@@ -1,5 +1,4 @@
 # client
-/client/node_modules
 /client/build
 /client/.env
 
@@ -48,6 +47,9 @@ jspm_packages/
 
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
+
+# TypeScript v1 declaration files
+typings/
 
 # TypeScript cache
 *.tsbuildinfo
@@ -118,3 +120,16 @@ dist
 .yarn/unplugged
 .yarn/build-state.yml
 .pnp.*
+
+### react ###
+.DS_*
+**/*.backup.*
+**/*.back.*
+
+node_modules
+
+*.sublime*
+
+psd
+thumb
+sketch
