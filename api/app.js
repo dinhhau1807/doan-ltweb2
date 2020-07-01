@@ -15,10 +15,13 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // ROUTES
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
   res.status(200).json({
-    message: 'Hello World'
+    message: 'Hello the world!',
   });
 });
 
 module.exports = app;
+
+// Uncomment for init database purpose
+// const Customer = require('./models/customer.model');
