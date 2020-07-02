@@ -29,17 +29,24 @@ exports.customerLogin = asyncHandler(async (req, res, next) => {
   });
 
   //? temp check password, willing to use hash in future
-  // if (!customer || !(await passwordValidator.verifyHashedPassword(password, customer.password))) {
-  if (!customer || customer.password !== '1234demo') {
+  if (
+    !customer ||
+    !(await passwordValidator.verifyHashedPassword(password, customer.password))
+  ) {
     return next(new AppError('Incorrect username/email or password', 401));
   }
 
   // Create login token and send to client
   const token = signToken('customer', customer.id);
 
-  return res
-    .status(200)
-    .json({ status: 'success', data: { status: 'success', token } });
+  const newCustomer = { ...customer.dataValues };
+  delete newCustomer.password;
+  delete newCustomer.verifyCode;
+
+  return res.status(201).json({
+    status: 'success',
+    data: { status: 'success', token, user: newCustomer },
+  });
 });
 
 exports.customerRegister = asyncHandler(async (req, res, next) => {
@@ -53,10 +60,16 @@ exports.customerRegister = asyncHandler(async (req, res, next) => {
     address: req.body.address,
     verifyCode: uuidv4(),
   });
+
   // Create login token and send to client
   const token = signToken('customer', customer.id);
 
-  return res
-    .status(200)
-    .json({ status: 'success', data: { status: 'success', token } });
+  const newCustomer = { ...customer.dataValues };
+  delete newCustomer.password;
+  delete newCustomer.verifyCode;
+
+  return res.status(201).json({
+    status: 'success',
+    data: { status: 'success', token, user: newCustomer },
+  });
 });
