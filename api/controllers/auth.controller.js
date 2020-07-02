@@ -3,8 +3,8 @@ const asyncHandler = require('express-async-handler');
 const { Op } = require('sequelize');
 const { v4: uuidv4 } = require('uuid');
 
+const { Customer } = require('../models');
 const AppError = require('../utils/appError');
-const Customer = require('../models/customer.model');
 const passwordValidator = require('../utils/passwordValidator');
 
 const signToken = (type, id) => {
