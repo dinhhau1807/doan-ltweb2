@@ -31,6 +31,9 @@ app.get('/', async (req, res) => {
 });
 app.use('/api/customers', customerRouter);
 
+// Ignore favicon
+app.get('/favicon.ico', (req, res) => res.status(204));
+
 // Route not found
 app.use('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
