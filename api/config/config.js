@@ -11,6 +11,10 @@ module.exports = {
     logging: false,
   },
   production: {
-    use_env_variables: 'DATABASE_URL',
+    use_env_variable: 'DATABASE_URL',
+    dialect: 'postgres',
+    dialectOptions: {
+      ssl: true,
+    },
   },
 };
