@@ -28,7 +28,6 @@ exports.customerLogin = asyncHandler(async (req, res, next) => {
     where: { [Op.or]: [{ username }, { email: username }] },
   });
 
-  //? temp check password, willing to use hash in future
   if (
     !customer ||
     !(await passwordValidator.verifyHashedPassword(password, customer.password))
@@ -39,13 +38,13 @@ exports.customerLogin = asyncHandler(async (req, res, next) => {
   // Create login token and send to client
   const token = signToken('customer', customer.id);
 
-  const newCustomer = { ...customer.dataValues };
-  delete newCustomer.password;
-  delete newCustomer.verifyCode;
+  const customerFound = { ...customer.dataValues };
+  delete customerFound.password;
+  delete customerFound.verifyCode;
 
   return res.status(201).json({
     status: 'success',
-    data: { status: 'success', token, user: newCustomer },
+    data: { status: 'success', token, user: customerFound },
   });
 });
 
