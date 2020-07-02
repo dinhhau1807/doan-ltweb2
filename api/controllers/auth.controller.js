@@ -42,7 +42,7 @@ exports.customerLogin = asyncHandler(async (req, res, next) => {
   delete customerFound.password;
   delete customerFound.verifyCode;
 
-  return res.status(201).json({
+  return res.status(200).json({
     status: 'success',
     data: { status: 'success', token, user: customerFound },
   });
