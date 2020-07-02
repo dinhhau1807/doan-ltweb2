@@ -2,8 +2,8 @@ const jwt = require('jsonwebtoken');
 const asyncHandler = require('express-async-handler');
 const { Op } = require('sequelize');
 
+const { Customer } = require('../models');
 const AppError = require('../utils/appError');
-const Customer = require('../models/customer.model');
 // const passwordValidator = require('../utils/passwordValidator');
 
 const signToken = (type, id) => {

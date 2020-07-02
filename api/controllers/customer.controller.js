@@ -1,6 +1,6 @@
 const asyncHandler = require('express-async-handler');
 
-const Customer = require('../models/customer.model');
+const { Customer } = require('../models');
 
 // test method
 exports.getAllCustomers = asyncHandler(async (req, res, next) => {
