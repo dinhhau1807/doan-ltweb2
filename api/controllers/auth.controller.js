@@ -1,10 +1,11 @@
 const jwt = require('jsonwebtoken');
 const asyncHandler = require('express-async-handler');
 const { Op } = require('sequelize');
+const { v4: uuidv4 } = require('uuid');
 
 const AppError = require('../utils/appError');
 const Customer = require('../models/customer.model');
-// const passwordValidator = require('../utils/passwordValidator');
+const passwordValidator = require('../utils/passwordValidator');
 
 const signToken = (type, id) => {
   return jwt.sign({ type, id }, process.env.JWT_SECRET, {
@@ -33,6 +34,25 @@ exports.customerLogin = asyncHandler(async (req, res, next) => {
     return next(new AppError('Incorrect username/email or password', 401));
   }
 
+  // Create login token and send to client
+  const token = signToken('customer', customer.id);
+
+  return res
+    .status(200)
+    .json({ status: 'success', data: { status: 'success', token } });
+});
+
+exports.customerRegister = asyncHandler(async (req, res, next) => {
+  const customer = await Customer.create({
+    username: req.body.username,
+    email: req.body.email,
+    password: await passwordValidator.createHashedPassword(req.body.password),
+    name: req.body.name,
+    dateOfBirth: req.body.dateOfBirth,
+    phoneNumber: req.body.phoneNumber,
+    address: req.body.address,
+    verifyCode: uuidv4(),
+  });
   // Create login token and send to client
   const token = signToken('customer', customer.id);
 

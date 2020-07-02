@@ -10,6 +10,7 @@ router.get('/getAll', customerController.getAllCustomers);
 
 // Public route
 router.post('/login', authController.customerLogin);
+router.post('/register', authController.customerRegister);
 
 // Auth route
 
