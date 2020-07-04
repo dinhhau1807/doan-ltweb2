@@ -10,3 +10,7 @@ export const fetchUser = () => async dispatch => {
     console.error(err);
   }
 };
+
+export const login = body => {
+  return fetchApi('/customers/login', 'POST', body);
+};

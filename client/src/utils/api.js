@@ -1,6 +1,8 @@
 import axios from 'axios';
 import camelize from 'camelize';
 import * as config from './../constants/UrlAPI';
+import { readCookie } from './helpers';
+import { TOKEN_KEY } from '../constants/GlobalConstants';
 
 const instanceNext = axios.create({
   baseURL: config.API_URL,
@@ -9,7 +11,15 @@ const instanceNext = axios.create({
 
 //config send request header
 instanceNext.interceptors.request.use(
-  config => config,
+  config => {
+    if (!config.headers.Authorization) {
+      const token = readCookie(TOKEN_KEY);
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
+    return config;
+  },
   error => Promise.reject(error)
 );
 
@@ -34,13 +44,13 @@ instanceNext.interceptors.response.use(
  * @params: {params} : params on url
  * @params: {cancelToken} : cancel request token
  */
-export const fetchApi = async ({
+export const fetchApi = async (
   endpoint,
   method = 'GET',
   body,
   params = {},
   sourceToken = null
-}) => {
+) => {
   return instanceNext({
     method,
     url: endpoint,

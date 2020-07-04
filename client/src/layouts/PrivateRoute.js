@@ -1,5 +1,7 @@
 import React from 'react';
-import { Route } from 'react-router-dom';
+import { Route, Redirect } from 'react-router-dom';
+import { TOKEN_KEY, LOGIN_URL } from '../constants/GlobalConstants';
+import { readCookie } from '../utils/helpers';
 
 export const PrivateRoute = ({
   component: Component,
@@ -9,11 +11,15 @@ export const PrivateRoute = ({
   return (
     <Route
       {...rest}
-      render={props => (
-        <Layout>
-          <Component {...props} />
-        </Layout>
-      )}
+      render={props =>
+        readCookie(TOKEN_KEY) ? (
+          <Layout>
+            <Component {...props} />
+          </Layout>
+        ) : (
+          <Redirect to={LOGIN_URL} />
+        )
+      }
     />
   );
 };
