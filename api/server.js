@@ -1,11 +1,10 @@
 /* eslint-disable */
 // Declare environment variables
-const dotenv = require('dotenv');
-dotenv.config({ path: './.env' });
+require('dotenv').config({ path: './.env' });
 
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || process.env.LOCAL_PORT;
 const app = require('./app');
-const sequelize = require('./models/db');
+var db = require('./models');
 
 process.on('uncaughtException', (err) => {
   console.log('UNCAUGHT REJECTION! 💥 Shutting down...');
@@ -14,7 +13,7 @@ process.on('uncaughtException', (err) => {
 });
 
 // Connect database
-sequelize
+db.sequelize
   .sync()
   .then(() => {
     console.log('Connection has been established successfully.');
