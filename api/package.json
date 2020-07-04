@@ -18,7 +18,7 @@
     "morgan": "^1.10.0",
     "pg": "^8.2.1",
     "pg-hstore": "^2.3.3",
-    "sequelize": "^6.2.4",
+    "sequelize": "^6.3.0",
     "uuid": "^8.2.0"
   },
   "devDependencies": {
@@ -36,5 +36,8 @@
   },
   "engines": {
     "node": "^12"
-  }
+  },
+  "main": "app.js",
+  "author": "Huy <dawuhy@gmail.com>",
+  "license": "ISC"
 }
