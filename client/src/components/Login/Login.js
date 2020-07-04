@@ -26,7 +26,6 @@ const Login = ({ login, history }) => {
       history.push('/');
     } catch (err) {
       console.error(err);
-    } finally {
       setLoading(false);
     }
   };
