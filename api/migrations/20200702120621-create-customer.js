@@ -23,7 +23,7 @@ module.exports = {
       dateOfBirth: {
         type: Sequelize.DATE,
       },
-      phone: {
+      phoneNumber: {
         type: Sequelize.STRING,
       },
       address: {

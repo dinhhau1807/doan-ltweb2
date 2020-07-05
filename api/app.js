@@ -3,6 +3,7 @@ const morgan = require('morgan');
 const cors = require('cors');
 
 const AppError = require('./utils/appError');
+const GlobalAppError = require('./controllers/error.controller');
 
 // Router import
 const customerRouter = require('./routes/customer.routes');
@@ -23,10 +24,9 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // ROUTES
-// ? for testing
 app.get('/', async (req, res) => {
   res.status(200).json({
-    message: 'Hello the world!',
+    message: 'Hello the world 😄😄😄!',
   });
 });
 app.use('/api/customers', customerRouter);
@@ -39,7 +39,7 @@ app.use('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
-module.exports = app;
+// Handle global error
+app.use(GlobalAppError);
 
-// Uncomment for init database purpose
-// const Customer = require('./models/customer.model');
+module.exports = app;
