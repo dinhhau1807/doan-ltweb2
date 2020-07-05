@@ -11,8 +11,14 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Transaction.belongsTo(models.Account);
-      Transaction.belongsTo(models.Bank);
+      Transaction.belongsTo(models.Account, {
+        as: 'Current',
+        foreignKey: 'accountSourceId'
+      });
+      Transaction.belongsTo(models.Bank, {
+        as: 'Current2',
+        foreignKey: 'bankDestinationId'
+      });
     }
   };
   Transaction.init({
@@ -24,7 +30,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    bankIdDestination: {
+    bankDestinationId: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
@@ -37,7 +43,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     status: {
-      type: DataTypes.BOOLEAN,
+      type: DataTypes.STRING,
       allowNull: false,
     },
     otpCode: {
@@ -49,14 +55,6 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     otpExpiredDate: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-    createdDate: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-    updated: {
       type: DataTypes.DATE,
       allowNull: false,
     },

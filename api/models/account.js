@@ -11,8 +11,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Account.belongsTo(models.Customer);
-      Account.hasMany(models.Transaction);
+      Account.belongsTo(models.Customer, {
+        as: 'Current',
+        foreignKey: 'customerId'
+      });
     }
   };
   Account.init({
@@ -33,7 +35,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     status: {
-      type: DataTypes.BOOLEAN,
+      type: DataTypes.STRING,
       allowNull: false,
     },
     interestRate: {
@@ -41,14 +43,6 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     term: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-    createdDate: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-    updatedDate: {
       type: DataTypes.DATE,
       allowNull: false,
     },
