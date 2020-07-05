@@ -8,7 +8,7 @@ const renderRoutes = (routes = []) => {
   let result = null;
   if (routes.length > 0) {
     result = routes.map(
-      ({ isPrivate, path, exact, component, layout }, index) =>
+      ({ isPrivate, isStaffRoute, path, exact, component, layout }, index) =>
         isPrivate ? (
           <PrivateRoute
             key={index}
@@ -16,6 +16,7 @@ const renderRoutes = (routes = []) => {
             exact={exact}
             component={component}
             layout={layout}
+            isStaffRoute={isStaffRoute}
           />
         ) : (
           <PublicRoute

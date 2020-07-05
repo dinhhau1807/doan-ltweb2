@@ -6,6 +6,7 @@ import { readCookie } from '../utils/helpers';
 export const PrivateRoute = ({
   component: Component,
   layout: Layout,
+  isStaffRoute,
   ...rest
 }) => {
   return (
@@ -13,11 +14,13 @@ export const PrivateRoute = ({
       {...rest}
       render={props =>
         readCookie(TOKEN_KEY) ? (
-          <Layout>
+          <Layout isStaffRoute={isStaffRoute}>
             <Component {...props} />
           </Layout>
         ) : (
-          <Redirect to={LOGIN_URL} />
+          <Redirect
+            to={isStaffRoute ? `/a2hl-management${LOGIN_URL}` : LOGIN_URL}
+          />
         )
       }
     />
