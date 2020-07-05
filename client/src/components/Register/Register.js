@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
-import './Register.scss';
+import PropTypes from 'prop-types';
+import { LOGIN_URL, TOKEN_KEY } from '../../constants/GlobalConstants';
+import { createCookie } from '../../utils/helpers';
 
+import './Register.scss';
 import { Form, Input, Button, DatePicker } from 'antd';
 
 const layout = {
@@ -17,15 +20,39 @@ const validateMessages = {
   }
 };
 
-const Register = () => {
+const propTypes = {
+  register: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired
+};
+
+const defaultProps = {};
+
+const Register = ({ register, history }) => {
   const [loading, setLoading] = useState(false);
 
-  const onFinish = values => {
-    setLoading(true);
-    console.log('Received values of form: ', values);
-    setTimeout(() => {
+  const onFinish = async values => {
+    try {
+      setLoading(true);
+
+      const { email, password, name, DoB, phone, address } = values;
+
+      const body = {
+        username: email,
+        email,
+        password,
+        name,
+        dateOfBirth: DoB.format('yyyy/MM/DD'),
+        phoneNumber: phone,
+        address
+      };
+
+      const { data } = await register(body);
+      createCookie(TOKEN_KEY, data.token);
+      history.push('/');
+    } catch (err) {
+      console.error(err);
       setLoading(false);
-    }, 3000);
+    }
   };
 
   return (
@@ -94,7 +121,7 @@ const Register = () => {
             <Button loading={loading} type="primary" htmlType="submit">
               Đăng kí
             </Button>
-            <a href="/login" style={{ marginLeft: '10px' }}>
+            <a href={LOGIN_URL} style={{ marginLeft: '10px' }}>
               Trở về đăng nhập
             </a>
           </Form.Item>
@@ -103,5 +130,8 @@ const Register = () => {
     </div>
   );
 };
+
+Register.propTypes = propTypes;
+Register.defaultProps = defaultProps;
 
 export default Register;

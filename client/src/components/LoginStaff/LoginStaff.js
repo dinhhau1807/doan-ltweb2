@@ -5,7 +5,7 @@ import { TOKEN_KEY } from '../../constants/GlobalConstants';
 
 import { Form, Input, Button } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import './Login.scss';
+import './LoginStaff.scss';
 
 const propTypes = {
   login: PropTypes.func.isRequired,
@@ -14,7 +14,7 @@ const propTypes = {
 
 const defaultProps = {};
 
-const Login = ({ login, history }) => {
+const LoginStaff = ({ login, history }) => {
   const [loading, setLoading] = useState(false);
 
   const onFinish = async values => {
@@ -23,7 +23,7 @@ const Login = ({ login, history }) => {
       const { email, password } = values;
       const { data } = await login({ username: email, password });
       createCookie(TOKEN_KEY, data.token);
-      history.push('/');
+      history.push('/a2hl-management');
     } catch (err) {
       console.error(err);
       setLoading(false);
@@ -33,7 +33,7 @@ const Login = ({ login, history }) => {
   return (
     <div className="public-form">
       <div className="public-form__wrap" style={{ width: '400px' }}>
-        <h2 className="public-form__header">A2HL Internet Banking</h2>
+        <h2 className="public-form__header">A2HL Management</h2>
         <Form name="form" className="form" onFinish={onFinish}>
           <Form.Item
             name="email"
@@ -67,20 +67,13 @@ const Login = ({ login, history }) => {
               Đăng nhập
             </Button>
           </Form.Item>
-
-          <Form.Item>
-            <a href="/">Quên mật khẩu</a>{' '}
-            <span>
-              hoặc <a href="/register">đăng kí tại đây!</a>
-            </span>
-          </Form.Item>
         </Form>
       </div>
     </div>
   );
 };
 
-Login.propTypes = propTypes;
-Login.defaultProps = defaultProps;
+LoginStaff.propTypes = propTypes;
+LoginStaff.defaultProps = defaultProps;
 
-export default Login;
+export default LoginStaff;
