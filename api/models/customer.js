@@ -9,8 +9,6 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      // Customer.hasOne(models.Identity);
-      // Customer.hasMany(models.Account);
     }
   }
   Customer.init(
@@ -50,9 +48,8 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       status: {
-        type: DataTypes.BOOLEAN,
+        type: DataTypes.STRING,
         allowNull: false,
-        defaultValue: false,
       },
     },
     {

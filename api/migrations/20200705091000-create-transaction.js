@@ -6,46 +6,46 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       accountSourceId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       accountDestination: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       bankDestinationId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       amount: {
-        type: Sequelize.DECIMAL
+        type: Sequelize.DECIMAL,
       },
       description: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       status: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       otpCode: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       otpCreatedDate: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       otpExpiredDate: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable('Transactions');
-  }
+  },
 };

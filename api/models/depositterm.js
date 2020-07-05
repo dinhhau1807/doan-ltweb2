@@ -1,7 +1,5 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class DepositTerm extends Model {
     /**
@@ -12,19 +10,22 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
     }
-  };
-  DepositTerm.init({
-    period: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
+  }
+  DepositTerm.init(
+    {
+      period: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      interestRate: {
+        type: DataTypes.DECIMAL,
+        allowNull: false,
+      },
     },
-    interestRate: {
-      type: DataTypes.DECIMAL,
-      allowNull: false,
-    },
-  }, {
-    sequelize,
-    modelName: 'DepositTerm',
-  });
+    {
+      sequelize,
+      modelName: 'DepositTerm',
+    }
+  );
   return DepositTerm;
 };

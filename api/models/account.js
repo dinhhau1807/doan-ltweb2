@@ -1,7 +1,5 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Account extends Model {
     /**
@@ -13,42 +11,45 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Account.belongsTo(models.Customer, {
         as: 'Current',
-        foreignKey: 'customerId'
+        foreignKey: 'customerId',
       });
     }
-  };
-  Account.init({
-    customerId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
+  }
+  Account.init(
+    {
+      customerId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      type: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      currentBalance: {
+        type: DataTypes.DECIMAL,
+        allowNull: false,
+      },
+      currentUnit: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      status: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      interestRate: {
+        type: DataTypes.DECIMAL,
+        allowNull: false,
+      },
+      term: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
     },
-    type: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    currentBalance: {
-      type: DataTypes.DECIMAL,
-      allowNull: false,
-    },
-    currentUnit: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    status: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    interestRate: {
-      type: DataTypes.DECIMAL,
-      allowNull: false,
-    },
-    term: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-  }, {
-    sequelize,
-    modelName: 'Account',
-  });
+    {
+      sequelize,
+      modelName: 'Account',
+    }
+  );
   return Account;
 };

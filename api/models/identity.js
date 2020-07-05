@@ -1,7 +1,5 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Identity extends Model {
     /**
@@ -13,34 +11,37 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Identity.belongsTo(models.Customer, {
         as: 'Current',
-        foreignKey: 'customerId'
+        foreignKey: 'customerId',
       });
     }
-  };
-  Identity.init({
-    customerId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
+  }
+  Identity.init(
+    {
+      customerId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      identityNumber: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      fontImage: {
+        type: DataTypes.BLOB,
+        allowNull: false,
+      },
+      backImage: {
+        type: DataTypes.BLOB,
+        allowNull: false,
+      },
+      staffIdApproved: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
     },
-    identityNumber: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    fontImage: {
-      type: DataTypes.BLOB,
-      allowNull: false,
-    },
-    backImage: {
-      type: DataTypes.BLOB,
-      allowNull: false,
-    },
-    staffIdApproved: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-  }, {
-    sequelize,
-    modelName: 'Identity',
-  });
+    {
+      sequelize,
+      modelName: 'Identity',
+    }
+  );
   return Identity;
 };

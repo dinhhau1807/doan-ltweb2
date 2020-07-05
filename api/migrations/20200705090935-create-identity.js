@@ -6,34 +6,34 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       customerId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       identityNumber: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       fontImage: {
-        type: Sequelize.BLOB
+        type: Sequelize.BLOB,
       },
       backImage: {
-        type: Sequelize.BLOB
+        type: Sequelize.BLOB,
       },
       staffIdApproved: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable('Identities');
-  }
+  },
 };
