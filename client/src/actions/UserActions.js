@@ -14,3 +14,7 @@ export const fetchUser = () => async dispatch => {
 export const login = body => {
   return fetchApi('/customers/login', 'POST', body);
 };
+
+export const register = body => {
+  return fetchApi('/customers/register', 'POST', body);
+};
