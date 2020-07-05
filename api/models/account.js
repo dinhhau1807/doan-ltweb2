@@ -1,7 +1,7 @@
+'use strict';
 const { Model } = require('sequelize');
-
 module.exports = (sequelize, DataTypes) => {
-  class Customer extends Model {
+  class Account extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -9,53 +9,47 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Account.belongsTo(models.Customer, {
+        as: 'Current',
+        foreignKey: 'customerId',
+      });
     }
   }
-  Customer.init(
+  Account.init(
     {
-      username: {
-        type: DataTypes.STRING,
+      customerId: {
+        type: DataTypes.INTEGER,
         allowNull: false,
-        unique: true,
       },
-      email: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
-      },
-      password: {
+      type: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      name: {
-        type: DataTypes.STRING,
+      currentBalance: {
+        type: DataTypes.DECIMAL,
         allowNull: false,
       },
-      dateOfBirth: {
-        type: DataTypes.DATE,
-        allowNull: false,
-      },
-      phoneNumber: {
+      currentUnit: {
         type: DataTypes.STRING,
         allowNull: false,
-      },
-      address: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      verifyCode: {
-        type: DataTypes.STRING,
-        allowNull: true,
       },
       status: {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      interestRate: {
+        type: DataTypes.DECIMAL,
+        allowNull: false,
+      },
+      term: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
     },
     {
       sequelize,
-      modelName: 'Customer',
+      modelName: 'Account',
     }
   );
-  return Customer;
+  return Account;
 };
