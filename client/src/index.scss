@@ -3,6 +3,10 @@
 
 @import '~antd/dist/antd.css';
 
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -49,7 +53,16 @@ body {
 }
 
 .sidebar-logo {
-  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background: rgba(255, 255, 255, 0.2);
   margin: 16px;
+  height: 32px;
+
+  img {
+    transform: scale(1.8);
+    width: 70px;
+    object-fit: cover;
+  }
 }
