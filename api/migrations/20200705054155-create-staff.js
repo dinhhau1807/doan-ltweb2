@@ -15,7 +15,7 @@ module.exports = {
         type: Sequelize.STRING,
       },
       name: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
       },
       roleId: {
         type: Sequelize.INTEGER,
