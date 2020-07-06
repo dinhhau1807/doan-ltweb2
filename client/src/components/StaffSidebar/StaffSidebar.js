@@ -9,6 +9,7 @@ import {
 import './StaffSidebar.scss';
 import { history } from '../../utils/helpers';
 import { STAFF_TABS } from '../../constants/GlobalConstants';
+import logo from '../../images/logo.png';
 
 const { Sider } = Layout;
 
@@ -36,7 +37,9 @@ const StaffSidebar = () => {
 
   return (
     <Sider theme="light">
-      <div className="sidebar-logo">LOGO</div>
+      <div className="sidebar-logo">
+        <img src={logo} />
+      </div>
       <Menu
         defaultSelectedKeys={[STAFF_TABS.CUSTOMER]}
         mode="inline"
