@@ -6,7 +6,9 @@ const NotFound = lazy(() => import('./pages/NotFoundPage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const RegisterPage = lazy(() => import('./pages/RegisterPage'));
 const LoginStaffPage = lazy(() => import('./pages/LoginStaffPage'));
-const StaffPage = lazy(() => import('./pages/StaffPage'));
+const CustomersManagement = lazy(() =>
+  import('./pages/CustomersManagementPage')
+);
 
 export const routes = [
   {
@@ -22,7 +24,7 @@ export const routes = [
     isPrivate: true,
     isStaffRoute: true,
     layout: PrivateLayout,
-    component: StaffPage
+    component: CustomersManagement
   },
   {
     path: '/a2hl-management/login',
