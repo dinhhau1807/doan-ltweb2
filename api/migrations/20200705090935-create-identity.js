@@ -14,6 +14,9 @@ module.exports = {
       identityNumber: {
         type: Sequelize.STRING,
       },
+      registrationDate: {
+        type: Sequelize.DATE,
+      },
       fontImage: {
         type: Sequelize.BLOB,
       },
