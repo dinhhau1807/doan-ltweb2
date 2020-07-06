@@ -1,7 +1,5 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Transaction extends Model {
     /**
@@ -13,54 +11,58 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Transaction.belongsTo(models.Account, {
         as: 'Current',
-        foreignKey: 'accountSourceId'
+        foreignKey: 'accountSourceId',
       });
       Transaction.belongsTo(models.Bank, {
         as: 'Current2',
-        foreignKey: 'bankDestinationId'
+        foreignKey: 'bankDestinationId',
       });
     }
-  };
-  Transaction.init({
-    accountSourceId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
+  }
+  Transaction.init(
+    {
+      accountSourceId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      accountDestination: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      bankDestinationId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      amount: {
+        type: DataTypes.DECIMAL,
+        allowNull: false,
+      },
+      description: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      status: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: 'pending',
+      },
+      otpCode: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      otpCreatedDate: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
+      otpExpiredDate: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
     },
-    accountDestination: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    bankDestinationId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    amount: {
-      type: DataTypes.DECIMAL,
-      allowNull: false,
-    },
-    description: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    status: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    otpCode: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    otpCreatedDate: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-    otpExpiredDate: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-  }, {
-    sequelize,
-    modelName: 'Transaction',
-  });
+    {
+      sequelize,
+      modelName: 'Transaction',
+    }
+  );
   return Transaction;
 };

@@ -15,7 +15,7 @@ module.exports = {
           phoneNumber: '1234',
           address: '1234',
           verifyCode: '1234',
-          status: true,
+          status: 'inactive',
           createdAt: new Date(),
           updatedAt: new Date(),
         },
