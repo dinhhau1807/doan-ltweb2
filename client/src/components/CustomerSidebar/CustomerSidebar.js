@@ -61,7 +61,7 @@ const CustomerSidebar = () => {
   return (
     <Sider theme="light">
       <div className="sidebar-logo">
-        <img src={logo} />
+        <img src={logo} alt="logo" />
       </div>
       <Menu
         mode="inline"
