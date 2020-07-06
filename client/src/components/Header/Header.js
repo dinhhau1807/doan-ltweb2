@@ -17,7 +17,9 @@ const menu = isStaffRoute => {
 const HeaderComponent = ({ style, isStaffRoute }) => {
   return (
     <Header className="header" style={style}>
-      <h1 className="header__left">A2HL Management</h1>
+      <h1 className="header__left">
+        {isStaffRoute ? 'A2HL Management' : 'A2HL Internet Banking'}
+      </h1>
       <div className="header__right">
         <Dropdown overlay={menu(isStaffRoute)}>
           <span style={{ cursor: 'pointer', fontSize: '18px' }}>
