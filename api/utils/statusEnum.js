@@ -1,12 +1,12 @@
 exports.STATUS = Object.freeze({
-  ACTIVE: 'active',
-  INACTIVE: 'inactive',
-  BLOCKED: 'blocked',
-  DELETED: 'deleted',
+  active: 'active',
+  inactive: 'inactive',
+  blocked: 'blocked',
+  deleted: 'deleted',
 });
 
 exports.TRANS_STATUS = Object.freeze({
-  PENDING: 'pending',
-  SUCCEED: 'succeed',
-  FAILED: 'failed',
+  pending: 'pending',
+  succeed: 'succeed',
+  failed: 'failed',
 });
