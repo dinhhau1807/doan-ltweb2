@@ -17,6 +17,9 @@ const excludeAdmin = {
 const findStaff = asyncHandler(async (id) => {
   const staff = await Staff.findOne({
     include: excludeAdmin,
+    attributes: {
+      exclude: ['password', 'roleId'],
+    },
     where: {
       [Op.and]: [
         { id },
@@ -33,13 +36,50 @@ const findStaff = asyncHandler(async (id) => {
 });
 
 exports.getAllStaffs = asyncHandler(async (req, res, next) => {
+  const attributes = ['username', 'name'];
+  const sortTypes = ['asc', 'desc'];
+  let { sortBy, sortType, page, limit } = req.query;
+
+  if (!page || page <= 0) page = 1;
+  if (!limit || limit <= 0) limit = 10;
+
+  if (!sortType || (sortType && !sortTypes.includes(sortType)))
+    sortType = 'asc';
+  if (!sortBy || (sortBy && !attributes.includes(sortBy))) sortBy = 'updatedAt';
+
+  const filterArr = [];
+  attributes.forEach((attr) => {
+    if (req.query[attr]) {
+      const obj = {};
+      obj[attr] = { [Op.like]: `%${req.query[attr]}%` };
+      filterArr.push(obj);
+    }
+  });
+
   const staffs = await Staff.findAll({
     include: excludeAdmin,
+    attributes: {
+      exclude: ['password', 'roleId'],
+    },
+    where: {
+      [Op.and]: [
+        {
+          status: {
+            [Op.ne]: STATUS.deleted,
+          },
+        },
+        ...filterArr,
+      ],
+    },
+    order: [[sortBy, sortType]],
+    offset: limit * (page - 1),
+    limit,
   });
 
   return res.status(200).json({
     status: 'success',
-    data: staffs,
+    totalItems: staffs.length,
+    items: staffs,
   });
 });
 
@@ -91,6 +131,9 @@ exports.deleteStaff = asyncHandler(async (req, res, next) => {
 
   staff.status = STATUS.deleted;
   staff.save();
+
+  delete staff.roleId;
+  delete staff.password;
 
   return res.status(200).json({
     status: 'success',
