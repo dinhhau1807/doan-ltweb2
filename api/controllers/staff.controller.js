@@ -46,6 +46,20 @@ exports.getAllCustomer = asyncHandler(async (req, res, next) => {
   const condition = search ? { [sortBy]: { [Op.like]: `%${search}%` } } : null;
   const { limit, offset } = getPagination(page, size);
 
+  if (Object.keys(req.query).length === 0) {
+    const customer = await Customer.findAndCountAll({
+      attributes: attributes,
+      limit,
+      offset,
+      where: condition,
+    });
+    const listCustomer = getPagingData(customer, page, limit);
+    return res.status(200).json({
+      status: 'success',
+      data: { status: 'success', listData: listCustomer },
+    });
+  }
+
   if (!attributes.includes(sortBy) || !typeSort.includes(sortType)) {
     return next(new AppError('Property invalid!', 400));
   }
