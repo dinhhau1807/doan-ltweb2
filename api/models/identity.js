@@ -10,7 +10,6 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Identity.belongsTo(models.Customer, {
-        as: 'Current',
         foreignKey: 'customerId',
       });
     }

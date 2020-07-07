@@ -33,3 +33,21 @@ export const FILTER_CUSTOMERS = {
     }
   ]
 };
+
+export const FILTER_STAFFS = {
+  // default column
+  default: {
+    columnName: 'username',
+    placeholder: 'Nhập username'
+  },
+
+  //optional columns
+  options: [
+    {
+      label: 'Họ tên',
+      type: 'input',
+      columnName: 'name',
+      placeholder: ''
+    }
+  ]
+};

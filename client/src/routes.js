@@ -1,5 +1,6 @@
 import { lazy } from 'react';
 import { PrivateLayout, PublicLayout } from './layouts';
+import StaffsManagementPage from './pages/StaffsManagementPage';
 
 const UserPage = lazy(() => import('./pages/UserPage'));
 const NotFound = lazy(() => import('./pages/NotFoundPage'));
@@ -9,6 +10,7 @@ const LoginStaffPage = lazy(() => import('./pages/LoginStaffPage'));
 const CustomersManagement = lazy(() =>
   import('./pages/CustomersManagementPage')
 );
+const StaffsManagement = lazy(() => import('./pages/StaffsManagementPage'));
 
 export const routes = [
   {
@@ -25,6 +27,14 @@ export const routes = [
     isStaffRoute: true,
     layout: PrivateLayout,
     component: CustomersManagement
+  },
+  {
+    path: '/a2hl-management/staffs',
+    exact: true,
+    isPrivate: true,
+    isStaffRoute: true,
+    layout: PrivateLayout,
+    component: StaffsManagement
   },
   {
     path: '/a2hl-management/login',

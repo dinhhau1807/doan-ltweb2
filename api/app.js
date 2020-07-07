@@ -8,6 +8,7 @@ const GlobalAppError = require('./controllers/error.controller');
 // Router import
 const customerRouter = require('./routes/customer.routes');
 const staffRouter = require('./routes/staff.routes');
+const adminRouter = require('./routes/admin.routes');
 
 // Start express app
 const app = express();
@@ -32,6 +33,7 @@ app.get('/', async (req, res) => {
 });
 app.use('/api/customers', customerRouter);
 app.use('/api/staffs', staffRouter);
+app.use('/api/admin', adminRouter);
 
 // Ignore favicon
 app.get('/favicon.ico', (req, res) => res.status(204));
