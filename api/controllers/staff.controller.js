@@ -27,7 +27,6 @@ exports.updateStatus = asyncHandler(async (req, res, next) => {
   customer.save();
   return res.status(200).json({
     status: 'success',
-    data: { message: 'Update status success!' },
   });
 });
 
