@@ -11,14 +11,6 @@ const getPagination = (page, size) => {
   return { limit, offset };
 };
 
-const getPagingData = (data, page, limit) => {
-  const { count: totalItems, rows: customers } = data;
-  const currentPage = page ? +page : 0;
-  const totalPages = Math.ceil(totalItems / limit);
-
-  return { totalItems, customers, totalPages, currentPage };
-};
-
 exports.updateStatus = asyncHandler(async (req, res, next) => {
   const { idCustomer, status } = req.body;
   const customer = await Customer.findOne({
@@ -35,15 +27,24 @@ exports.updateStatus = asyncHandler(async (req, res, next) => {
   customer.save();
   return res.status(200).json({
     status: 'success',
-    data: { status: 'success' },
+    data: { message: 'Update status success!' },
   });
 });
 
 exports.getAllCustomer = asyncHandler(async (req, res, next) => {
-  const { page, size, search, sortBy, sortType } = req.query;
+  const {
+    page,
+    size,
+    sortBy,
+    sortType = 'desc',
+    username,
+    email,
+    name,
+    phoneNumber,
+    address,
+  } = req.query;
   const attributes = ['username', 'email', 'name', 'phoneNumber', 'address'];
   const typeSort = ['asc', 'desc'];
-  const condition = search ? { [sortBy]: { [Op.like]: `%${search}%` } } : null;
   const { limit, offset } = getPagination(page, size);
 
   if (Object.keys(req.query).length === 0) {
@@ -51,12 +52,11 @@ exports.getAllCustomer = asyncHandler(async (req, res, next) => {
       attributes: attributes,
       limit,
       offset,
-      where: condition,
     });
-    const listCustomer = getPagingData(customer, page, limit);
     return res.status(200).json({
       status: 'success',
-      data: { status: 'success', listData: listCustomer },
+      totalItems: customer.count,
+      items: customer.rows,
     });
   }
 
@@ -64,17 +64,88 @@ exports.getAllCustomer = asyncHandler(async (req, res, next) => {
     return next(new AppError('Property invalid!', 400));
   }
 
+  if (Object.keys(req.query).length === 1) {
+    const customer = await Customer.findAndCountAll({
+      attributes: attributes,
+      limit,
+      offset,
+      order: [[sortBy, 'desc']],
+    });
+    return res.status(200).json({
+      status: 'success',
+      totalItems: customer.count,
+      items: customer.rows,
+    });
+  }
+
+  if (Object.keys(req.query).length === 2) {
+    const customer = await Customer.findAndCountAll({
+      attributes: attributes,
+      limit,
+      offset,
+      order: [[sortBy, sortType]],
+    });
+    return res.status(200).json({
+      status: 'success',
+      totalItems: customer.count,
+      items: customer.rows,
+    });
+  }
+
   const customer = await Customer.findAndCountAll({
     attributes: attributes,
-    where: condition,
+    where: {
+      [Op.or]: [
+        {
+          username: {
+            [Op.or]: {
+              [Op.like]: `%${username}%`,
+              [Op.eq]: null,
+            },
+          },
+        },
+        {
+          email: {
+            [Op.or]: {
+              [Op.like]: `%${email}%`,
+              [Op.eq]: null,
+            },
+          },
+        },
+        {
+          name: {
+            [Op.or]: {
+              [Op.like]: `%${name}%`,
+              [Op.eq]: null,
+            },
+          },
+        },
+        {
+          phoneNumber: {
+            [Op.or]: {
+              [Op.like]: `%${phoneNumber}%`,
+              [Op.eq]: null,
+            },
+          },
+        },
+        {
+          address: {
+            [Op.or]: {
+              [Op.like]: `%${address}%`,
+              [Op.eq]: null,
+            },
+          },
+        },
+      ],
+    },
     limit,
     offset,
     order: [[sortBy, sortType]],
   });
 
-  const listCustomer = getPagingData(customer, page, limit);
   return res.status(200).json({
     status: 'success',
-    data: { status: 'success', listData: listCustomer },
+    totalItems: customer.count,
+    items: customer.rows,
   });
 });
