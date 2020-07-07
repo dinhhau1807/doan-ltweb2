@@ -31,7 +31,7 @@ app.get('/', async (req, res) => {
   });
 });
 app.use('/api/customers', customerRouter);
-app.use('/api/staff', staffRouter);
+app.use('/api/staffs', staffRouter);
 
 // Ignore favicon
 app.get('/favicon.ico', (req, res) => res.status(204));

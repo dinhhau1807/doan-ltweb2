@@ -8,6 +8,6 @@ const router = express.Router();
 
 // Auth route
 router.get('/customers', staffController.getAllCustomer);
-router.post('/status', staffController.updateStatus);
+router.post('/customers/status', staffController.updateStatus);
 
 module.exports = router;
