@@ -105,7 +105,7 @@ exports.createStaff = asyncHandler(async (req, res, next) => {
 
   return res.status(201).json({
     status: 'success',
-    data: { status: 'success', data: newStaff },
+    data: newStaff,
   });
 });
 
