@@ -132,9 +132,6 @@ exports.deleteStaff = asyncHandler(async (req, res, next) => {
   staff.status = STATUS.deleted;
   staff.save();
 
-  delete staff.roleId;
-  delete staff.password;
-
   return res.status(200).json({
     status: 'success',
     data: staff,
