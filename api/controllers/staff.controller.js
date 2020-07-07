@@ -49,24 +49,18 @@ exports.getAllCustomer = asyncHandler(async (req, res, next) => {
   if (!attributes.includes(sortBy) || !typeSort.includes(sortType)) {
     return next(new AppError('Property invalid!', 400));
   }
-  await Customer.findAndCountAll({
+
+  const customer = await Customer.findAndCountAll({
     attributes: attributes,
     where: condition,
     limit,
     offset,
     order: [[sortBy, sortType]],
-  })
-    .then((data) => {
-      const listCustomer = getPagingData(data, page, limit);
-      return res.status(200).json({
-        status: 'success',
-        data: { status: 'success', listData: listCustomer },
-      });
-    })
-    .catch((err) => {
-      res.status(400).json({
-        message:
-          err.message || 'Some error occurred while retrieving customers.',
-      });
-    });
+  });
+
+  const listCustomer = getPagingData(customer, page, limit);
+  return res.status(200).json({
+    status: 'success',
+    data: { status: 'success', listData: listCustomer },
+  });
 });
