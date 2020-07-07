@@ -5,7 +5,7 @@ export const STAFF_TABS = {
   CUSTOMER: '/',
   IDENTITY: '/identity',
   TRANSACTION: '/transaction',
-  STAFF: '/staff'
+  STAFF: '/staffs'
 };
 
 export const CUSTOMER_TABS = {
