@@ -115,7 +115,7 @@ exports.customerLogin = asyncHandler(async (req, res, next) => {
 
   return res.status(200).json({
     status: 'success',
-    data: { status: 'success', token, user: customerFound },
+    token,
   });
 });
 
@@ -140,6 +140,6 @@ exports.customerRegister = asyncHandler(async (req, res, next) => {
 
   return res.status(201).json({
     status: 'success',
-    data: { status: 'success', token, user: newCustomer },
+    token,
   });
 });
