@@ -10,7 +10,7 @@ const router = express.Router();
 // router.post('/login', authController.staffLogin);
 
 // Auth route
-// router.use(authController.restrictTo(ROLE.admin));
+// router.use(authController.authorize, authController.restrictTo(ROLE.admin));
 
 // router.get('/', adminController.getMe);
 

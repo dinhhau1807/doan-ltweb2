@@ -1,16 +1,87 @@
 const jwt = require('jsonwebtoken');
+const { promisify } = require('util');
 const asyncHandler = require('express-async-handler');
 const { Op } = require('sequelize');
 const { v4: uuidv4 } = require('uuid');
 
-const { Customer } = require('../models');
+const { Customer, Staff, Role } = require('../models');
 const AppError = require('../utils/appError');
 const passwordValidator = require('../utils/passwordValidator');
+const { STATUS } = require('../utils/statusEnum');
 
 const signToken = (type, id) => {
   return jwt.sign({ type, id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
+};
+
+exports.authorize = asyncHandler(async (req, res, next) => {
+  // Get token
+  let token;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer ')
+  ) {
+    token = req.headers.authorization.split(' ')[1];
+  } else {
+    return next(
+      new AppError('You are not logged in! Please log in to get access.', 401)
+    );
+  }
+
+  // Verify token
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+
+  // Check user exists
+  let currentUser = null;
+  switch (decoded.type) {
+    case 'customer':
+      currentUser = await Customer.findOne({ where: { id: decoded.id } });
+      break;
+    case 'staff':
+      currentUser = await Staff.findOne({
+        include: { model: Role },
+        where: { id: decoded.id },
+      });
+      break;
+    default:
+  }
+
+  if (!currentUser || (currentUser && currentUser.status === STATUS.deleted)) {
+    return next(
+      new AppError(
+        'The user belonging to this token does no longer exists.',
+        401
+      )
+    );
+  }
+
+  // Check status
+  switch (currentUser.status) {
+    case STATUS.inactive:
+      return next(new AppError('Your account is inactive!', 403));
+    case STATUS.blocked:
+      return next(new AppError('Your account is blocked!', 403));
+    default:
+  }
+
+  // Should check user have changed password
+
+  // GRANT ACCESS
+  req.user = currentUser;
+  next();
+});
+
+// Only use for admin & staff
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.Role.roleDescription)) {
+      return next(
+        new AppError('You do not have permission to perform this action.', 403)
+      );
+    }
+    next();
+  };
 };
 
 exports.customerLogin = asyncHandler(async (req, res, next) => {
@@ -44,7 +115,7 @@ exports.customerLogin = asyncHandler(async (req, res, next) => {
 
   return res.status(200).json({
     status: 'success',
-    data: { status: 'success', token, user: customerFound },
+    token,
   });
 });
 
@@ -69,6 +140,6 @@ exports.customerRegister = asyncHandler(async (req, res, next) => {
 
   return res.status(201).json({
     status: 'success',
-    data: { status: 'success', token, user: newCustomer },
+    token,
   });
 });
