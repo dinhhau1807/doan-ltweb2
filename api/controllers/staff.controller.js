@@ -75,6 +75,12 @@ exports.getAllCustomers = asyncHandler(async (req, res, next) => {
     offset: limit * (page - 1),
     limit,
   });
+  if (customers.length === 0) {
+    return res.status(200).json({
+      status: 'success',
+      message: 'Customer not found!',
+    });
+  }
   return res.status(200).json({
     status: 'success',
     totalItems: customers.length,
