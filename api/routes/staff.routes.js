@@ -7,7 +7,7 @@ const router = express.Router();
 // Public route
 
 // Auth route
-router.get('/customers', staffController.getAllCustomer);
-router.post('/customers/status', staffController.updateStatus);
+router.get('/customers', staffController.getAllCustomers);
+router.post('/customers/status', staffController.updateCustomerStatus);
 
 module.exports = router;
