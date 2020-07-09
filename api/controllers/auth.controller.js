@@ -96,7 +96,10 @@ exports.customerLogin = asyncHandler(async (req, res, next) => {
 
   // Check if customer exists && password is correct
   const customer = await Customer.findOne({
-    where: { [Op.or]: [{ username }, { email: username }] },
+    where: {
+      [Op.or]: [{ username }, { email: username }],
+      status: { [Op.ne]: STATUS.deleted },
+    },
   });
 
   if (
@@ -156,7 +159,10 @@ exports.staffLogin = asyncHandler(async (req, res, next) => {
 
   // Check if staff exists && password is correct
   const staff = await Staff.findOne({
-    where: { [Op.or]: [{ username }, { email: username }] },
+    where: {
+      [Op.or]: [{ username }, { email: username }],
+      status: { [Op.ne]: STATUS.deleted },
+    },
   });
 
   if (
