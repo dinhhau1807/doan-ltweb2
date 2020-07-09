@@ -160,7 +160,7 @@ exports.staffLogin = asyncHandler(async (req, res, next) => {
   // Check if staff exists && password is correct
   const staff = await Staff.findOne({
     where: {
-      [Op.or]: [{ username }, { email: username }],
+      username,
       status: { [Op.ne]: STATUS.deleted },
     },
   });
