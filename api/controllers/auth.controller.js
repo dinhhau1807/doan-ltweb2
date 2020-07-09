@@ -143,3 +143,38 @@ exports.customerRegister = asyncHandler(async (req, res, next) => {
     token,
   });
 });
+
+exports.staffLogin = asyncHandler(async (req, res, next) => {
+  const { username, password } = req.body;
+
+  // Check if email and password exist
+  if (!username || !password) {
+    return next(
+      new AppError('Please provide username/email and password!', 400)
+    );
+  }
+
+  // Check if staff exists && password is correct
+  const staff = await Staff.findOne({
+    where: { [Op.or]: [{ username }, { email: username }] },
+  });
+
+  if (
+    !staff ||
+    !(await passwordValidator.verifyHashedPassword(password, staff.password))
+  ) {
+    return next(new AppError('Incorrect username/email or password', 401));
+  }
+
+  // Create login token and send to client
+  const token = signToken('staff', staff.id);
+
+  const staffFound = { ...staff.dataValues };
+  delete staffFound.password;
+  delete staffFound.verifyCode;
+
+  return res.status(200).json({
+    status: 'success',
+    token,
+  });
+});
