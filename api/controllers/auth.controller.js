@@ -96,7 +96,10 @@ exports.customerLogin = asyncHandler(async (req, res, next) => {
 
   // Check if customer exists && password is correct
   const customer = await Customer.findOne({
-    where: { [Op.or]: [{ username }, { email: username }] },
+    where: {
+      [Op.or]: [{ username }, { email: username }],
+      status: { [Op.ne]: STATUS.deleted },
+    },
   });
 
   if (
@@ -185,6 +188,44 @@ exports.customerRegister = asyncHandler(async (req, res, next) => {
   delete newCustomer.verifyCode;
 
   return res.status(201).json({
+    status: 'success',
+    token,
+  });
+});
+
+exports.staffLogin = asyncHandler(async (req, res, next) => {
+  const { username, password } = req.body;
+
+  // Check if email and password exist
+  if (!username || !password) {
+    return next(
+      new AppError('Please provide username/email and password!', 400)
+    );
+  }
+
+  // Check if staff exists && password is correct
+  const staff = await Staff.findOne({
+    where: {
+      username,
+      status: { [Op.ne]: STATUS.deleted },
+    },
+  });
+
+  if (
+    !staff ||
+    !(await passwordValidator.verifyHashedPassword(password, staff.password))
+  ) {
+    return next(new AppError('Incorrect username/email or password', 401));
+  }
+
+  // Create login token and send to client
+  const token = signToken('staff', staff.id);
+
+  const staffFound = { ...staff.dataValues };
+  delete staffFound.password;
+  delete staffFound.verifyCode;
+
+  return res.status(200).json({
     status: 'success',
     token,
   });
