@@ -123,21 +123,67 @@ exports.customerLogin = asyncHandler(async (req, res, next) => {
 });
 
 exports.customerRegister = asyncHandler(async (req, res, next) => {
-  const customer = await Customer.create({
-    username: req.body.username,
-    email: req.body.email,
-    password: await passwordValidator.createHashedPassword(req.body.password),
-    name: req.body.name,
-    dateOfBirth: req.body.dateOfBirth,
-    phoneNumber: req.body.phoneNumber,
-    address: req.body.address,
+  const {
+    password,
+    username,
+    email,
+    name,
+    dateOfBirth,
+    phoneNumber,
+    address,
+  } = req.body;
+  const regexPwd = /^(?=.*[\d])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*])[\w!@#$%^&*]{8,}$/gm;
+  const regexDoB = /^\d{4}[/-]\d{2}[/-]\d{2}$/gm;
+  const matchedPwd = regexPwd.exec(password);
+  const matchedDoB = regexDoB.exec(dateOfBirth);
+
+  const findMatches = await Customer.findOne({
+    where: {
+      [Op.or]: [
+        {
+          username: {
+            [Op.eq]: username,
+          },
+        },
+        {
+          email: {
+            [Op.eq]: email,
+          },
+        },
+      ],
+    },
+  });
+
+  if (!matchedPwd) {
+    return next(
+      new AppError(
+        'Password must be minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character.',
+        400
+      )
+    );
+  }
+  if (!matchedDoB) {
+    return next(new AppError('DoB invalid', 400));
+  }
+
+  if (findMatches) {
+    return next(new AppError('Username or Email have been used.', 400));
+  }
+  const customers = await Customer.create({
+    username: username,
+    email: email,
+    password: await passwordValidator.createHashedPassword(password),
+    name: name,
+    dateOfBirth: dateOfBirth,
+    phoneNumber: phoneNumber,
+    address: address,
     verifyCode: uuidv4(),
   });
 
   // Create login token and send to client
-  const token = signToken('customer', customer.id);
+  const token = signToken('customer', customers.id);
 
-  const newCustomer = { ...customer.dataValues };
+  const newCustomer = { ...customers.dataValues };
   delete newCustomer.password;
   delete newCustomer.verifyCode;
 
