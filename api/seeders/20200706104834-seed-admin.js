@@ -8,7 +8,7 @@ module.exports = {
         {
           username: 'admin',
           password:
-            '$2a$10$EjFeabxpdlqoYqUN1al96ORCprd25NUFpvedUw4tlEPmQMU.oGF9u',
+            '$2a$10$QeUFOtaYs656SR/vxR9EP.RH0Kqy1NySd1W3rhxHCmZLbnKARWZVy',
           name: 'A2HL Admin',
           roleId: 1,
           createdAt: new Date(),
