@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { createCookie } from '../../utils/helpers';
+import { createCookie, getErrorMessage } from '../../utils/helpers';
 import { TOKEN_KEY } from '../../constants/GlobalConstants';
 
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import './LoginStaff.scss';
 
@@ -21,11 +21,11 @@ const LoginStaff = ({ login, history }) => {
     try {
       setLoading(true);
       const { email, password } = values;
-      const { data } = await login({ username: email, password });
-      createCookie(TOKEN_KEY, data.token);
+      const { token } = await login({ username: email, password });
+      createCookie(TOKEN_KEY, token);
       history.push('/a2hl-management');
     } catch (err) {
-      console.error(err);
+      message.error(getErrorMessage(err));
       setLoading(false);
     }
   };

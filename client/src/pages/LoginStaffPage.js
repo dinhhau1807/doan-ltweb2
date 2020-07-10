@@ -1,3 +1,12 @@
 import LoginStaff from '../components/LoginStaff/LoginStaff';
 
-export default LoginStaff;
+import { connect } from 'react-redux';
+import { login } from '../actions/UserActions';
+
+const mapStateToProps = state => {
+  return {
+    login
+  };
+};
+
+export default connect(mapStateToProps)(LoginStaff);
