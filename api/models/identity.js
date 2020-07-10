@@ -18,42 +18,42 @@ module.exports = (sequelize, DataTypes) => {
     {
       customerId: {
         type: DataTypes.INTEGER,
-				allowNull: false,
-				validate: {
-					notEmpty: true,
-				},
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
       },
       identityNumber: {
-				type: DataTypes.STRING,
-				unique: true,
-				allowNull: false,
-				validate: {
-					is: {
-						args: /^[0-9]{9}$|^[0-9]{12}$/gm,
-						msg: "Identity number must be 9 or 12 characters in length"
-					}
-				}
+        type: DataTypes.STRING,
+        unique: true,
+        allowNull: false,
+        validate: {
+          is: {
+            args: /^[0-9]{9}$|^[0-9]{12}$/gm,
+            msg: 'Identity number must be 9 or 12 characters in length.',
+          },
+        },
       },
       registrationDate: {
         type: DataTypes.DATE,
-				allowNull: false,
-				validate: {
-					notEmpty: true,
-				},
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
       },
-      fontImage: {
+      frontImage: {
         type: DataTypes.BLOB,
-				allowNull: false,
-				validate: {
-					notEmpty: true,
-				},
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
       },
       backImage: {
         type: DataTypes.BLOB,
-				allowNull: false,
-				validate: {
-					notEmpty: true,
-				},
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
       },
       staffIdApproved: {
         type: DataTypes.INTEGER,

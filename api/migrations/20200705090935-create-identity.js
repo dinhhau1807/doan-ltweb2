@@ -17,7 +17,7 @@ module.exports = {
       registrationDate: {
         type: Sequelize.DATE,
       },
-      fontImage: {
+      frontImage: {
         type: Sequelize.BLOB,
       },
       backImage: {

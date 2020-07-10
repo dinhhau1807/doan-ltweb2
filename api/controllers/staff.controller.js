@@ -23,16 +23,20 @@ const findCustomer = asyncHandler(async (id) => {
 
 exports.updateCustomerStatus = asyncHandler(async (req, res, next) => {
   const { idCustomer, status } = req.body;
+
   const newStatus = STATUS[status];
   if (!newStatus || (newStatus && newStatus === STATUS.deleted)) {
     return next(new AppError('Invalid status!', 400));
   }
+
   const customer = await findCustomer(idCustomer);
   if (!customer) {
     return next(new AppError("Can't find this customer!", 404));
   }
+
   customer.status = newStatus;
   customer.save();
+
   return res.status(200).json({
     status: 'success',
     data: customer,
@@ -46,9 +50,9 @@ exports.getAllCustomers = asyncHandler(async (req, res, next) => {
 
   if (!page || page <= 0) page = 1;
   if (!limit || limit <= 0) limit = 10;
+
   if (!sortType || (sortType && !sortTypes.includes(sortType)))
     sortType = 'asc';
-
   if (!sortBy || (sortBy && !attributes.includes(sortBy))) sortBy = 'username';
 
   const filterArr = [];
@@ -59,6 +63,7 @@ exports.getAllCustomers = asyncHandler(async (req, res, next) => {
       filterArr.push(obj);
     }
   });
+
   const customers = await Customer.findAll({
     attributes: attributes,
     where: {
@@ -75,12 +80,14 @@ exports.getAllCustomers = asyncHandler(async (req, res, next) => {
     offset: limit * (page - 1),
     limit,
   });
+
   if (customers.length === 0) {
     return res.status(200).json({
       status: 'success',
       message: 'Customer not found!',
     });
   }
+
   return res.status(200).json({
     status: 'success',
     totalItems: customers.length,
@@ -90,22 +97,20 @@ exports.getAllCustomers = asyncHandler(async (req, res, next) => {
 
 exports.approveCustomer = asyncHandler(async (req, res, next) => {
   const staff = req.user;
-  const { customerId } = req.body;
-  if (!staff) {
-    return next(
-      new AppError('You are not logged in! Please log in to get access.', 401)
-    );
-  }
+  const { idCustomer } = req.body;
+
   const customer = await Identity.findOne({
-    where: customerId,
+    where: { customerId: idCustomer },
   });
   if (!customer) {
-    return next(new AppError('Customer not found', 404));
+    return next(new AppError('Customer not found.', 404));
   }
+
   customer.staffIdApproved = staff.id;
   customer.save();
+
   return res.status(200).json({
     status: 'success',
-    message: 'Customer have been approved',
+    message: 'Customer has been approved',
   });
 });

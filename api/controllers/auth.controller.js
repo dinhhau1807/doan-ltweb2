@@ -3,11 +3,58 @@ const { promisify } = require('util');
 const asyncHandler = require('express-async-handler');
 const { Op } = require('sequelize');
 const { v4: uuidv4 } = require('uuid');
+const multer = require('multer');
+const sharp = require('sharp');
 
-const { Customer, Staff, Role } = require('../models');
+const { Customer, Identity, Staff, Role } = require('../models');
 const AppError = require('../utils/appError');
 const passwordValidator = require('../utils/passwordValidator');
 const { STATUS } = require('../utils/statusEnum');
+
+const multerStorage = multer.memoryStorage();
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true);
+  } else {
+    cb(new AppError('Not an image! Please upload only images.', 400), false);
+  }
+};
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+
+exports.uploadIdentityImages = upload.fields([
+  {
+    name: 'frontImage',
+    maxCount: 1,
+  },
+  {
+    name: 'backImage',
+    maxCount: 1,
+  },
+]);
+
+exports.compressIdentityImages = asyncHandler(async (req, res, next) => {
+  if (!req.files.frontImage || !req.files.backImage)
+    return next(new AppError('Please provide front and back images!', 400));
+
+  // front image
+  req.body.frontImage = await sharp(req.files.frontImage[0].buffer)
+    .toFormat('jpeg')
+    .jpeg({ quality: 80 })
+    .toBuffer();
+
+  // back image
+  req.body.backImage = await sharp(req.files.backImage[0].buffer)
+    .toFormat('jpeg')
+    .jpeg({ quality: 80 })
+    .toBuffer();
+
+  next();
+});
 
 const signToken = (type, id) => {
   return jwt.sign({ type, id }, process.env.JWT_SECRET, {
@@ -112,10 +159,6 @@ exports.customerLogin = asyncHandler(async (req, res, next) => {
   // Create login token and send to client
   const token = signToken('customer', customer.id);
 
-  const customerFound = { ...customer.dataValues };
-  delete customerFound.password;
-  delete customerFound.verifyCode;
-
   return res.status(200).json({
     status: 'success',
     token,
@@ -124,35 +167,28 @@ exports.customerLogin = asyncHandler(async (req, res, next) => {
 
 exports.customerRegister = asyncHandler(async (req, res, next) => {
   const {
-    password,
-    username,
     email,
+    username,
+    password,
     name,
     dateOfBirth,
     phoneNumber,
     address,
+
+    identityNumber,
+    registrationDate,
+    frontImage,
+    backImage,
   } = req.body;
+
   const regexPwd = /^(?=.*[\d])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*])[\w!@#$%^&*]{8,}$/gm;
   const regexDoB = /^\d{4}[/-]\d{2}[/-]\d{2}$/gm;
+  const regexIdentNum = /^[0-9]{9}$|^[0-9]{12}$/gm;
+  const regexRegDate = /^\d{4}[/-]\d{2}[/-]\d{2}$/gm;
   const matchedPwd = regexPwd.exec(password);
   const matchedDoB = regexDoB.exec(dateOfBirth);
-
-  const findMatches = await Customer.findOne({
-    where: {
-      [Op.or]: [
-        {
-          username: {
-            [Op.eq]: username,
-          },
-        },
-        {
-          email: {
-            [Op.eq]: email,
-          },
-        },
-      ],
-    },
-  });
+  const matchedIdentNum = regexIdentNum.exec(identityNumber);
+  const matchedRegDate = regexRegDate.exec(registrationDate);
 
   if (!matchedPwd) {
     return next(
@@ -162,30 +198,47 @@ exports.customerRegister = asyncHandler(async (req, res, next) => {
       )
     );
   }
+
   if (!matchedDoB) {
-    return next(new AppError('DoB invalid', 400));
+    return next(new AppError('Date of birth is invalid', 400));
   }
 
-  if (findMatches) {
-    return next(new AppError('Username or Email have been used.', 400));
+  if (!identityNumber || !registrationDate || !frontImage || !backImage) {
+    return next(new AppError('Please provide a full identity.', 400));
   }
-  const customers = await Customer.create({
-    username: username,
-    email: email,
+
+  if (!matchedIdentNum) {
+    return next(
+      new AppError('Identity number must be 9 or 12 characters in length.', 400)
+    );
+  }
+
+  if (!matchedRegDate) {
+    return next(new AppError('Date of registration is invalid', 400));
+  }
+
+  // Create new customer
+  const customer = await Customer.create({
+    username: username.trim().toLowerCase(),
+    email: email.trim().toLowerCase(),
     password: await passwordValidator.createHashedPassword(password),
-    name: name,
-    dateOfBirth: dateOfBirth,
-    phoneNumber: phoneNumber,
-    address: address,
+    name,
+    dateOfBirth,
+    phoneNumber,
+    address,
     verifyCode: uuidv4(),
   });
 
-  // Create login token and send to client
-  const token = signToken('customer', customers.id);
+  await Identity.create({
+    customerId: customer.id,
+    identityNumber,
+    registrationDate,
+    frontImage: req.body.frontImage,
+    backImage: req.body.backImage,
+  });
 
-  const newCustomer = { ...customers.dataValues };
-  delete newCustomer.password;
-  delete newCustomer.verifyCode;
+  // Create login token and send to client
+  const token = signToken('customer', customer.id);
 
   return res.status(201).json({
     status: 'success',
@@ -220,10 +273,6 @@ exports.staffLogin = asyncHandler(async (req, res, next) => {
 
   // Create login token and send to client
   const token = signToken('staff', staff.id);
-
-  const staffFound = { ...staff.dataValues };
-  delete staffFound.password;
-  delete staffFound.verifyCode;
 
   return res.status(200).json({
     status: 'success',
