@@ -5,15 +5,19 @@ const customerController = require('../controllers/customer.controller');
 
 const router = express.Router();
 
-// Public route
-router.post('/login', authController.customerLogin);
-router.post('/register', authController.customerRegister);
-
-// Auth route
-// router.use(authController.authorize);
-
 // test route
 router.get('/getAll', customerController.getAllCustomers);
-router.post('/verify', customerController.customerIdentification);
+
+// Public route
+router.post('/login', authController.customerLogin);
+router.post(
+  '/register',
+  authController.uploadIdentityImages,
+  authController.compressIdentityImages,
+  authController.customerRegister
+);
+
+// Auth route
+router.use(authController.authorize);
 
 module.exports = router;
