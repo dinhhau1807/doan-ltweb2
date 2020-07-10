@@ -122,7 +122,7 @@ exports.authorize = asyncHandler(async (req, res, next) => {
 // Only use for admin & staff
 exports.restrictTo = (...roles) => {
   return (req, res, next) => {
-    if (!roles.includes(req.user.Role.roleDescription)) {
+    if (!req.user.Role && !roles.includes(req.user.Role.roleDescription)) {
       return next(
         new AppError('You do not have permission to perform this action.', 403)
       );
