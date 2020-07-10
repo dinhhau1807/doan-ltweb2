@@ -14,5 +14,6 @@ router.post('/login', authController.staffLogin);
 
 router.get('/customers', staffController.getAllCustomers);
 router.post('/customers/status', staffController.updateCustomerStatus);
+router.post('/customers/approve', staffController.approveCustomer);
 
 module.exports = router;

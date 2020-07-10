@@ -2,7 +2,7 @@ const asyncHandler = require('express-async-handler');
 const { Op } = require('sequelize');
 const AppError = require('../utils/appError');
 const { STATUS } = require('../utils/statusEnum');
-const { Customer } = require('../models');
+const { Customer, Identity } = require('../models');
 
 const findCustomer = asyncHandler(async (id) => {
   const customer = await Customer.findOne({
@@ -85,5 +85,27 @@ exports.getAllCustomers = asyncHandler(async (req, res, next) => {
     status: 'success',
     totalItems: customers.length,
     items: customers,
+  });
+});
+
+exports.approveCustomer = asyncHandler(async (req, res, next) => {
+  const staff = req.user;
+  const { customerId } = req.body;
+  if (!staff) {
+    return next(
+      new AppError('You are not logged in! Please log in to get access.', 401)
+    );
+  }
+  const customer = await Identity.findOne({
+    where: customerId,
+  });
+  if (!customer) {
+    return next(new AppError('Customer not found', 404));
+  }
+  customer.staffIdApproved = staff.id;
+  customer.save();
+  return res.status(200).json({
+    status: 'success',
+    message: 'Customer have been approved',
   });
 });
