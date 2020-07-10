@@ -14,5 +14,6 @@ router.post('/register', authController.customerRegister);
 
 // test route
 router.get('/getAll', customerController.getAllCustomers);
+router.post('/verify', customerController.customerIdentification);
 
 module.exports = router;
