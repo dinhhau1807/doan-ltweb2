@@ -6,7 +6,9 @@ const { Customer, Identity } = require('../models');
 
 const findCustomer = asyncHandler(async (id) => {
   const customer = await Customer.findOne({
-    attributes: ['username', 'email', 'name', 'phoneNumber', 'address'],
+    attributes: {
+      exclude: ['password', 'verifyCode'],
+    },
     where: {
       [Op.and]: [
         { id },
@@ -65,7 +67,9 @@ exports.getAllCustomers = asyncHandler(async (req, res, next) => {
   });
 
   const customers = await Customer.findAll({
-    attributes: attributes,
+    attributes: {
+      exclude: ['password', 'verifyCode'],
+    },
     where: {
       [Op.and]: [
         {
