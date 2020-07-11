@@ -121,6 +121,23 @@ const CustomersManagement = ({
     }
   };
 
+  const onTableChange = (pagination, filters, sorter) => {
+    const sortOrder =
+      sorter.order === 'descend'
+        ? 'desc'
+        : sorter.order === 'ascend'
+        ? 'asc'
+        : undefined;
+
+    fetchDataTable({
+      ...paramsTable,
+      page: pagination.current,
+      pageSize: pagination.pageSize,
+      sortBy: sorter.field,
+      sortType: sortOrder
+    });
+  };
+
   const handleViewCustomerDetails = customer => () => {
     history.push('a2hl-management/customers/' + customer.id);
   };
@@ -161,7 +178,11 @@ const CustomersManagement = ({
   return (
     <div className="customers-management">
       <h2 className="page-header">THÔNG TIN KHÁCH HÀNG</h2>
-      <FilterOptions columnFilter={FILTER_CUSTOMERS} />
+      <FilterOptions
+        columnFilter={FILTER_CUSTOMERS}
+        fetchData={fetchDataTable}
+        paramsTable={paramsTable}
+      />
       <div className="table">
         <Table
           size="middle"
@@ -170,6 +191,7 @@ const CustomersManagement = ({
           pagination={pagination}
           columns={tableColumns}
           loading={loading}
+          onChange={onTableChange}
         />
       </div>
     </div>
