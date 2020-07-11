@@ -166,9 +166,6 @@ exports.customerLogin = asyncHandler(async (req, res, next) => {
 });
 
 exports.customerRegister = asyncHandler(async (req, res, next) => {
-  console.log('REQ.BODY', req.body);
-  console.log('REQ.BODY.IMAGES', req.body.frontImage, req.body.backImage);
-
   const {
     email,
     username,
@@ -218,6 +215,11 @@ exports.customerRegister = asyncHandler(async (req, res, next) => {
 
   if (!matchedRegDate) {
     return next(new AppError('Date of registration is invalid', 400));
+  }
+
+  const foundIdentity = await Identity.findOne({ identityNumber });
+  if (foundIdentity) {
+    return next(new AppError('Identity number is already existed.', 400));
   }
 
   // Create new customer
