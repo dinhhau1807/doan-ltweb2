@@ -20,17 +20,17 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
         validate: {
-          notEmpty: true,
+          notEmpty: { args: true, msg: "CustomerId must not be blank." },
         },
       },
       identityNumber: {
         type: DataTypes.STRING,
-        unique: true,
+        unique: { args: true, msg: 'Identity numbers have been used.' },
         allowNull: false,
         validate: {
           is: {
             args: /^[0-9]{9}$|^[0-9]{12}$/gm,
-            msg: 'Identity number must be 9 or 12 characters in length.',
+            msg: 'Identity numbers must be 9 or 12 characters in length.',
           },
         },
       },
@@ -38,21 +38,21 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         allowNull: false,
         validate: {
-          notEmpty: true,
+          notEmpty: { args: true, msg: "Registration date must not be blank." },
         },
       },
       frontImage: {
         type: DataTypes.BLOB,
         allowNull: false,
         validate: {
-          notEmpty: true,
+          notEmpty: { args: true, msg: "Front image must not be blank." },
         },
       },
       backImage: {
         type: DataTypes.BLOB,
         allowNull: false,
         validate: {
-          notEmpty: true,
+          notEmpty: { args: true, msg: "Back image must not be blank." },
         },
       },
       staffIdApproved: {
