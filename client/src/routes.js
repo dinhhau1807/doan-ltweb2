@@ -1,6 +1,5 @@
 import { lazy } from 'react';
 import { PrivateLayout, PublicLayout } from './layouts';
-import StaffsManagementPage from './pages/StaffsManagementPage';
 
 const UserPage = lazy(() => import('./pages/UserPage'));
 const NotFound = lazy(() => import('./pages/NotFoundPage'));

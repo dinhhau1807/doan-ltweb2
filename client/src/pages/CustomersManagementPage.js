@@ -4,11 +4,13 @@ import {
   getCustomers,
   changeCustomerStatus
 } from '../actions/StaffCustomersActions';
+import { ENTITY_STATUS } from '../constants/GlobalConstants';
 
 const mapStateToProps = state => {
   return {
     getCustomers,
-    changeCustomerStatus
+    changeCustomerStatus,
+    customerStatus: ENTITY_STATUS
   };
 };
 

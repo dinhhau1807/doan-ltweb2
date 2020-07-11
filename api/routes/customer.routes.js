@@ -16,8 +16,14 @@ router.post(
   authController.compressIdentityImages,
   authController.customerRegister
 );
-
 // Auth route
 router.use(authController.authorize);
+
+router
+  .route('/me')
+  .get(customerController.getInfo)
+  .put(customerController.updateInfo);
+
+router.put('/updatePassword', customerController.updatePassword);
 
 module.exports = router;
