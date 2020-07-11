@@ -1,4 +1,5 @@
 import React from 'react';
+import { withRouter } from 'react-router-dom';
 import { Layout, Menu } from 'antd';
 import {
   FileOutlined,
@@ -15,8 +16,9 @@ const { Sider } = Layout;
 
 const rootSegment = '/a2hl-management';
 
-const StaffSidebar = () => {
+const StaffSidebar = ({ match }) => {
   const selectTab = ({ key }) => {
+    console.log(key);
     let tabUrl = rootSegment;
     switch (key) {
       case STAFF_TABS.IDENTITY:
@@ -35,13 +37,16 @@ const StaffSidebar = () => {
     history.push(tabUrl);
   };
 
+  const path = match.path.replace('/a2hl-management', '');
+  const defaultKey = path === '' ? '/' : path;
+
   return (
     <Sider theme="light">
       <div className="sidebar-logo">
         <img src={logo} alt="logo" />
       </div>
       <Menu
-        defaultSelectedKeys={[STAFF_TABS.CUSTOMER]}
+        defaultSelectedKeys={[defaultKey]}
         mode="inline"
         onSelect={selectTab}
       >
@@ -62,4 +67,4 @@ const StaffSidebar = () => {
   );
 };
 
-export default StaffSidebar;
+export default withRouter(StaffSidebar);
