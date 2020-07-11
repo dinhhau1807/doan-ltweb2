@@ -42,10 +42,12 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  background-image: url('./images/public-bg.svg');
+  background-size: cover;
 
   &__wrap {
     width: 100%;
-    max-width: 500px;
+    max-width: 1000px;
     border: 1px solid $c-primary;
     border-radius: 4px;
     padding: 16px;
