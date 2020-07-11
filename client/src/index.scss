@@ -77,6 +77,15 @@ body {
 
 .table {
   margin-top: 16px;
+
+  &__id {
+    color: $c-primary;
+
+    &:hover {
+      cursor: pointer;
+      text-decoration: underline;
+    }
+  }
 }
 
 .page-header {

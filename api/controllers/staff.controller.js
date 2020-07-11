@@ -24,6 +24,18 @@ const findCustomer = asyncHandler(async (id) => {
   return customer;
 });
 
+const getPagination = (page, limit) => {
+  const size = limit ? +limit : 10;
+  const offset = page ? page * limit : 1;
+
+  return { size, offset };
+};
+
+const getPagingData = (data) => {
+  const { count: totalItems, rows: customers } = data;
+  return { totalItems, customers };
+};
+
 exports.updateCustomerStatus = asyncHandler(async (req, res, next) => {
   const { idCustomer, status } = req.body;
 
@@ -80,7 +92,9 @@ exports.getAllCustomers = asyncHandler(async (req, res, next) => {
     }
   });
 
-  const customers = await Customer.findAll({
+  const { size, offset } = getPagination(page, limit);
+
+  const customers = await Customer.findAndCountAll({
     attributes: {
       exclude: ['password', 'verifyCode'],
     },
@@ -95,9 +109,11 @@ exports.getAllCustomers = asyncHandler(async (req, res, next) => {
       ],
     },
     order: [[sortBy, sortType]],
-    offset: limit * (page - 1),
-    limit,
+    offset,
+    limit: size,
   });
+
+  const listCustomers = getPagingData(customers);
 
   if (customers.length === 0) {
     return res.status(200).json({
@@ -108,8 +124,8 @@ exports.getAllCustomers = asyncHandler(async (req, res, next) => {
 
   return res.status(200).json({
     status: 'success',
-    totalItems: customers.length,
-    items: customers,
+    totalItems: listCustomers.totalItems,
+    items: listCustomers.customers,
   });
 });
 

@@ -35,6 +35,18 @@ const findStaff = asyncHandler(async (id) => {
   return staff;
 });
 
+const getPagination = (page, limit) => {
+  const size = limit ? +limit : 10;
+  const offset = page ? page * limit : 1;
+
+  return { size, offset };
+};
+
+const getPagingData = (data) => {
+  const { count: totalItems, rows: staffs } = data;
+  return { totalItems, staffs };
+};
+
 exports.getAllStaffs = asyncHandler(async (req, res, next) => {
   const attributes = ['username', 'name'];
   const sortTypes = ['asc', 'desc'];
@@ -56,7 +68,9 @@ exports.getAllStaffs = asyncHandler(async (req, res, next) => {
     }
   });
 
-  const staffs = await Staff.findAll({
+  const { size, offset } = getPagination(page, limit);
+
+  const staffs = await Staff.findAndCountAll({
     include: excludeAdmin,
     attributes: {
       exclude: ['password', 'roleId'],
@@ -72,14 +86,16 @@ exports.getAllStaffs = asyncHandler(async (req, res, next) => {
       ],
     },
     order: [[sortBy, sortType]],
-    offset: limit * (page - 1),
-    limit,
+    offset,
+    limit: size,
   });
+
+  const listStaffs = getPagingData(staffs);
 
   return res.status(200).json({
     status: 'success',
-    totalItems: staffs.length,
-    items: staffs,
+    totalItems: listStaffs.totalItems,
+    items: listStaffs.staffs,
   });
 });
 
