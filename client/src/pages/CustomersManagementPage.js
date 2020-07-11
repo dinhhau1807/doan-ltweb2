@@ -1,3 +1,15 @@
-import StaffPage from '../components/CustomersManagement/CustomersManagement';
+import CustomersManagement from '../components/CustomersManagement/CustomersManagement';
+import { connect } from 'react-redux';
+import {
+  getCustomers,
+  changeCustomerStatus
+} from '../actions/StaffCustomersActions';
 
-export default StaffPage;
+const mapStateToProps = state => {
+  return {
+    getCustomers,
+    changeCustomerStatus
+  };
+};
+
+export default connect(mapStateToProps)(CustomersManagement);
