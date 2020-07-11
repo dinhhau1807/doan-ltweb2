@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Table, Dropdown, message } from 'antd';
+import { Table, Dropdown, message, Row, Col } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import FilterOptions from '../FilterOptions/FilterOptions';
 import { FILTER_STAFFS } from '../../constants/ColumnFilter';
-import EditStatusDropdown from '../EditStatusDropdown/EditStatusDropdown';
 import { getErrorMessage } from '../../utils/helpers';
+import EditStatusDropdown from '../EditStatusDropdown/EditStatusDropdown';
+import AddStaffModal from '../AddStaffModal/AddStaffModal';
 
 import './StaffsManagement.scss';
 
@@ -13,7 +14,8 @@ const propTypes = {
   getStaffs: PropTypes.func.isRequired,
   changeStaffStatus: PropTypes.func.isRequired,
   history: PropTypes.object,
-  staffStatus: PropTypes.object
+  staffStatus: PropTypes.object,
+  createStaff: PropTypes.func.isRequired
 };
 
 const defaultProps = {};
@@ -22,7 +24,8 @@ const StaffsManagement = ({
   getStaffs,
   changeStaffStatus,
   history,
-  staffStatus
+  staffStatus,
+  createStaff
 }) => {
   const [dataTable, setDataTable] = useState([]);
   const [paramsTable, setParamsTable] = useState({});
@@ -160,11 +163,22 @@ const StaffsManagement = ({
   return (
     <div className="staffs-management">
       <h2 className="page-header">THÔNG TIN NHÂN VIÊN</h2>
-      <FilterOptions
-        columnFilter={FILTER_STAFFS}
-        fetchData={fetchDataTable}
-        paramsTable={paramsTable}
-      />
+      <Row align="middle" gutter={8}>
+        <Col span={20}>
+          <FilterOptions
+            columnFilter={FILTER_STAFFS}
+            fetchData={fetchDataTable}
+            paramsTable={paramsTable}
+          />
+        </Col>
+        <Col span={4}>
+          <AddStaffModal
+            createStaff={createStaff}
+            fetchData={fetchDataTable}
+            paramsTable={paramsTable}
+          />
+        </Col>
+      </Row>
       <div className="table">
         <Table
           size="middle"
