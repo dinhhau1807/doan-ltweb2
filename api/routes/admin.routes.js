@@ -17,11 +17,7 @@ router
   .get(adminController.getAllStaffs)
   .post(adminController.createStaff);
 
-router
-  .route('/staffs/:id')
-  .get(adminController.getStaff)
-  .delete(adminController.deleteStaff);
-
+router.get('/staffs/:id', adminController.getStaff);
 router.post('/staffs/status', adminController.updateStaffStatus);
 
 module.exports = router;

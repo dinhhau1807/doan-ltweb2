@@ -122,31 +122,21 @@ exports.getStaff = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.deleteStaff = asyncHandler(async (req, res, next) => {
-  const staff = await findStaff(req.params.id);
-
-  if (!staff) {
-    return next(new AppError("Can't find that staff!", 404));
-  }
-
-  staff.status = STATUS.deleted;
-  staff.save();
-
-  return res.status(200).json({
-    status: 'success',
-    data: staff,
-  });
-});
-
 exports.updateStaffStatus = asyncHandler(async (req, res, next) => {
   const { idStaff, status } = req.body;
 
   const newStatus = STATUS[status];
-  if (!newStatus || (newStatus && newStatus === STATUS.deleted)) {
+  if (!newStatus) {
     return next(new AppError('Status is not valid!', 400));
   }
 
-  const staff = await findStaff(idStaff);
+  const staff = await Staff.findOne({
+    include: excludeAdmin,
+    attributes: {
+      exclude: ['password', 'roleId'],
+    },
+    where: { id: idStaff },
+  });
   if (!staff) {
     return next(new AppError("Can't find that staff!", 404));
   }

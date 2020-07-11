@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler');
 const { Op } = require('sequelize');
 const AppError = require('../utils/appError');
 const { STATUS } = require('../utils/statusEnum');
+const ROLE = require('../utils/roleEnum');
 const { Customer, Identity } = require('../models');
 
 const findCustomer = asyncHandler(async (id) => {
@@ -27,11 +28,24 @@ exports.updateCustomerStatus = asyncHandler(async (req, res, next) => {
   const { idCustomer, status } = req.body;
 
   const newStatus = STATUS[status];
-  if (!newStatus || (newStatus && newStatus === STATUS.deleted)) {
+  if (!newStatus) {
     return next(new AppError('Invalid status!', 400));
   }
+  if (
+    newStatus === STATUS.deleted &&
+    req.user.Role.roleDescription !== ROLE.admin
+  ) {
+    return next(
+      new AppError('You do not have permission to perform this action!', 401)
+    );
+  }
 
-  const customer = await findCustomer(idCustomer);
+  const customer = await Customer.findOne({
+    attributes: {
+      exclude: ['password', 'verifyCode'],
+    },
+    where: { id: idCustomer },
+  });
   if (!customer) {
     return next(new AppError("Can't find this customer!", 404));
   }
@@ -116,5 +130,18 @@ exports.approveCustomer = asyncHandler(async (req, res, next) => {
   return res.status(200).json({
     status: 'success',
     message: 'Customer has been approved',
+  });
+});
+
+exports.getCustomer = asyncHandler(async (req, res, next) => {
+  const customer = await findCustomer(req.params.id);
+
+  if (!customer) {
+    return next(new AppError('Customer not found.', 404));
+  }
+
+  return res.status(200).json({
+    status: 'success',
+    data: customer,
   });
 });
