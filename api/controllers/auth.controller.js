@@ -217,7 +217,7 @@ exports.customerRegister = asyncHandler(async (req, res, next) => {
     return next(new AppError('Date of registration is invalid', 400));
   }
 
-  const foundIdentity = await Identity.findOne({ identityNumber });
+  const foundIdentity = await Identity.findOne({ where: { identityNumber } });
   if (foundIdentity) {
     return next(new AppError('Identity number is already existed.', 400));
   }

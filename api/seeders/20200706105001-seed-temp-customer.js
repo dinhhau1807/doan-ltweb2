@@ -19,34 +19,6 @@ module.exports = {
           createdAt: new Date(),
           updatedAt: new Date(),
         },
-        {
-          username: 'democust1',
-          email: 'democust1@example.com',
-          password:
-            '$2a$10$QeUFOtaYs656SR/vxR9EP.RH0Kqy1NySd1W3rhxHCmZLbnKARWZVy',
-          name: 'demo',
-          dateOfBirth: new Date(),
-          phoneNumber: '0909123456',
-          address: '1234',
-          verifyCode: '1234',
-          status: 'inactive',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-        {
-          username: 'democust2',
-          email: 'democust2@example.com',
-          password:
-            '$2a$10$QeUFOtaYs656SR/vxR9EP.RH0Kqy1NySd1W3rhxHCmZLbnKARWZVy',
-          name: 'demo',
-          dateOfBirth: new Date(),
-          phoneNumber: '0909123456',
-          address: '1234',
-          verifyCode: '1234',
-          status: 'inactive',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
       ],
       {}
     );
