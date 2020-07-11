@@ -19,3 +19,10 @@ export const CUSTOMER_TABS = {
   UTILS_UPDATE: '/update-infomation',
   UTILS_PASSWORD: '/change-password'
 };
+
+export const CUSTOMER_STATUS = {
+  inactive: { label: 'Inactive', color: '#fbc02d' },
+  active: { label: 'Active', color: '#64dd17' },
+  blocked: { label: 'Blocked', color: '#9e9e9e' },
+  deleted: { label: 'Deleted', color: '#d50000' }
+};
