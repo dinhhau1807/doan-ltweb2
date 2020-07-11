@@ -42,7 +42,7 @@ const getPagination = (page, limit) => {
   return { size, offset };
 };
 
-const getPagingData = (data, page, limit) => {
+const getPagingData = (data) => {
   const { count: totalItems, rows: staffs } = data;
   return { totalItems, staffs };
 };
@@ -90,7 +90,7 @@ exports.getAllStaffs = asyncHandler(async (req, res, next) => {
     limit: size,
   });
 
-  const listStaffs = getPagingData(staffs, page, size);
+  const listStaffs = getPagingData(staffs);
 
   return res.status(200).json({
     status: 'success',

@@ -30,7 +30,7 @@ const getPagination = (page, limit) => {
   return { size, offset };
 };
 
-const getPagingData = (data, page, limit) => {
+const getPagingData = (data) => {
   const { count: totalItems, rows: customers } = data;
   return { totalItems, customers };
 };
@@ -99,7 +99,7 @@ exports.getAllCustomers = asyncHandler(async (req, res, next) => {
     limit: size,
   });
 
-  const listCustomers = getPagingData(customers, page, size);
+  const listCustomers = getPagingData(customers);
 
   if (customers.length === 0) {
     return res.status(200).json({
