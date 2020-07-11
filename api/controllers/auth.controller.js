@@ -166,6 +166,9 @@ exports.customerLogin = asyncHandler(async (req, res, next) => {
 });
 
 exports.customerRegister = asyncHandler(async (req, res, next) => {
+  console.log('REQ.BODY', req.body);
+  console.log('REQ.BODY.IMAGES', req.body.frontImage, req.body.backImage);
+
   const {
     email,
     username,
