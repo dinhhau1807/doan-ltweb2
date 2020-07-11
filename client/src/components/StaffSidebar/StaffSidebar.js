@@ -18,7 +18,6 @@ const rootSegment = '/a2hl-management';
 
 const StaffSidebar = ({ match }) => {
   const selectTab = ({ key }) => {
-    console.log(key);
     let tabUrl = rootSegment;
     switch (key) {
       case STAFF_TABS.IDENTITY:

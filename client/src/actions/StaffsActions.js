@@ -7,3 +7,7 @@ export const getStaffs = (params = {}) => {
 export const changeStaffStatus = body => {
   return fetchApi('/admin/staffs/status', 'POST', body);
 };
+
+export const createStaff = body => {
+  return fetchApi('/admin/staffs', 'POST', body);
+};
