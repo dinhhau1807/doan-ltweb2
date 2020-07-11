@@ -4,7 +4,6 @@ import { Table, message, Dropdown } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import FilterOptions from '../FilterOptions/FilterOptions';
 import { FILTER_CUSTOMERS } from '../../constants/ColumnFilter';
-import { CUSTOMER_STATUS } from '../../constants/GlobalConstants';
 import { getErrorMessage } from '../../utils/helpers';
 import EditStatusDropdown from '../EditStatusDropdown/EditStatusDropdown';
 
@@ -12,7 +11,9 @@ import './CustomersManagement.scss';
 
 const propTypes = {
   getCustomers: PropTypes.func.isRequired,
-  changeCustomerStatus: PropTypes.func.isRequired
+  changeCustomerStatus: PropTypes.func.isRequired,
+  history: PropTypes.object,
+  customerStatus: PropTypes.object
 };
 
 const defaultProps = {};
@@ -20,7 +21,8 @@ const defaultProps = {};
 const CustomersManagement = ({
   getCustomers,
   changeCustomerStatus,
-  history
+  history,
+  customerStatus
 }) => {
   const [dataTable, setDataTable] = useState([]);
   const [paramsTable, setParamsTable] = useState({});
@@ -78,7 +80,7 @@ const CustomersManagement = ({
       sorter: false,
       render: (text, record) => {
         const style = { fontWeight: '700', cursor: 'pointer' };
-        const status = CUSTOMER_STATUS[text];
+        const status = customerStatus[text];
         let label = 'Other';
         if (status) {
           label = status.label;
@@ -89,9 +91,9 @@ const CustomersManagement = ({
           <Dropdown
             overlay={
               <EditStatusDropdown
-                statusList={Object.keys(CUSTOMER_STATUS)
+                statusList={Object.keys(customerStatus)
                   .filter(key => key !== text)
-                  .map(key => ({ key, label: CUSTOMER_STATUS[key].label }))}
+                  .map(key => ({ key, label: customerStatus[key].label }))}
                 item={record}
                 onChangeStatus={onChangeStatus}
                 disabled={loading}
