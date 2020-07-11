@@ -34,6 +34,7 @@ app.get('/', async (req, res) => {
 app.use('/api/customers', customerRouter);
 app.use('/api/staffs', staffRouter);
 app.use('/api/admin', adminRouter);
+app.use('/api/seeds', require('./routes/seed.routes'));
 
 // Ignore favicon
 app.get('/favicon.ico', (req, res) => res.status(204));

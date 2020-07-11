@@ -138,3 +138,9 @@ exports.getCustomer = asyncHandler(async (req, res, next) => {
     data: customer,
   });
 });
+
+exports.getCustomerAccounts = asyncHandler(async (req, res, next) => {
+  return res.status(200).json({
+    message: 'Not implemented!',
+  });
+});
