@@ -37,7 +37,7 @@ const StaffSidebar = ({ match }) => {
     history.push(tabUrl);
   };
 
-  const path = match.path.replace('/a2hl-management', '');
+  const path = match.path.replace(rootSegment, '');
   const defaultKey = path === '' ? '/' : path;
 
   return (
