@@ -21,7 +21,10 @@ const LoginStaff = ({ login, history }) => {
     try {
       setLoading(true);
       const { email, password } = values;
-      const { token } = await login({ username: email, password });
+      const { token } = await login('/staffs/login', {
+        username: email,
+        password
+      });
       createCookie(TOKEN_KEY, token);
       history.push('/a2hl-management');
     } catch (err) {

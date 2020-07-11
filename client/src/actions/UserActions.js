@@ -11,8 +11,8 @@ export const fetchUser = () => async dispatch => {
   }
 };
 
-export const login = body => {
-  return fetchApi('/customers/login', 'POST', body);
+export const login = (url, body) => {
+  return fetchApi(url, 'POST', body);
 };
 
 export const register = body => {

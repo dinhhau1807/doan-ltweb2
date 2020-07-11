@@ -21,7 +21,10 @@ const Login = ({ login, history }) => {
     try {
       setLoading(true);
       const { email, password } = values;
-      const { token } = await login({ username: email, password });
+      const { token } = await login('/customers/login', {
+        username: email,
+        password
+      });
       createCookie(TOKEN_KEY, token);
       history.push('/');
     } catch (err) {
