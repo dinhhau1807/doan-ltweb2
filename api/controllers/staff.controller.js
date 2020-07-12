@@ -174,3 +174,50 @@ exports.getCustomerTransactions = asyncHandler(async (req, res, next) => {
     data: transactions,
   });
 });
+
+exports.getAllIdentities = asyncHandler(async (req, res, next) => {
+  let { page, limit, sortBy, sortType } = req.query;
+  const attributes = [
+    'customerId',
+    'identityNumber',
+    'registrationDate',
+    'frontImage',
+    'backImage',
+  ];
+  const sortTypes = ['asc', 'desc'];
+
+  if (!page || page <= 0) page = 1;
+  if (!limit || limit <= 0) limit = 10;
+
+  if (!sortType || (sortType && !sortTypes.includes(sortType)))
+    sortType = 'asc';
+  if (!sortBy || (sortBy && !attributes.includes(sortBy)))
+    sortBy = 'customerId';
+
+  const filterArr = [];
+  attributes.forEach((attr) => {
+    if (req.query[attr]) {
+      const obj = {};
+      obj[attr] = { [Op.like]: `%${req.query[attr]}%` };
+      filterArr.push(obj);
+    }
+  });
+
+  const identities = await Identity.findAndCountAll({
+    attributes: {
+      exclude: ['frontImage', 'backImage', 'staffIdApproved'],
+    },
+    where: {
+      ...filterArr,
+    },
+    order: [[sortBy, sortType]],
+    offset: (page - 1) * limit,
+    limit,
+  });
+
+  return res.status(200).json({
+    status: 'success',
+    totalItems: identities.count,
+    items: identities.rows,
+  });
+});
