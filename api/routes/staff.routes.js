@@ -17,6 +17,7 @@ router.use(
 
 router.get('/customers', staffController.getAllCustomers);
 router.get('/customers/identities', staffController.getAllIdentities);
+router.get('/customers/identities/:idCustomer', staffController.getIdentity);
 router.post('/customers/status', staffController.updateCustomerStatus);
 router.post('/customers/approve', staffController.approveCustomer);
 

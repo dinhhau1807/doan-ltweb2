@@ -221,3 +221,20 @@ exports.getAllIdentities = asyncHandler(async (req, res, next) => {
     items: identities.rows,
   });
 });
+
+exports.getIdentity = asyncHandler(async (req, res, next) => {
+  const identity = await Identity.findOne({
+    where: {
+      id: req.params.idCustomer,
+    },
+  });
+
+  if (!identity) {
+    return next(new AppError('Identity not found.', 404));
+  }
+
+  return res.status(200).json({
+    status: 'success',
+    data: identity,
+  });
+});
