@@ -131,6 +131,16 @@ exports.restrictTo = (...roles) => {
   };
 };
 
+// Only use for customer
+exports.restrictToCustomer = (req, res, next) => {
+  if (req.user.Role) {
+    return next(
+      new AppError('You do not have permission to perform this action.', 403)
+    );
+  }
+  next();
+};
+
 exports.customerLogin = asyncHandler(async (req, res, next) => {
   const { username, password } = req.body;
 

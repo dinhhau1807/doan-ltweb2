@@ -19,7 +19,7 @@ router.get('/customers', staffController.getAllCustomers);
 router.post('/customers/status', staffController.updateCustomerStatus);
 router.post('/customers/approve', staffController.approveCustomer);
 
-// router.get('/customers/transactions', staffController.getCustomerTransactions);
+router.get('/customers/transactions', staffController.getCustomerTransactions);
 router.get('/customers/accounts', staffController.getCustomerAccounts);
 router.get('/customers/:id', staffController.getCustomer);
 
