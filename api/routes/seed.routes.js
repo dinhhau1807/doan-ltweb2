@@ -1,9 +1,19 @@
 const express = require('express');
 const asyncHandler = require('express-async-handler');
 
-const { Account, Transaction } = require('../models');
+const { Customer, Account, Transaction } = require('../models');
 
 const router = express.Router();
+
+router.get('/customers', async (req, res, next) => {
+  const customers = await Customer.findAll();
+  res.status(200).json({ customers });
+});
+
+router.get('/accounts', async (req, res, next) => {
+  const accounts = await Account.findAll();
+  res.status(200).json({ accounts });
+});
 
 router.post(
   '/accounts',

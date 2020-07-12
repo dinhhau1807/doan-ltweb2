@@ -1,21 +1,8 @@
 const asyncHandler = require('express-async-handler');
-const jwt = require('jsonwebtoken');
 
 const { Customer } = require('../models');
 const AppError = require('../utils/appError');
 const passwordValidator = require('../utils/passwordValidator');
-
-const signToken = (type, id) => {
-  return jwt.sign({ type, id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  });
-};
-
-// test method
-exports.getAllCustomers = asyncHandler(async (req, res, next) => {
-  const customers = await Customer.findAll();
-  res.status(200).json({ status: 'success', data: customers });
-});
 
 exports.getInfo = asyncHandler(async (req, res, next) => {
   const customer = req.user;
