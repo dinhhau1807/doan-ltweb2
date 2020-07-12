@@ -187,13 +187,7 @@ exports.getCustomerTransactions = asyncHandler(async (req, res, next) => {
 
 exports.getAllIdentities = asyncHandler(async (req, res, next) => {
   let { page, limit, sortBy, sortType } = req.query;
-  const attributes = [
-    'customerId',
-    'identityNumber',
-    'registrationDate',
-    'frontImage',
-    'backImage',
-  ];
+  const attributes = ['customerId', 'identityNumber', 'registrationDate'];
   const sortTypes = ['asc', 'desc'];
 
   if (!page || page <= 0) page = 1;
