@@ -27,7 +27,7 @@ module.exports = {
         type: Sequelize.DECIMAL,
       },
       term: {
-        type: Sequelize.DATE,
+        type: Sequelize.INTEGER,
       },
       createdAt: {
         allowNull: false,

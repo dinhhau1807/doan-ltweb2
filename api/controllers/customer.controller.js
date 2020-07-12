@@ -4,12 +4,6 @@ const { Customer } = require('../models');
 const AppError = require('../utils/appError');
 const passwordValidator = require('../utils/passwordValidator');
 
-// test method
-exports.getAllCustomers = asyncHandler(async (req, res, next) => {
-  const customers = await Customer.findAll();
-  res.status(200).json({ status: 'success', data: customers });
-});
-
 exports.getInfo = asyncHandler(async (req, res, next) => {
   const customer = req.user;
   const customerInfo = await Customer.findOne({

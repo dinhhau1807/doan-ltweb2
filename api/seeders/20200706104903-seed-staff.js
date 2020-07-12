@@ -6,19 +6,10 @@ module.exports = {
       'Staffs',
       [
         {
-          username: 'staff',
-          password:
-            '$2a$10$QeUFOtaYs656SR/vxR9EP.RH0Kqy1NySd1W3rhxHCmZLbnKARWZVy',
-          name: 'A2HL Staff',
-          roleId: 2,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-        {
           username: 'staff1',
           password:
-            '$2a$10$QeUFOtaYs656SR/vxR9EP.RH0Kqy1NySd1W3rhxHCmZLbnKARWZVy',
-          name: 'A2HL Staff1',
+            '$2a$10$JLCLPwf5UIObcyE3zKWVy.HM0vW7LIHL13W2R97vPL8nfdkWSpFx2',
+          name: 'A2HL Staff 1',
           roleId: 2,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -26,8 +17,8 @@ module.exports = {
         {
           username: 'staff2',
           password:
-            '$2a$10$QeUFOtaYs656SR/vxR9EP.RH0Kqy1NySd1W3rhxHCmZLbnKARWZVy',
-          name: 'A2HL Staff2',
+            '$2a$10$pLQwvktEqC6K1JVUjMRXveHkMug9Qkkr//Ln6aMppH6NwAfLFbgYG',
+          name: 'A2HL Staff 2',
           roleId: 2,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -35,8 +26,17 @@ module.exports = {
         {
           username: 'staff3',
           password:
-            '$2a$10$QeUFOtaYs656SR/vxR9EP.RH0Kqy1NySd1W3rhxHCmZLbnKARWZVy',
-          name: 'A2HL Staff3',
+            '$2a$10$L3aSMxxHzsJOaFNIdd9rd.8jeP7ziuQ.nftjF9cqPjo/cVT.yQJ7K',
+          name: 'A2HL Staff 3',
+          roleId: 2,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          username: 'staff4',
+          password:
+            '$2a$10$WMXRmaF3NL.Xyzn4CAe2BexEf8RsojZLqdC/qxRd28wNZ39986Tpm',
+          name: 'A2HL Staff 4',
           roleId: 2,
           createdAt: new Date(),
           updatedAt: new Date(),

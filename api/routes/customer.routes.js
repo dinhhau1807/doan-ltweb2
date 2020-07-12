@@ -5,9 +5,6 @@ const customerController = require('../controllers/customer.controller');
 
 const router = express.Router();
 
-// test route
-router.get('/getAll', customerController.getAllCustomers);
-
 // Public route
 router.post('/login', authController.customerLogin);
 router.post(
@@ -16,6 +13,7 @@ router.post(
   authController.compressIdentityImages,
   authController.customerRegister
 );
+
 // Auth route
 router.use(authController.authorize);
 
