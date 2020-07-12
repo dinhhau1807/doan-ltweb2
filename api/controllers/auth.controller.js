@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
 const asyncHandler = require('express-async-handler');
 const { Op } = require('sequelize');
-const { v4: uuidv4 } = require('uuid');
+const shortid = require('shortid');
 const multer = require('multer');
 const sharp = require('sharp');
 
@@ -231,7 +231,7 @@ exports.customerRegister = asyncHandler(async (req, res, next) => {
     dateOfBirth,
     phoneNumber,
     address,
-    verifyCode: uuidv4(),
+    verifyCode: shortid.generate(),
   });
 
   await Identity.create({
