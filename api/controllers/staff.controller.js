@@ -118,7 +118,17 @@ exports.approveCustomer = asyncHandler(async (req, res, next) => {
   }
 
   customer.staffIdApproved = staff.id;
-  customer.save();
+  await customer.save();
+
+  const customerApproved = await Customer.findOne({
+    attributes: {
+      exclude: ['password', 'verifyCode'],
+    },
+    where: { id: idCustomer },
+  });
+
+  customerApproved.status = STATUS.active;
+  await customerApproved.save();
 
   return res.status(200).json({
     status: 'success',
