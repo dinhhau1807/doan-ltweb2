@@ -2,12 +2,23 @@ const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 
+const AppError = require('./utils/appError');
+const GlobalAppError = require('./controllers/error.controller');
+
+// Router import
+const customerRouter = require('./routes/customer.routes');
+const staffRouter = require('./routes/staff.routes');
+const adminRouter = require('./routes/admin.routes');
+
 // Start express app
 const app = express();
 app.enable('trust proxy');
 
-// GLOBAL MIDDLEWARE
+// Implement cors
 app.use(cors());
+
+// Parse data from incoming request
+app.use(express.json());
 
 // Development logging request
 if (process.env.NODE_ENV === 'development') {
@@ -15,10 +26,25 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // ROUTES
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
   res.status(200).json({
-    message: 'Hello World'
+    message: 'Hello the world 😄😄😄!',
   });
 });
+app.use('/api/customers', customerRouter);
+app.use('/api/staffs', staffRouter);
+app.use('/api/admin', adminRouter);
+app.use('/api/seeds', require('./routes/seed.routes'));
+
+// Ignore favicon
+app.get('/favicon.ico', (req, res) => res.status(204));
+
+// Route not found
+app.use('*', (req, res, next) => {
+  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+});
+
+// Handle global error
+app.use(GlobalAppError);
 
 module.exports = app;

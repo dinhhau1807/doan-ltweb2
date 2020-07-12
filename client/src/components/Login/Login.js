@@ -1,18 +1,36 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import { createCookie, getErrorMessage } from '../../utils/helpers';
+import { TOKEN_KEY } from '../../constants/GlobalConstants';
+
+import { Form, Input, Button, message } from 'antd';
+import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import './Login.scss';
 
-import { Form, Input, Button } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
+const propTypes = {
+  login: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired
+};
 
-const Login = () => {
+const defaultProps = {};
+
+const Login = ({ login, history }) => {
   const [loading, setLoading] = useState(false);
 
-  const onFinish = values => {
-    setLoading(true);
-    console.log('Received values of form: ', values);
-    setTimeout(() => {
+  const onFinish = async values => {
+    try {
+      setLoading(true);
+      const { email, password } = values;
+      const { token } = await login('/customers/login', {
+        username: email,
+        password
+      });
+      createCookie(TOKEN_KEY, token);
+      history.push('/');
+    } catch (err) {
+      message.error(getErrorMessage(err));
       setLoading(false);
-    }, 3000);
+    }
   };
 
   return (
@@ -64,5 +82,8 @@ const Login = () => {
     </div>
   );
 };
+
+Login.propTypes = propTypes;
+Login.defaultProps = defaultProps;
 
 export default Login;
