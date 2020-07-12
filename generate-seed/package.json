@@ -1,0 +1,21 @@
+{
+  "name": "generate-seed",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "seed:customer": "node seed_customer_identity.js",
+    "seed:account": "node seed_accounts.js",
+    "seed:transaction": "node seed_transactions.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "dotenv": "^8.2.0",
+    "form-data": "^3.0.0",
+    "moment": "^2.27.0",
+    "moment-random": "^1.0.5",
+    "moment-timezone": "^0.5.31"
+  }
+}
