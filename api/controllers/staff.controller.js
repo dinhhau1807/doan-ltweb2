@@ -3,7 +3,7 @@ const { Op } = require('sequelize');
 const AppError = require('../utils/appError');
 const { STATUS } = require('../utils/statusEnum');
 const ROLE = require('../utils/roleEnum');
-const { Customer, Identity } = require('../models');
+const { Customer, Identity, Account, Transaction } = require('../models');
 
 const findCustomer = asyncHandler(async (id) => {
   const customer = await Customer.findOne({
@@ -140,7 +140,37 @@ exports.getCustomer = asyncHandler(async (req, res, next) => {
 });
 
 exports.getCustomerAccounts = asyncHandler(async (req, res, next) => {
+  const { idCustomer } = req.body;
+
+  const customer = await findCustomer(idCustomer);
+  if (!customer) {
+    return next(new AppError('Customer not found.', 404));
+  }
+
+  const accounts = await Account.findAll({ where: { customerId: idCustomer } });
+
   return res.status(200).json({
-    message: 'Not implemented!',
+    status: 'success',
+    data: accounts,
+  });
+});
+
+exports.getCustomerTransactions = asyncHandler(async (req, res, next) => {
+  const { idCustomer } = req.body;
+
+  const customer = await findCustomer(idCustomer);
+  if (!customer) {
+    return next(new AppError('Customer not found.', 404));
+  }
+
+  const transactions = await Transaction.findAll({
+    where: {
+      [Op.or]: { accountSourceId: idCustomer, accountDestination: idCustomer },
+    },
+  });
+
+  return res.status(200).json({
+    status: 'success',
+    data: transactions,
   });
 });

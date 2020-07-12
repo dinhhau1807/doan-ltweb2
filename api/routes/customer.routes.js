@@ -15,7 +15,7 @@ router.post(
 );
 
 // Auth route
-router.use(authController.authorize);
+router.use(authController.authorize, authController.restrictToCustomer);
 
 router
   .route('/me')
