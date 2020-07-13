@@ -1,6 +1,8 @@
 const asyncHandler = require('express-async-handler');
 const { Op } = require('sequelize');
+const { Staff } = require('../models');
 const AppError = require('../utils/appError');
+const passwordValidator = require('../utils/passwordValidator');
 const { STATUS } = require('../utils/statusEnum');
 const ROLE = require('../utils/roleEnum');
 const { Customer, Identity, Account, Transaction } = require('../models');
@@ -240,5 +242,72 @@ exports.getIdentity = asyncHandler(async (req, res, next) => {
   return res.status(200).json({
     status: 'success',
     data: identity,
+  });
+});
+
+exports.getInfo = asyncHandler(async (req, res, next) => {
+  const staff = req.user;
+  const staffInfo = await Staff.findOne({
+    attributes: {
+      exclude: ['password', 'roleId'],
+    },
+    where: { id: staff.id },
+  });
+  res.status(200).json({ status: 'success', data: staffInfo });
+});
+
+exports.updateInfo = asyncHandler(async (req, res, next) => {
+  const staff = req.user;
+  const { name } = req.body;
+  await Staff.update(
+    {
+      name,
+    },
+    {
+      where: { id: staff.id },
+    }
+  );
+  res.status(200).json({
+    status: 'success',
+    message: 'Update information successful.',
+  });
+});
+
+exports.updatePassword = asyncHandler(async (req, res, next) => {
+  const staff = req.user;
+  const { oldPassword, newPassword } = req.body;
+  const matchedOldPwd = await passwordValidator.verifyHashedPassword(
+    oldPassword,
+    staff.password
+  );
+  const matchedNewPwd = await passwordValidator.verifyHashedPassword(
+    newPassword,
+    staff.password
+  );
+  if (!matchedOldPwd) {
+    return next(new AppError('Old password incorrect.', 401));
+  }
+  if (matchedNewPwd) {
+    return next(
+      new AppError('New password must be different from current password.', 401)
+    );
+  }
+
+  const newPasswordHashed = await passwordValidator.createHashedPassword(
+    newPassword
+  );
+
+  await Staff.update(
+    {
+      password: newPasswordHashed,
+    },
+    {
+      where: { id: staff.id },
+    }
+  );
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Change password successful.',
   });
 });

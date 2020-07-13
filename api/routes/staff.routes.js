@@ -25,4 +25,11 @@ router.get('/customers/transactions', staffController.getCustomerTransactions);
 router.get('/customers/accounts', staffController.getCustomerAccounts);
 router.get('/customers/:id', staffController.getCustomer);
 
+router
+  .route('/me')
+  .get(staffController.getInfo)
+  .put(staffController.updateInfo);
+
+router.put('/updatePassword', staffController.updatePassword);
+
 module.exports = router;
