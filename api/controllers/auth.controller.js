@@ -112,7 +112,15 @@ exports.authorize = asyncHandler(async (req, res, next) => {
     default:
   }
 
-  // Should check user have changed password
+  // Check password changed
+  if (
+    currentUser.passwordUpdatedAt &&
+    decoded.iat < parseInt(currentUser.passwordUpdatedAt.getTime() / 1000, 10)
+  ) {
+    return next(
+      new AppError('User recently changed password! Please log in again.', 401)
+    );
+  }
 
   // GRANT ACCESS
   req.user = currentUser;
