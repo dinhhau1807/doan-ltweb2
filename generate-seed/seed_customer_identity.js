@@ -2,7 +2,7 @@ require('dotenv').config({ path: './.env' });
 const axios = require('axios');
 const FormData = require('form-data');
 const fs = require('fs');
-const dateRandom = require('./dateRd');
+const { dateRandom } = require('./utils');
 
 const count = 50;
 for (let i = 0; i < count; i++) {

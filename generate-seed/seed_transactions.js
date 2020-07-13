@@ -2,12 +2,7 @@ require('dotenv').config({ path: './.env' });
 var axios = require('axios');
 const tz = require('moment-timezone');
 const moment = require('moment').tz.setDefault('Asia/Ho_Chi_Minh');
-
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+const { getRandomInt } = require('./utils');
 
 function generateOTP() {
   let digits = '0123456789';
@@ -28,15 +23,15 @@ axios
   .then((ids) => {
     for (let id of ids) {
       const now = moment();
-      let accountDestination = ids[getRandomInt(0, ids.length)];
+      let accountDestination = ids[getRandomInt(0, ids.length - 1)];
       while (accountDestination === id) {
-        accountDestination = ids[getRandomInt(0, ids.length)];
+        accountDestination = ids[getRandomInt(0, ids.length - 1)];
       }
 
       const data = {
         accountSourceId: id,
         accountDestination,
-        amount: getRandomInt(100000, 2000001),
+        amount: getRandomInt(100000, 2000000),
         description: `User ${id} transfer to user ${accountDestination}`,
         status: 'succeed',
         otpCode: generateOTP(),
