@@ -29,6 +29,12 @@ module.exports = {
       address: {
         type: Sequelize.STRING,
       },
+      passwordUpdatedAt: {
+        type: Sequelize.DATE,
+      },
+      accessFailedCount: {
+        type: Sequelize.INTEGER,
+      },
       verifyCode: {
         type: Sequelize.STRING,
       },

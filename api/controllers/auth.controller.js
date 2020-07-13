@@ -112,7 +112,15 @@ exports.authorize = asyncHandler(async (req, res, next) => {
     default:
   }
 
-  // Should check user have changed password
+  // Check password changed
+  if (
+    currentUser.passwordUpdatedAt &&
+    decoded.iat < parseInt(currentUser.passwordUpdatedAt.getTime() / 1000, 10)
+  ) {
+    return next(
+      new AppError('User recently changed password! Please log in again.', 401)
+    );
+  }
 
   // GRANT ACCESS
   req.user = currentUser;
@@ -163,8 +171,32 @@ exports.customerLogin = asyncHandler(async (req, res, next) => {
     !customer ||
     !(await passwordValidator.verifyHashedPassword(password, customer.password))
   ) {
+    if (customer.accessFailedCount < 5) {
+      customer.accessFailedCount += 1;
+      customer.save();
+    }
+
     return next(new AppError('Incorrect username/email or password', 401));
   }
+
+  // Check if user access failed 5 times
+  if (customer.accessFailedCount === 5) {
+    if (customer.status !== STATUS.blocked) {
+      customer.status = STATUS.blocked;
+      customer.save();
+    }
+
+    return next(
+      new AppError(
+        'Your account is blocked! You have logged in failed 5 times!',
+        403
+      )
+    );
+  }
+
+  // Reset access failed if login success before 5 times
+  customer.accessFailedCount = 0;
+  customer.save();
 
   // Create login token and send to client
   const token = signToken('customer', customer.id);

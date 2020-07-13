@@ -62,6 +62,7 @@ exports.updatePassword = asyncHandler(async (req, res, next) => {
   await Customer.update(
     {
       password: newPasswordHashed,
+      passwordUpdatedAt: new Date(),
     },
     {
       where: { id: customer.id },

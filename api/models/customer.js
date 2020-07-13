@@ -19,8 +19,11 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         unique: { args: true, msg: 'Username have been used.' },
         validate: {
-          notEmpty: { args: true, msg: "Username must not be blank." },
-          isAlphanumeric: { args: true, msg: "Username only accept characters and numbers." },
+          notEmpty: { args: true, msg: 'Username must not be blank.' },
+          isAlphanumeric: {
+            args: true,
+            msg: 'Username only accept characters and numbers.',
+          },
           notIn: {
             args: [['admin']],
             msg: 'Cant use username: admin.',
@@ -36,14 +39,14 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         unique: { args: true, msg: 'Email have been used.' },
         validate: {
-          notEmpty: { args: true, msg: "Email must not be blank." },
+          notEmpty: { args: true, msg: 'Email must not be blank.' },
           len: {
             args: [6, 128],
             msg:
               'Email address must be between 6 and 128 characters in length.',
           },
           isEmail: {
-						args: true,
+            args: true,
             msg: 'Email address is invalid.',
           },
         },
@@ -52,14 +55,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          notEmpty: { args: true, msg: "Password must not be blank." },
+          notEmpty: { args: true, msg: 'Password must not be blank.' },
         },
       },
       name: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          notEmpty: { args: true, msg: "Name must not be blank." },
+          notEmpty: { args: true, msg: 'Name must not be blank.' },
           len: {
             args: [3, 50],
             msg: 'Name must be between 3 and 50 characters in length.',
@@ -70,15 +73,15 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         allowNull: false,
         validate: {
-          notEmpty: { args: true, msg: "DOB must not be blank." },
+          notEmpty: { args: true, msg: 'DOB must not be blank.' },
         },
       },
       phoneNumber: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          notEmpty: { args: true, msg: "Phone numbers must not be blank." },
-          isNumeric: { args: true, msg: "Phone numbers only accept numbers." },
+          notEmpty: { args: true, msg: 'Phone numbers must not be blank.' },
+          isNumeric: { args: true, msg: 'Phone numbers only accept numbers.' },
           is: {
             args: /(03|05|07|08|09|[2|6|8|9])+([0-9]{8})\b/,
             msg: 'Phone numbers is invalid.',
@@ -89,8 +92,17 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          notEmpty: { args: true, msg: "Address must not be blank." },
+          notEmpty: { args: true, msg: 'Address must not be blank.' },
         },
+      },
+      passwordUpdatedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      accessFailedCount: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
       },
       verifyCode: {
         type: DataTypes.STRING,
