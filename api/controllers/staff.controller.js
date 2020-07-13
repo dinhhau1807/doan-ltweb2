@@ -300,6 +300,7 @@ exports.updatePassword = asyncHandler(async (req, res, next) => {
   await Staff.update(
     {
       password: newPasswordHashed,
+      passwordUpdateAt: new Date(),
     },
     {
       where: { id: staff.id },
