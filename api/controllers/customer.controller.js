@@ -142,3 +142,58 @@ exports.transactionsHistory = asyncHandler(async (req, res, next) => {
     items: transactions.rows,
   });
 });
+
+exports.historyPeriod = asyncHandler(async (req, res, next) => {
+  const customer = req.user;
+  const { fromDate, toDate } = req.body;
+  let { page, limit, sortBy, sortType } = req.query;
+  const attributes = ['createdAt'];
+  const sortTypes = ['asc', 'desc'];
+
+  const iFromDate = fromDate ? new Date(fromDate) : null;
+  const iToDate = toDate
+    ? new Date(toDate).setDate(new Date(toDate).getDate() + 1)
+    : null;
+
+  if (!page || page <= 0) page = 1;
+  if (!limit || limit <= 0) limit = 10;
+
+  if (!sortType || (sortType && !sortTypes.includes(sortType)))
+    sortType = 'asc';
+  if (!sortBy || (sortBy && !attributes.includes(sortBy))) sortBy = 'createdAt';
+
+  const transactions = await Transaction.findAndCountAll({
+    attributes: {
+      exclude: ['otpCode', 'otpCreatedDate', 'otpExpiredDate'],
+    },
+    where: {
+      [Op.and]: [
+        {
+          [Op.or]: {
+            accountSourceId: customer.id,
+            accountDestination: customer.id,
+          },
+        },
+        {
+          createdAt: { [Op.between]: [iFromDate, iToDate] },
+        },
+      ],
+    },
+    order: [[sortBy, sortType]],
+    offset: (page - 1) * limit,
+    limit,
+  });
+
+  if (transactions.count === 0) {
+    return res.status(404).json({
+      status: 'error',
+      msg: 'Transaction not found in this period.',
+    });
+  }
+
+  return res.status(200).json({
+    status: 'success',
+    totalItems: transactions.count,
+    items: transactions.rows,
+  });
+});
