@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler');
+const { Op } = require('sequelize');
 
-const { Customer } = require('../models');
+const { Customer, Transaction } = require('../models');
 const AppError = require('../utils/appError');
 const passwordValidator = require('../utils/passwordValidator');
 
@@ -72,5 +73,72 @@ exports.updatePassword = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     message: 'Change password successful.',
+  });
+});
+
+exports.transactionsHistory = asyncHandler(async (req, res, next) => {
+  const customer = req.user;
+  let { page, limit, sortBy, sortType } = req.query;
+  const attributes = ['createdAt'];
+  const sortTypes = ['asc', 'desc'];
+
+  if (!page || page <= 0) page = 1;
+  if (!limit || limit <= 0) limit = 10;
+
+  if (!sortType || (sortType && !sortTypes.includes(sortType)))
+    sortType = 'asc';
+  if (!sortBy || (sortBy && !attributes.includes(sortBy))) sortBy = 'createdAt';
+
+  const filterArr = [];
+  attributes.forEach((attr) => {
+    if (req.query[attr]) {
+      const obj = {};
+      obj[attr] = {
+        [Op.and]: [
+          {
+            [Op.gte]: new Date(`${req.query[attr]}`),
+          },
+          {
+            [Op.lte]: new Date(`${req.query[attr]}%`).setDate(
+              new Date(`${req.query[attr]}%`).getDate() + 1
+            ),
+          },
+        ],
+      };
+      filterArr.push(obj);
+    }
+  });
+
+  const transactions = await Transaction.findAndCountAll({
+    attributes: {
+      exclude: ['otpCode', 'otpCreatedDate', 'otpExpiredDate'],
+    },
+    where: {
+      [Op.and]: [
+        {
+          [Op.or]: {
+            accountSourceId: customer.id,
+            accountDestination: customer.id,
+          },
+        },
+        ...filterArr,
+      ],
+    },
+    order: [[sortBy, sortType]],
+    offset: (page - 1) * limit,
+    limit,
+  });
+
+  if (transactions.count === 0) {
+    return res.status(404).json({
+      status: 'error',
+      msg: 'Transaction not found in this time.',
+    });
+  }
+
+  return res.status(200).json({
+    status: 'success',
+    totalItems: transactions.count,
+    items: transactions.rows,
   });
 });

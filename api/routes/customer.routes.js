@@ -24,4 +24,6 @@ router
 
 router.put('/updatePassword', customerController.updatePassword);
 
+router.get('/transactionHistory', customerController.transactionsHistory);
+
 module.exports = router;
