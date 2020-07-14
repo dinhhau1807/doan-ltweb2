@@ -6,7 +6,7 @@ import {
 
 const initialState = {
   loading: false,
-  data: {}
+  data: null
 };
 
 export default function (state = initialState, { type, payload }) {
