@@ -167,11 +167,22 @@ exports.customerLogin = asyncHandler(async (req, res, next) => {
     },
   });
 
+  // Check if customer is blocked or inactive
+  if (customer) {
+    switch (customer.status) {
+      case STATUS.inactive:
+        return next(new AppError('Your account is inactive!', 403));
+      case STATUS.blocked:
+        return next(new AppError('Your account is blocked!', 403));
+      default:
+    }
+  }
+
   if (
     !customer ||
     !(await passwordValidator.verifyHashedPassword(password, customer.password))
   ) {
-    if (customer.accessFailedCount < 5) {
+    if (customer && customer.accessFailedCount < 5) {
       customer.accessFailedCount += 1;
       await customer.save();
     }
@@ -310,6 +321,17 @@ exports.staffLogin = asyncHandler(async (req, res, next) => {
       status: { [Op.ne]: STATUS.deleted },
     },
   });
+
+  // Check if staff is blocked or inactive
+  if (staff) {
+    switch (staff.status) {
+      case STATUS.inactive:
+        return next(new AppError('Your account is inactive!', 403));
+      case STATUS.blocked:
+        return next(new AppError('Your account is blocked!', 403));
+      default:
+    }
+  }
 
   if (
     !staff ||
