@@ -30,3 +30,7 @@ export const logout = () => {
   eraseCookie(TOKEN_KEY);
   return { type: USER_LOGOUT };
 };
+
+export const changePassword = (type, body) => {
+  return fetchApi(`/${type}/updatePassword`, 'PUT', body);
+};

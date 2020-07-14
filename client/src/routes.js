@@ -2,10 +2,14 @@ import { lazy } from 'react';
 import { PrivateLayout, PublicLayout } from './layouts';
 
 const UserPage = lazy(() => import('./pages/UserPage'));
+const UserPasswordPage = lazy(() => import('./pages/UserPasswordPage'));
+
 const NotFound = lazy(() => import('./pages/NotFoundPage'));
+
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const RegisterPage = lazy(() => import('./pages/RegisterPage'));
 const LoginStaffPage = lazy(() => import('./pages/LoginStaffPage'));
+
 const CustomersManagement = lazy(() =>
   import('./pages/CustomersManagementPage')
 );
@@ -18,6 +22,13 @@ export const routes = [
     isPrivate: true,
     layout: PrivateLayout,
     component: UserPage
+  },
+  {
+    path: '/password',
+    exact: true,
+    isPrivate: true,
+    layout: PrivateLayout,
+    component: UserPasswordPage
   },
   {
     path: '/a2hl-management',
