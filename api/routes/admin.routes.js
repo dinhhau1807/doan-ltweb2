@@ -17,7 +17,7 @@ router
   .get(adminController.getAllStaffs)
   .post(adminController.createStaff);
 
-router.get('/staffs/:id', adminController.getStaff);
 router.post('/staffs/status', adminController.updateStaffStatus);
+router.get('/staffs/:id', adminController.getStaff);
 
 module.exports = router;
