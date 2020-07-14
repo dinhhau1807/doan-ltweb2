@@ -171,7 +171,7 @@ exports.customerLogin = asyncHandler(async (req, res, next) => {
     !customer ||
     !(await passwordValidator.verifyHashedPassword(password, customer.password))
   ) {
-    if (customer.accessFailedCount < 5) {
+    if (customer && customer.accessFailedCount < 5) {
       customer.accessFailedCount += 1;
       await customer.save();
     }
