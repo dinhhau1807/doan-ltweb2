@@ -6,10 +6,10 @@ const shortid = require('shortid');
 const multer = require('multer');
 const sharp = require('sharp');
 
-const { Customer, Identity, Staff, Role } = require('../models');
 const AppError = require('../utils/appError');
 const passwordValidator = require('../utils/passwordValidator');
 const { STATUS } = require('../utils/statusEnum');
+const { Customer, Identity, Staff, Role } = require('../models');
 
 const multerStorage = multer.memoryStorage();
 
@@ -173,7 +173,7 @@ exports.customerLogin = asyncHandler(async (req, res, next) => {
   ) {
     if (customer.accessFailedCount < 5) {
       customer.accessFailedCount += 1;
-      customer.save();
+      await customer.save();
     }
 
     return next(new AppError('Incorrect username/email or password', 401));
@@ -183,7 +183,7 @@ exports.customerLogin = asyncHandler(async (req, res, next) => {
   if (customer.accessFailedCount === 5) {
     if (customer.status !== STATUS.blocked) {
       customer.status = STATUS.blocked;
-      customer.save();
+      await customer.save();
     }
 
     return next(
@@ -196,7 +196,7 @@ exports.customerLogin = asyncHandler(async (req, res, next) => {
 
   // Reset access failed if login success before 5 times
   customer.accessFailedCount = 0;
-  customer.save();
+  await customer.save();
 
   // Create login token and send to client
   const token = signToken('customer', customer.id);

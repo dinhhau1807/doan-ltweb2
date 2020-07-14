@@ -1,16 +1,27 @@
 const asyncHandler = require('express-async-handler');
 const { Op } = require('sequelize');
-const { Staff } = require('../models');
+
 const AppError = require('../utils/appError');
 const passwordValidator = require('../utils/passwordValidator');
 const { STATUS } = require('../utils/statusEnum');
 const ROLE = require('../utils/roleEnum');
-const { Customer, Identity, Account, Transaction } = require('../models');
+const {
+  Staff,
+  Customer,
+  Identity,
+  Account,
+  Transaction,
+} = require('../models');
 
 const findCustomer = asyncHandler(async (id) => {
   const customer = await Customer.findOne({
     attributes: {
-      exclude: ['password', 'verifyCode'],
+      exclude: [
+        'password',
+        'verifyCode',
+        'accessFailedCount',
+        'passwordUpdatedAt',
+      ],
     },
     where: {
       [Op.and]: [
@@ -26,41 +37,66 @@ const findCustomer = asyncHandler(async (id) => {
   return customer;
 });
 
-exports.updateCustomerStatus = asyncHandler(async (req, res, next) => {
-  const { idCustomer, status } = req.body;
+// PERSONAL INFO MANAGEMENT -----------------------------------------------------
+exports.getInfo = asyncHandler(async (req, res, next) => {
+  const staff = { ...req.user.dataValues };
 
-  const newStatus = STATUS[status];
-  if (!newStatus) {
-    return next(new AppError('Invalid status!', 400));
-  }
-  if (
-    newStatus === STATUS.deleted &&
-    req.user.Role.roleDescription !== ROLE.admin
-  ) {
-    return next(
-      new AppError('You do not have permission to perform this action!', 401)
-    );
-  }
+  delete staff.password;
+  delete staff.roleId;
+  delete staff.Role;
+  delete staff.passwordUpdatedAt;
 
-  const customer = await Customer.findOne({
-    attributes: {
-      exclude: ['password', 'verifyCode'],
-    },
-    where: { id: idCustomer },
-  });
-  if (!customer) {
-    return next(new AppError("Can't find this customer!", 404));
-  }
+  res.status(200).json({ status: 'success', data: staff });
+});
 
-  customer.status = newStatus;
-  customer.save();
+exports.updateInfo = asyncHandler(async (req, res, next) => {
+  const staff = req.user;
+  const { name } = req.body;
 
-  return res.status(200).json({
+  await Staff.update({ name }, { where: { id: staff.id } });
+
+  res.status(200).json({
     status: 'success',
-    data: customer,
+    message: 'Update information successful.',
   });
 });
 
+exports.updatePassword = asyncHandler(async (req, res, next) => {
+  const staff = req.user;
+  const { oldPassword, newPassword } = req.body;
+  const matchedOldPwd = await passwordValidator.verifyHashedPassword(
+    oldPassword,
+    staff.password
+  );
+  const matchedNewPwd = await passwordValidator.verifyHashedPassword(
+    newPassword,
+    staff.password
+  );
+  if (!matchedOldPwd) {
+    return next(new AppError('Old password incorrect.', 401));
+  }
+  if (matchedNewPwd) {
+    return next(
+      new AppError('New password must be different from current password.', 401)
+    );
+  }
+
+  const newPasswordHashed = await passwordValidator.createHashedPassword(
+    newPassword
+  );
+
+  await Staff.update(
+    { password: newPasswordHashed, passwordUpdatedAt: new Date() },
+    { where: { id: staff.id } }
+  );
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Change password successful.',
+  });
+});
+
+// CUSTOMER MANAGEMENT -----------------------------------------------------
 exports.getAllCustomers = asyncHandler(async (req, res, next) => {
   let { page, limit, sortBy, sortType } = req.query;
   const attributes = ['username', 'email', 'name', 'phoneNumber', 'address'];
@@ -84,7 +120,12 @@ exports.getAllCustomers = asyncHandler(async (req, res, next) => {
 
   const customers = await Customer.findAndCountAll({
     attributes: {
-      exclude: ['password', 'verifyCode'],
+      exclude: [
+        'password',
+        'verifyCode',
+        'accessFailedCount',
+        'passwordUpdatedAt',
+      ],
     },
     where: {
       [Op.and]: [
@@ -108,36 +149,6 @@ exports.getAllCustomers = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.approveCustomer = asyncHandler(async (req, res, next) => {
-  const staff = req.user;
-  const { idCustomer } = req.body;
-
-  const customer = await Identity.findOne({
-    where: { customerId: idCustomer },
-  });
-  if (!customer) {
-    return next(new AppError('Customer not found.', 404));
-  }
-
-  customer.staffIdApproved = staff.id;
-  await customer.save();
-
-  const customerApproved = await Customer.findOne({
-    attributes: {
-      exclude: ['password', 'verifyCode'],
-    },
-    where: { id: idCustomer },
-  });
-
-  customerApproved.status = STATUS.active;
-  await customerApproved.save();
-
-  return res.status(200).json({
-    status: 'success',
-    message: 'Customer has been approved',
-  });
-});
-
 exports.getCustomer = asyncHandler(async (req, res, next) => {
   const customer = await findCustomer(req.params.id);
 
@@ -151,15 +162,32 @@ exports.getCustomer = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.getCustomerAccounts = asyncHandler(async (req, res, next) => {
-  const { idCustomer } = req.body;
+exports.getCustomerIdentity = asyncHandler(async (req, res, next) => {
+  const identity = await Identity.findOne({
+    where: {
+      id: req.params.id,
+    },
+  });
 
-  const customer = await findCustomer(idCustomer);
+  if (!identity) {
+    return next(new AppError('Identity not found.', 404));
+  }
+
+  return res.status(200).json({
+    status: 'success',
+    data: identity,
+  });
+});
+
+exports.getCustomerAccounts = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+
+  const customer = await findCustomer(id);
   if (!customer) {
     return next(new AppError('Customer not found.', 404));
   }
 
-  const accounts = await Account.findAll({ where: { customerId: idCustomer } });
+  const accounts = await Account.findAll({ where: { customerId: id } });
 
   return res.status(200).json({
     status: 'success',
@@ -168,16 +196,16 @@ exports.getCustomerAccounts = asyncHandler(async (req, res, next) => {
 });
 
 exports.getCustomerTransactions = asyncHandler(async (req, res, next) => {
-  const { idCustomer } = req.body;
+  const { id } = req.params;
 
-  const customer = await findCustomer(idCustomer);
+  const customer = await findCustomer(id);
   if (!customer) {
     return next(new AppError('Customer not found.', 404));
   }
 
   const transactions = await Transaction.findAll({
     where: {
-      [Op.or]: { accountSourceId: idCustomer, accountDestination: idCustomer },
+      [Op.or]: { accountSourceId: id, accountDestination: id },
     },
   });
 
@@ -229,10 +257,10 @@ exports.getAllIdentities = asyncHandler(async (req, res, next) => {
 });
 
 exports.getIdentity = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+
   const identity = await Identity.findOne({
-    where: {
-      id: req.params.idCustomer,
-    },
+    where: { id },
   });
 
   if (!identity) {
@@ -245,70 +273,73 @@ exports.getIdentity = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.getInfo = asyncHandler(async (req, res, next) => {
+exports.approveCustomer = asyncHandler(async (req, res, next) => {
   const staff = req.user;
-  const staffInfo = await Staff.findOne({
-    attributes: {
-      exclude: ['password', 'roleId'],
-    },
-    where: { id: staff.id },
-  });
-  res.status(200).json({ status: 'success', data: staffInfo });
-});
+  const { idCustomer } = req.body;
 
-exports.updateInfo = asyncHandler(async (req, res, next) => {
-  const staff = req.user;
-  const { name } = req.body;
-  await Staff.update(
-    {
-      name,
-    },
-    {
-      where: { id: staff.id },
-    }
-  );
-  res.status(200).json({
-    status: 'success',
-    message: 'Update information successful.',
+  const customer = await Identity.findOne({
+    where: { customerId: idCustomer },
   });
-});
-
-exports.updatePassword = asyncHandler(async (req, res, next) => {
-  const staff = req.user;
-  const { oldPassword, newPassword } = req.body;
-  const matchedOldPwd = await passwordValidator.verifyHashedPassword(
-    oldPassword,
-    staff.password
-  );
-  const matchedNewPwd = await passwordValidator.verifyHashedPassword(
-    newPassword,
-    staff.password
-  );
-  if (!matchedOldPwd) {
-    return next(new AppError('Old password incorrect.', 401));
+  if (!customer) {
+    return next(new AppError('Customer not found.', 404));
   }
-  if (matchedNewPwd) {
+
+  customer.staffIdApproved = staff.id;
+  await customer.save();
+
+  const customerApproved = await Customer.findOne({
+    attributes: {
+      exclude: [
+        'password',
+        'verifyCode',
+        'accessFailedCount',
+        'passwordUpdatedAt',
+      ],
+    },
+    where: { id: idCustomer },
+  });
+
+  customerApproved.status = STATUS.active;
+  await customerApproved.save();
+
+  return res.status(200).json({
+    status: 'success',
+    message: 'Customer has been approved',
+  });
+});
+
+exports.updateCustomerStatus = asyncHandler(async (req, res, next) => {
+  const { idCustomer, status } = req.body;
+
+  const newStatus = STATUS[status];
+  if (!newStatus) {
+    return next(new AppError('Invalid status!', 400));
+  }
+  if (
+    newStatus === STATUS.deleted &&
+    req.user.Role.roleDescription !== ROLE.admin
+  ) {
     return next(
-      new AppError('New password must be different from current password.', 401)
+      new AppError('You do not have permission to perform this action!', 401)
     );
   }
 
-  const newPasswordHashed = await passwordValidator.createHashedPassword(
-    newPassword
-  );
-
-  await Staff.update(
-    {
-      password: newPasswordHashed,
-      passwordUpdatedAt: new Date(),
+  const customer = await Customer.findOne({
+    attributes: {
+      exclude: ['password', 'verifyCode'],
     },
-    {
-      where: { id: staff.id },
-    }
-  );
+    where: { id: idCustomer },
+  });
+  if (!customer) {
+    return next(new AppError("Can't find this customer!", 404));
+  }
 
-  res.status(200).json({
+  customer.status = newStatus;
+  customer.accessFailedCount = 0;
+  await customer.save();
+
+  return res.status(200).json({
     status: 'success',
-    message: 'Change password successful.',
+    data: customer,
   });
 });

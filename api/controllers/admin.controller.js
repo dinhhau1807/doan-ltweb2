@@ -3,9 +3,9 @@ const { Op } = require('sequelize');
 
 const ROLE = require('../utils/roleEnum');
 const { STATUS } = require('../utils/statusEnum');
-const { Staff, Role } = require('../models');
 const passwordValidator = require('../utils/passwordValidator');
 const AppError = require('../utils/appError');
+const { Staff, Role } = require('../models');
 
 const excludeAdmin = {
   model: Role,
@@ -18,7 +18,7 @@ const findStaff = asyncHandler(async (id) => {
   const staff = await Staff.findOne({
     include: excludeAdmin,
     attributes: {
-      exclude: ['password', 'roleId'],
+      exclude: ['password', 'roleId', 'passwordUpdatedAt'],
     },
     where: {
       [Op.and]: [
@@ -59,7 +59,7 @@ exports.getAllStaffs = asyncHandler(async (req, res, next) => {
   const staffs = await Staff.findAndCountAll({
     include: excludeAdmin,
     attributes: {
-      exclude: ['password', 'roleId'],
+      exclude: ['password', 'roleId', 'passwordUpdatedAt'],
     },
     where: {
       [Op.and]: [
@@ -102,6 +102,7 @@ exports.createStaff = asyncHandler(async (req, res, next) => {
   const newStaff = { ...staff.dataValues };
   delete newStaff.roleId;
   delete newStaff.password;
+  delete newStaff.passwordUpdatedAt;
 
   return res.status(201).json({
     status: 'success',
@@ -133,7 +134,7 @@ exports.updateStaffStatus = asyncHandler(async (req, res, next) => {
   const staff = await Staff.findOne({
     include: excludeAdmin,
     attributes: {
-      exclude: ['password', 'roleId'],
+      exclude: ['password', 'roleId', 'passwordUpdatedAt'],
     },
     where: { id: idStaff },
   });
@@ -142,7 +143,7 @@ exports.updateStaffStatus = asyncHandler(async (req, res, next) => {
   }
 
   staff.status = newStatus;
-  staff.save();
+  await staff.save();
 
   return res.status(200).json({
     status: 'success',
