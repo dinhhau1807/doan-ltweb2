@@ -1,7 +1,7 @@
 import axios from 'axios';
 import camelize from 'camelize';
 import * as config from './../constants/UrlAPI';
-import { readCookie } from './helpers';
+import { readCookie, eraseCookie } from './helpers';
 import { TOKEN_KEY } from '../constants/GlobalConstants';
 
 const instanceNext = axios.create({
@@ -27,6 +27,19 @@ instanceNext.interceptors.request.use(
 instanceNext.interceptors.response.use(
   response => camelize(response.data),
   error => {
+    // token expiry
+    if (error.response && error.response.status === 401) {
+      // clear token
+      eraseCookie(TOKEN_KEY);
+      // redirect to login page
+      window.location.href = './login';
+    }
+
+    // call api without token
+    if (error.response && error.response.status === 403) {
+      window.location.href = './login';
+    }
+
     if (error.response) {
       return Promise.reject(error.response);
     }

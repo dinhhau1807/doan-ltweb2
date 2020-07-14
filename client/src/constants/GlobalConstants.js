@@ -16,8 +16,8 @@ export const CUSTOMER_TABS = {
   SAVINGS_REQUEST: '/savings-request',
   SAVINGS_WITHDRAW: '/savings-withdraw',
   SAVINGS_TRANSACTION_HISTORY: '/savings-history',
-  UTILS_UPDATE: '/update-infomation',
-  UTILS_PASSWORD: '/change-password'
+  UTILS_UPDATE: '/profile',
+  UTILS_PASSWORD: '/password'
 };
 
 export const ENTITY_STATUS = {

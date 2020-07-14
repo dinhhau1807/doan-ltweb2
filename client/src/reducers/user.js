@@ -1,4 +1,8 @@
-import { FETCH_USER_REQUEST, FETCH_USER_SUCCESS } from '../constants/actions';
+import {
+  FETCH_USER_REQUEST,
+  FETCH_USER_SUCCESS,
+  USER_LOGOUT
+} from '../constants/actions';
 
 const initialState = {
   loading: false,
@@ -18,6 +22,8 @@ export default function (state = initialState, { type, payload }) {
         data: payload.user,
         loading: false
       };
+    case USER_LOGOUT:
+      return initialState;
     default:
       return state;
   }
