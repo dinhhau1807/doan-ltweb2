@@ -26,6 +26,10 @@ const HeaderComponent = ({
     history.push(isStaffRoute ? '/a2hl-management/login' : '/login');
   };
 
+  const handleChangePassword = () => {
+    history.push(isStaffRoute ? '/a2hl-management/password' : '/password');
+  };
+
   const { loading, data } = user;
   return (
     <Header className="header" style={style}>
@@ -38,6 +42,9 @@ const HeaderComponent = ({
             overlay={
               <Menu>
                 {!isStaffRoute && <Menu.Item>Cập nhật thông tin</Menu.Item>}
+                <Menu.Item onClick={handleChangePassword}>
+                  Đổi mật khẩu
+                </Menu.Item>
                 <Menu.Item onClick={handleLogout}>Đăng xuất</Menu.Item>
               </Menu>
             }
