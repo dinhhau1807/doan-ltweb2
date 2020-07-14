@@ -11,7 +11,7 @@ const defaultProps = {};
 
 const User = ({ user, fetchUser }) => {
   useEffect(() => {
-    fetchUser();
+    //fetchUser();
   }, [fetchUser]);
 
   const { loading, data } = user;
