@@ -216,7 +216,8 @@ exports.getCustomerTransactions = asyncHandler(async (req, res, next) => {
 });
 
 exports.getAllIdentities = asyncHandler(async (req, res, next) => {
-  let { page, limit, sortBy, sortType } = req.query;
+  // eslint-disable-next-line prefer-const
+  let { page, limit, sortBy, sortType, registrationDate } = req.query;
   const attributes = ['customerId', 'identityNumber', 'registrationDate'];
   const sortTypes = ['asc', 'desc'];
 
@@ -230,19 +231,44 @@ exports.getAllIdentities = asyncHandler(async (req, res, next) => {
 
   const filterArr = [];
   attributes.forEach((attr) => {
-    if (req.query[attr]) {
+    if (req.query[attr] && !req.query.approved && !req.query.registrationDate) {
       const obj = {};
       obj[attr] = { [Op.like]: `%${req.query[attr]}%` };
       filterArr.push(obj);
     }
-  });
 
+    if (req.query.registrationDate) {
+      const obj = {};
+      obj.registrationDate = {
+        [Op.between]: [
+          new Date(`${registrationDate}%`),
+          new Date(`${registrationDate}%`).setDate(
+            new Date(`${registrationDate}%`).getDate() + 1
+          ),
+        ],
+      };
+      filterArr.push(obj);
+    }
+
+    if (req.query.approved) {
+      if (req.query.approved === 'true') {
+        const obj = {};
+        obj.staffIdApproved = { [Op.not]: null };
+        filterArr.push(obj);
+      }
+      if (req.query.approved === 'false') {
+        const obj = {};
+        obj.staffIdApproved = { [Op.is]: null };
+        filterArr.push(obj);
+      }
+    }
+  });
   const identities = await Identity.findAndCountAll({
     attributes: {
       exclude: ['frontImage', 'backImage', 'staffIdApproved'],
     },
     where: {
-      ...filterArr,
+      [Op.and]: [...filterArr],
     },
     order: [[sortBy, sortType]],
     offset: (page - 1) * limit,
