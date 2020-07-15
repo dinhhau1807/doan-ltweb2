@@ -1,7 +1,9 @@
 import {
   FETCH_USER_REQUEST,
   FETCH_USER_SUCCESS,
-  USER_LOGOUT
+  USER_LOGOUT,
+  UPDATE_USER_REQUEST,
+  UPDATE_USER_SUCCESS
 } from '../constants/actions';
 import { fetchApi } from '../utils/api';
 import { getErrorMessage, eraseCookie } from '../utils/helpers';
@@ -33,4 +35,12 @@ export const logout = () => {
 
 export const changePassword = (type, body) => {
   return fetchApi(`/${type}/updatePassword`, 'PUT', body);
+};
+
+export const updateProfile = (type, body) => async dispatch => {
+  dispatch({ type: UPDATE_USER_REQUEST });
+
+  await fetchApi(`/${type}/me`, 'PUT', body);
+
+  dispatch({ type: UPDATE_USER_SUCCESS, payload: { userUpdated: body } });
 };

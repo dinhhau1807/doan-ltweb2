@@ -17,8 +17,10 @@ const HeaderComponent = ({
   history
 }) => {
   useEffect(() => {
-    const type = isStaffRoute ? 'staffs' : 'customers';
-    fetchUser(type);
+    if (!user.data) {
+      const type = isStaffRoute ? 'staffs' : 'customers';
+      fetchUser(type);
+    }
   }, [isStaffRoute]);
 
   const handleLogout = () => {
