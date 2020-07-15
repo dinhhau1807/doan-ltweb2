@@ -231,9 +231,15 @@ exports.getAllIdentities = asyncHandler(async (req, res, next) => {
 
   const filterArr = [];
   attributes.forEach((attr) => {
-    if (req.query[attr] && !req.query.approved && !req.query.registrationDate) {
+    if (req.query.identityNumber) {
       const obj = {};
-      obj[attr] = { [Op.like]: `%${req.query[attr]}%` };
+      obj.identityNumber = { [Op.like]: `%${req.query.identityNumber}%` };
+      filterArr.push(obj);
+    }
+
+    if (req.query.customerId) {
+      const obj = {};
+      obj.customerId = { [Op.eq]: `${req.query.customerId}` };
       filterArr.push(obj);
     }
 
