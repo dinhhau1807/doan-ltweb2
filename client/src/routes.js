@@ -3,6 +3,7 @@ import { PrivateLayout, PublicLayout } from './layouts';
 
 const UserPage = lazy(() => import('./pages/UserPage'));
 const UserPasswordPage = lazy(() => import('./pages/UserPasswordPage'));
+const UserProfilePage = lazy(() => import('./pages/UserProfilePage'));
 
 const NotFound = lazy(() => import('./pages/NotFoundPage'));
 
@@ -29,6 +30,13 @@ export const routes = [
     isPrivate: true,
     layout: PrivateLayout,
     component: UserPasswordPage
+  },
+  {
+    path: '/profile',
+    exact: true,
+    isPrivate: true,
+    layout: PrivateLayout,
+    component: UserProfilePage
   },
   {
     path: '/a2hl-management',
