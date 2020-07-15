@@ -56,6 +56,7 @@ const UserPassword = ({ changePassword }) => {
           <Form
             {...layout}
             name="form"
+            form={form}
             onFinish={onFinish}
             validateMessages={validateMessages}
           >
