@@ -3,7 +3,7 @@ const { Op } = require('sequelize');
 
 const AppError = require('../utils/appError');
 const passwordValidator = require('../utils/passwordValidator');
-const { STATUS } = require('../utils/statusEnum');
+const { STATUS, TRANS_STATUS } = require('../utils/statusEnum');
 const ROLE = require('../utils/roleEnum');
 const {
   Staff,
@@ -372,5 +372,93 @@ exports.updateCustomerStatus = asyncHandler(async (req, res, next) => {
   return res.status(200).json({
     status: 'success',
     data: customer,
+  });
+});
+
+exports.getAllTransactions = asyncHandler(async (req, res, next) => {
+  const { fromDate, toDate } = req.query;
+  let { page, limit, sortBy, sortType } = req.query;
+  const attributes = [
+    'accountSourceId',
+    'accountDestination',
+    'bankDestinationId',
+    'status',
+    'createdAt',
+  ];
+  const sortTypes = ['asc', 'desc'];
+
+  if (!page || page <= 0) page = 1;
+  if (!limit || limit <= 0) limit = 10;
+
+  if (!sortType || (sortType && !sortTypes.includes(sortType)))
+    sortType = 'asc';
+  if (!sortBy || (sortBy && !attributes.includes(sortBy))) sortBy = 'createdAt';
+
+  const filterArr = [];
+  attributes.forEach((attr) => {
+    if (req.query[attr]) {
+      const obj = {};
+      obj[attr] = { [Op.eq]: `${req.query[attr]}` };
+      filterArr.push(obj);
+    }
+  });
+
+  if (req.query.status) {
+    const obj = {};
+    obj.status = { [Op.eq]: TRANS_STATUS[req.query.status] };
+    filterArr.push(obj);
+  }
+
+  if (req.query.createdAt && !fromDate && !toDate) {
+    const obj = {};
+    obj.createdAt = {
+      [Op.and]: [
+        {
+          [Op.gte]: new Date(`${req.query.createdAt}%`),
+        },
+        {
+          [Op.lte]: new Date(`${req.query.createdAt}%`).setDate(
+            new Date(`${req.query.createdAt}%`).getDate() + 1
+          ),
+        },
+      ],
+    };
+    filterArr.push(obj);
+  }
+
+  if (fromDate && toDate) {
+    const obj = {};
+    obj.createdAt = {
+      [Op.between]: [
+        new Date(`${fromDate}%`),
+        new Date(`${toDate}%`).setDate(new Date(`${toDate}%`).getDate() + 1),
+      ],
+    };
+    filterArr.push(obj);
+  }
+
+  const transactions = await Transaction.findAndCountAll({
+    attributes: {
+      exclude: ['otpCode', 'otpCreatedDate', 'otpExpiredDate'],
+    },
+    where: {
+      [Op.and]: [...filterArr],
+    },
+    order: [[sortBy, sortType]],
+    offset: (page - 1) * limit,
+    limit,
+  });
+
+  if (transactions.count === 0) {
+    return res.status(404).json({
+      status: 'error',
+      message: 'Transaction not found.',
+    });
+  }
+
+  return res.status(200).json({
+    status: 'success',
+    totalItems: transactions.count,
+    items: transactions.rows,
   });
 });
