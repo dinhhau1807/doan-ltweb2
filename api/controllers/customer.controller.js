@@ -69,8 +69,8 @@ exports.updatePassword = asyncHandler(async (req, res, next) => {
 
 exports.transactionsHistory = asyncHandler(async (req, res, next) => {
   const customer = req.user;
-  // eslint-disable-next-line prefer-const
-  let { page, limit, sortBy, sortType, fromDate, toDate } = req.query;
+  const { fromDate, toDate } = req.query;
+  let { page, limit, sortBy, sortType } = req.query;
   const attributes = ['createdAt'];
   const sortTypes = ['asc', 'desc'];
 
@@ -83,7 +83,7 @@ exports.transactionsHistory = asyncHandler(async (req, res, next) => {
 
   const filterArr = [];
   attributes.forEach((attr) => {
-    if (req.query[attr] && !req.query.fromDate && !req.query.toDate) {
+    if (req.query[attr] && !fromDate && !toDate) {
       const obj = {};
       obj[attr] = {
         [Op.and]: [
@@ -99,7 +99,7 @@ exports.transactionsHistory = asyncHandler(async (req, res, next) => {
       };
       filterArr.push(obj);
     }
-    if (req.query.fromDate && req.query.toDate) {
+    if (fromDate && toDate) {
       const obj = {};
       obj.createdAt = {
         [Op.between]: [
@@ -134,7 +134,7 @@ exports.transactionsHistory = asyncHandler(async (req, res, next) => {
   if (transactions.count === 0) {
     return res.status(404).json({
       status: 'error',
-      msg: 'Transaction not found in this time.',
+      message: 'Transaction not found in this time.',
     });
   }
 
