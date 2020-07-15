@@ -230,45 +230,44 @@ exports.getAllIdentities = asyncHandler(async (req, res, next) => {
     sortBy = 'customerId';
 
   const filterArr = [];
-  attributes.forEach((attr) => {
-    if (req.query.identityNumber) {
+  if (req.query.identityNumber) {
+    const obj = {};
+    obj.identityNumber = { [Op.like]: `%${req.query.identityNumber}%` };
+    filterArr.push(obj);
+  }
+
+  if (req.query.customerId) {
+    const obj = {};
+    obj.customerId = { [Op.eq]: `${req.query.customerId}` };
+    filterArr.push(obj);
+  }
+
+  if (req.query.registrationDate) {
+    const obj = {};
+    obj.registrationDate = {
+      [Op.between]: [
+        new Date(`${registrationDate}%`),
+        new Date(`${registrationDate}%`).setDate(
+          new Date(`${registrationDate}%`).getDate() + 1
+        ),
+      ],
+    };
+    filterArr.push(obj);
+  }
+
+  if (req.query.approved) {
+    if (req.query.approved === 'true') {
       const obj = {};
-      obj.identityNumber = { [Op.like]: `%${req.query.identityNumber}%` };
+      obj.staffIdApproved = { [Op.not]: null };
       filterArr.push(obj);
     }
-
-    if (req.query.customerId) {
+    if (req.query.approved === 'false') {
       const obj = {};
-      obj.customerId = { [Op.eq]: `${req.query.customerId}` };
+      obj.staffIdApproved = { [Op.is]: null };
       filterArr.push(obj);
     }
+  }
 
-    if (req.query.registrationDate) {
-      const obj = {};
-      obj.registrationDate = {
-        [Op.between]: [
-          new Date(`${registrationDate}%`),
-          new Date(`${registrationDate}%`).setDate(
-            new Date(`${registrationDate}%`).getDate() + 1
-          ),
-        ],
-      };
-      filterArr.push(obj);
-    }
-
-    if (req.query.approved) {
-      if (req.query.approved === 'true') {
-        const obj = {};
-        obj.staffIdApproved = { [Op.not]: null };
-        filterArr.push(obj);
-      }
-      if (req.query.approved === 'false') {
-        const obj = {};
-        obj.staffIdApproved = { [Op.is]: null };
-        filterArr.push(obj);
-      }
-    }
-  });
   const identities = await Identity.findAndCountAll({
     attributes: {
       exclude: ['frontImage', 'backImage', 'staffIdApproved'],
