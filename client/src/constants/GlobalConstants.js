@@ -26,3 +26,5 @@ export const ENTITY_STATUS = {
   blocked: { label: 'Blocked', color: '#9e9e9e' },
   deleted: { label: 'Deleted', color: '#d50000' }
 };
+
+export const DATE_FORMAT = 'yyyy/MM/DD';
