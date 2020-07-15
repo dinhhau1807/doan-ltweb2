@@ -51,3 +51,47 @@ export const FILTER_STAFFS = {
     }
   ]
 };
+
+export const FILTER_IDENTITIES = {
+  // default column
+  default: {
+    columnName: 'identityNumber',
+    placeholder: 'Nhập CMND'
+  },
+
+  //optional columns
+  options: [
+    {
+      label: 'Mã khách hàng',
+      type: 'input',
+      columnName: 'customerId',
+      placeholder: ''
+    },
+    {
+      label: 'Ngày đăng kí',
+      type: 'datepicker',
+      columnName: 'registrationDate',
+      placeholder: ''
+    },
+    {
+      label: 'Đã xác nhận',
+      type: 'select',
+      columnName: 'approved',
+      options: [
+        {
+          key: '',
+          value: 'All'
+        },
+        {
+          key: 'true',
+          value: 'Approved'
+        },
+        {
+          key: 'false',
+          value: 'Not Approved'
+        }
+      ],
+      placeholder: ''
+    }
+  ]
+};

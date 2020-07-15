@@ -3,7 +3,7 @@ export const LOGIN_URL = '/login';
 
 export const STAFF_TABS = {
   CUSTOMER: '/',
-  IDENTITY: '/identity',
+  IDENTITY: '/identities',
   TRANSACTION: '/transaction',
   STAFF: '/staffs'
 };
