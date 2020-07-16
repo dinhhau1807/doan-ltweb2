@@ -37,4 +37,6 @@ router.get(
 router.get('/identities', staffController.getAllIdentities);
 router.get('/identities/:id', staffController.getIdentity);
 
+router.get('/transactionHistory', staffController.getAllTransactions);
+
 module.exports = router;
