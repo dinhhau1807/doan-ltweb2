@@ -12,11 +12,7 @@ const layout = {
 
 const validateMessages = {
   // eslint-disable-next-line no-template-curly-in-string
-  required: '${label} không được bỏ trống!',
-  types: {
-    // eslint-disable-next-line no-template-curly-in-string
-    email: '${label} không đúng định dạng!'
-  }
+  required: '${label} is required!'
 };
 
 const propTypes = {
@@ -34,12 +30,12 @@ const UserPassword = ({ changePassword }) => {
       setLoading(true);
 
       const { oldPassword, newPassword } = values;
-      await changePassword('customers', {
+      const data = await changePassword('customers', {
         oldPassword,
         newPassword
       });
 
-      message.success('Change password successfully');
+      message.success(data.message);
 
       form.resetFields();
     } catch (err) {
@@ -50,7 +46,7 @@ const UserPassword = ({ changePassword }) => {
 
   return (
     <div>
-      <h2 className="page-header">ĐỔI MẬT KHẨU</h2>
+      <h2 className="page-header">CHANGE PASSWORD</h2>
       <Row>
         <Col xs={24} sm={24} md={20} lg={12}>
           <Form
@@ -62,21 +58,21 @@ const UserPassword = ({ changePassword }) => {
           >
             <Form.Item
               name="oldPassword"
-              label="Mật khẩu cũ"
+              label="Your old password"
               rules={[{ required: true }]}
             >
               <Input.Password />
             </Form.Item>
             <Form.Item
               name="newPassword"
-              label="Mật khẩu mới"
+              label="Your new password"
               rules={[{ required: true }]}
             >
               <Input.Password />
             </Form.Item>
             <Form.Item
               name="confirmNewPassword"
-              label="Xác nhận mật khẩu mới"
+              label="New password confirmation"
               dependencies={['newPassword']}
               rules={[
                 { required: true },
@@ -85,7 +81,9 @@ const UserPassword = ({ changePassword }) => {
                     if (!value || getFieldValue('newPassword') === value) {
                       return Promise.resolve();
                     }
-                    return Promise.reject('Xác nhận mật khẩu không chính xác!');
+                    return Promise.reject(
+                      'New password and password confirmation are not the same!'
+                    );
                   }
                 })
               ]}
@@ -94,7 +92,7 @@ const UserPassword = ({ changePassword }) => {
             </Form.Item>
             <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
               <Button loading={loading} type="primary" htmlType="submit">
-                Đổi mật khẩu
+                Update
               </Button>
             </Form.Item>
           </Form>

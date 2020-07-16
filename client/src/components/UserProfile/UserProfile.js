@@ -14,7 +14,7 @@ const layout = {
 
 const validateMessages = {
   // eslint-disable-next-line no-template-curly-in-string
-  required: '${label} không được bỏ trống!'
+  required: '${label} is required!'
 };
 
 const propTypes = {
@@ -36,9 +36,9 @@ const UserProfile = ({ loading, data, updateProfile }) => {
         address
       };
 
-      await updateProfile('customers', body);
+      const data = await updateProfile('customers', body);
 
-      message.success('Change profile successfully');
+      message.success(data.message);
     } catch (err) {
       message.error(getErrorMessage(err));
     }
@@ -52,7 +52,7 @@ const UserProfile = ({ loading, data, updateProfile }) => {
 
   return (
     <div>
-      <h2 className="page-header">Cập nhật thông tin</h2>
+      <h2 className="page-header">Update information</h2>
       <Row>
         <Col xs={24} sm={24} md={20} lg={12}>
           <Form
@@ -67,33 +67,37 @@ const UserProfile = ({ loading, data, updateProfile }) => {
               dateOfBirth: moment(dateOfBirth)
             }}
           >
-            <Form.Item name="name" label="Họ tên" rules={[{ required: true }]}>
+            <Form.Item
+              name="name"
+              label="Fullname"
+              rules={[{ required: true }]}
+            >
               <Input />
             </Form.Item>
             <Form.Item
               name="dateOfBirth"
-              label="Ngày sinh"
+              label="Birthday"
               rules={[{ required: true }]}
             >
               <DatePicker />
             </Form.Item>
             <Form.Item
               name="phoneNumber"
-              label="Điện thoại"
+              label="Phone"
               rules={[{ required: true }]}
             >
               <Input />
             </Form.Item>
             <Form.Item
               name="address"
-              label="Địa chỉ"
+              label="Address"
               rules={[{ required: true }]}
             >
               <Input />
             </Form.Item>
             <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
               <Button loading={loading} type="primary" htmlType="submit">
-                Cập nhật
+                Update
               </Button>
             </Form.Item>
           </Form>

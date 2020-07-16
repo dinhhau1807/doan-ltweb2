@@ -26,7 +26,7 @@ const IdentitiesManagement = ({ getIdentities, history }) => {
 
   const tableColumns = [
     {
-      title: 'Mã xác nhận',
+      title: 'Identity ID',
       dataIndex: 'id',
       sorter: false,
       render: (text, record) => (
@@ -36,22 +36,22 @@ const IdentitiesManagement = ({ getIdentities, history }) => {
       )
     },
     {
-      title: 'Mã khách hàng',
+      title: 'Customer ID',
       dataIndex: 'customerId',
       sorter: true
     },
     {
-      title: 'Số CMND',
+      title: 'Identification ID No',
       dataIndex: 'identityNumber',
       sorter: true
     },
     {
-      title: 'Ngày đăng kí',
+      title: 'Issued on',
       dataIndex: 'registrationDate',
       sorter: true
     },
     {
-      title: 'NV xác nhận',
+      title: 'Staff ID Approved',
       dataIndex: 'staffIdApproved',
       sorter: false
     }
@@ -112,7 +112,7 @@ const IdentitiesManagement = ({ getIdentities, history }) => {
 
   return (
     <div>
-      <h2 className="page-header">THÔNG TIN CHỨNG MINH</h2>
+      <h2 className="page-header">IDENTITIES INFORMATION</h2>
       <FilterOptions
         columnFilter={FILTER_IDENTITIES}
         fetchData={fetchDataTable}

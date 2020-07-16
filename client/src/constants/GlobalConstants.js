@@ -13,9 +13,9 @@ export const CUSTOMER_TABS = {
   ACCOUNT_HISTORY: '/history',
   TRANSACTION: '/transaction',
   TRANSACTION_EXTERNAL: '/ext-transaction',
-  SAVINGS_REQUEST: '/savings-request',
-  SAVINGS_WITHDRAW: '/savings-withdraw',
-  SAVINGS_TRANSACTION_HISTORY: '/savings-history',
+  DEPOSIT_REQUEST: '/deposit-request',
+  DEPOSIT_WITHDRAW: '/deposit-withdraw',
+  DEPOSIT_TRANSACTION_HISTORY: '/deposit-history',
   UTILS_UPDATE: '/profile',
   UTILS_PASSWORD: '/password'
 };

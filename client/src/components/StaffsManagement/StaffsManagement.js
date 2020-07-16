@@ -38,7 +38,7 @@ const StaffsManagement = ({
 
   const tableColumns = [
     {
-      title: 'Mã NV',
+      title: 'ID',
       dataIndex: 'id',
       sorter: false,
       render: (text, record) => (
@@ -48,7 +48,7 @@ const StaffsManagement = ({
       )
     },
     {
-      title: 'Họ tên',
+      title: 'Fullnamee',
       dataIndex: 'name',
       sorter: true
     },
@@ -58,7 +58,7 @@ const StaffsManagement = ({
       sorter: true
     },
     {
-      title: 'Tình trạng',
+      title: 'Status',
       dataIndex: 'status',
       sorter: false,
       render: (text, record) => {
@@ -162,8 +162,8 @@ const StaffsManagement = ({
 
   return (
     <div className="staffs-management">
-      <h2 className="page-header">THÔNG TIN NHÂN VIÊN</h2>
-      <Row align="middle" gutter={8}>
+      <h2 className="page-header">EMPLOYEES INFORMATION</h2>
+      <Row gutter={8}>
         <Col span={20}>
           <FilterOptions
             columnFilter={FILTER_STAFFS}

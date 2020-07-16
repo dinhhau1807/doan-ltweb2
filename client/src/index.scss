@@ -25,10 +25,6 @@ body {
 .main {
   position: relative;
   height: 100vh;
-
-  @include mq(tablet) {
-    overflow-x: scroll;
-  }
 }
 
 .spinning {
