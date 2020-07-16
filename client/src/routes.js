@@ -18,6 +18,7 @@ const StaffsManagement = lazy(() => import('./pages/StaffsManagementPage'));
 const IdentitiesManagement = lazy(() =>
   import('./pages/IdentitiesManagementPage')
 );
+const IdentityDetails = lazy(() => import('./pages/IdentityDetailsPage'));
 
 export const routes = [
   {
@@ -64,6 +65,14 @@ export const routes = [
     isStaffRoute: true,
     layout: PrivateLayout,
     component: IdentitiesManagement
+  },
+  {
+    path: '/a2hl-management/identities/:id',
+    exact: true,
+    isPrivate: true,
+    isStaffRoute: true,
+    layout: PrivateLayout,
+    component: IdentityDetails
   },
   {
     path: '/a2hl-management/login',
