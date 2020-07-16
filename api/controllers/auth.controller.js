@@ -171,9 +171,9 @@ exports.customerLogin = asyncHandler(async (req, res, next) => {
   if (customer) {
     switch (customer.status) {
       case STATUS.inactive:
-        return next(new AppError('Your account is inactive!', 403));
+        return next(new AppError('Your account is inactive!', 400));
       case STATUS.blocked:
-        return next(new AppError('Your account is blocked!', 403));
+        return next(new AppError('Your account is blocked!', 400));
       default:
     }
   }
@@ -187,7 +187,7 @@ exports.customerLogin = asyncHandler(async (req, res, next) => {
       await customer.save();
     }
 
-    return next(new AppError('Incorrect username/email or password', 401));
+    return next(new AppError('Incorrect username/email or password', 400));
   }
 
   // Check if user access failed 5 times
@@ -200,7 +200,7 @@ exports.customerLogin = asyncHandler(async (req, res, next) => {
     return next(
       new AppError(
         'Your account is blocked! You have logged in failed 5 times!',
-        403
+        400
       )
     );
   }
@@ -326,9 +326,9 @@ exports.staffLogin = asyncHandler(async (req, res, next) => {
   if (staff) {
     switch (staff.status) {
       case STATUS.inactive:
-        return next(new AppError('Your account is inactive!', 403));
+        return next(new AppError('Your account is inactive!', 400));
       case STATUS.blocked:
-        return next(new AppError('Your account is blocked!', 403));
+        return next(new AppError('Your account is blocked!', 400));
       default:
     }
   }
@@ -337,7 +337,7 @@ exports.staffLogin = asyncHandler(async (req, res, next) => {
     !staff ||
     !(await passwordValidator.verifyHashedPassword(password, staff.password))
   ) {
-    return next(new AppError('Incorrect username/email or password', 401));
+    return next(new AppError('Incorrect username/email or password', 400));
   }
 
   // Create login token and send to client
