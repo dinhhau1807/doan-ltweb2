@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Form, Input, Button, Row, Col, message, DatePicker, Spin } from 'antd';
+import { Form, Input, Button, Row, Col, message, DatePicker } from 'antd';
 import { getErrorMessage } from '../../utils/helpers';
 import moment from 'moment';
 import { DATE_FORMAT } from '../../constants/GlobalConstants';

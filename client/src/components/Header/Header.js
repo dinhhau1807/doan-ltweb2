@@ -2,11 +2,9 @@ import React, { useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { fetchUser, logout } from '../../actions/UserActions';
-import { Layout, Menu, Dropdown, Spin } from 'antd';
+import { Menu, Dropdown, Spin } from 'antd';
 import { UserOutlined, DownOutlined } from '@ant-design/icons';
 import './Header.scss';
-
-const { Header } = Layout;
 
 const HeaderComponent = ({
   style,
@@ -34,7 +32,7 @@ const HeaderComponent = ({
 
   const { loading, data } = user;
   return (
-    <Header className="header" style={style}>
+    <header className="header" style={style}>
       <h1 className="header__left">
         {isStaffRoute ? 'A2HL Management' : 'A2HL Internet Banking'}
       </h1>
@@ -43,7 +41,6 @@ const HeaderComponent = ({
           <Dropdown
             overlay={
               <Menu>
-                {!isStaffRoute && <Menu.Item>Cập nhật thông tin</Menu.Item>}
                 <Menu.Item onClick={handleChangePassword}>
                   Đổi mật khẩu
                 </Menu.Item>
@@ -61,7 +58,7 @@ const HeaderComponent = ({
           </Dropdown>
         </Spin>
       </div>
-    </Header>
+    </header>
   );
 };
 
