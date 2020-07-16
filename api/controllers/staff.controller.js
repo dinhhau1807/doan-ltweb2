@@ -270,7 +270,7 @@ exports.getAllIdentities = asyncHandler(async (req, res, next) => {
 
   const identities = await Identity.findAndCountAll({
     attributes: {
-      exclude: ['frontImage', 'backImage', 'staffIdApproved'],
+      exclude: ['frontImage', 'backImage'],
     },
     where: {
       [Op.and]: [...filterArr],
