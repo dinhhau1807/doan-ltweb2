@@ -306,7 +306,7 @@ exports.getIdentity = asyncHandler(async (req, res, next) => {
 
 exports.approveCustomer = asyncHandler(async (req, res, next) => {
   const staff = req.user;
-  const { idCustomer } = req.body;
+  const { idCustomer, amount } = req.body;
 
   const customer = await Identity.findOne({
     where: { customerId: idCustomer },
@@ -332,6 +332,16 @@ exports.approveCustomer = asyncHandler(async (req, res, next) => {
 
   customerApproved.status = STATUS.active;
   await customerApproved.save();
+
+  await Account.create({
+    customerId: idCustomer,
+    type: 'payment',
+    currentBalance: amount,
+    currentUnit: 'VND',
+    status: 'active',
+    interestRate: 0,
+    term: 0,
+  });
 
   return res.status(200).json({
     status: 'success',
