@@ -1,6 +1,6 @@
 const express = require('express');
 
-const ROLE = require('../utils/roleEnum');
+const ROLE = require('../utils/enums/roleEnum');
 const authController = require('../controllers/auth.controller');
 const adminController = require('../controllers/admin.controller');
 

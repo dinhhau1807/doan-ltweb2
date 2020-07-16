@@ -8,7 +8,7 @@ const sharp = require('sharp');
 
 const AppError = require('../utils/appError');
 const passwordValidator = require('../utils/passwordValidator');
-const { STATUS } = require('../utils/statusEnum');
+const { STATUS } = require('../utils/enums/statusEnum');
 const { Customer, Identity, Staff, Role } = require('../models');
 
 const multerStorage = multer.memoryStorage();

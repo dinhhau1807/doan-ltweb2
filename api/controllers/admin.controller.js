@@ -1,8 +1,8 @@
 const asyncHandler = require('express-async-handler');
 const { Op } = require('sequelize');
 
-const ROLE = require('../utils/roleEnum');
-const { STATUS } = require('../utils/statusEnum');
+const ROLE = require('../utils/enums/roleEnum');
+const { STATUS } = require('../utils/enums/statusEnum');
 const passwordValidator = require('../utils/passwordValidator');
 const AppError = require('../utils/appError');
 const { Staff, Role } = require('../models');

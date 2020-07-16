@@ -3,8 +3,10 @@ const { Op } = require('sequelize');
 
 const AppError = require('../utils/appError');
 const passwordValidator = require('../utils/passwordValidator');
-const { STATUS, TRANS_STATUS } = require('../utils/statusEnum');
-const ROLE = require('../utils/roleEnum');
+const { STATUS, TRANS_STATUS } = require('../utils/enums/statusEnum');
+const ACCOUNT_TYPE = require('../utils/enums/accountTypeEnum');
+const CURRENCY_UNIT = require('../utils/enums/currencyUnitEnum');
+const ROLE = require('../utils/enums/roleEnum');
 const {
   Staff,
   Customer,
@@ -335,17 +337,17 @@ exports.approveCustomer = asyncHandler(async (req, res, next) => {
 
   await Account.create({
     customerId: idCustomer,
-    type: 'payment',
+    type: ACCOUNT_TYPE.payment,
     currentBalance: amount,
-    currentUnit: 'VND',
-    status: 'active',
+    currentUnit: CURRENCY_UNIT.VND,
+    status: STATUS.active,
     interestRate: 0,
     term: 0,
   });
 
   return res.status(200).json({
     status: 'success',
-    message: 'Customer has been approved',
+    message: 'Customer has been approved.',
   });
 });
 
@@ -386,7 +388,7 @@ exports.updateCustomerStatus = asyncHandler(async (req, res, next) => {
 });
 
 exports.getAllTransactions = asyncHandler(async (req, res, next) => {
-  const { fromDate, toDate } = req.query;
+  const { fromDate, toDate, status } = req.query;
   let { page, limit, sortBy, sortType } = req.query;
   const attributes = [
     'accountSourceId',
@@ -413,9 +415,9 @@ exports.getAllTransactions = asyncHandler(async (req, res, next) => {
     }
   });
 
-  if (req.query.status) {
+  if (status && TRANS_STATUS[status]) {
     const obj = {};
-    obj.status = { [Op.eq]: TRANS_STATUS[req.query.status] };
+    obj.status = { [Op.eq]: TRANS_STATUS[status] };
     filterArr.push(obj);
   }
 
