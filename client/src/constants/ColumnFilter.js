@@ -2,13 +2,13 @@ export const FILTER_CUSTOMERS = {
   // default column
   default: {
     columnName: 'username',
-    placeholder: 'Nhập username'
+    placeholder: 'Input username'
   },
 
   //optional columns
   options: [
     {
-      label: 'Họ tên',
+      label: 'Fullname',
       type: 'input',
       columnName: 'name',
       placeholder: ''
@@ -20,13 +20,13 @@ export const FILTER_CUSTOMERS = {
       placeholder: ''
     },
     {
-      label: 'Điện thoại',
+      label: 'Phone',
       type: 'input',
       columnName: 'phone',
       placeholder: ''
     },
     {
-      label: 'Địa chỉ',
+      label: 'Address',
       type: 'input',
       columnName: 'address',
       placeholder: ''
@@ -38,13 +38,13 @@ export const FILTER_STAFFS = {
   // default column
   default: {
     columnName: 'username',
-    placeholder: 'Nhập username'
+    placeholder: 'Input username'
   },
 
   //optional columns
   options: [
     {
-      label: 'Họ tên',
+      label: 'Fullname',
       type: 'input',
       columnName: 'name',
       placeholder: ''
@@ -56,25 +56,25 @@ export const FILTER_IDENTITIES = {
   // default column
   default: {
     columnName: 'identityNumber',
-    placeholder: 'Nhập CMND'
+    placeholder: 'Input identification ID No'
   },
 
   //optional columns
   options: [
     {
-      label: 'Mã khách hàng',
+      label: 'Customer ID',
       type: 'input',
       columnName: 'customerId',
       placeholder: ''
     },
     {
-      label: 'Ngày đăng kí',
+      label: 'Issued on',
       type: 'datepicker',
       columnName: 'registrationDate',
       placeholder: ''
     },
     {
-      label: 'Đã xác nhận',
+      label: 'Approved',
       type: 'select',
       columnName: 'approved',
       options: [

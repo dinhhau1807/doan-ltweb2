@@ -42,13 +42,13 @@ const CustomerSidebar = ({ match }) => {
         tabUrl += CUSTOMER_TABS.TRANSACTION_EXTERNAL;
         break;
       case CUSTOMER_TABS.SAVINGS_REQUEST:
-        tabUrl += CUSTOMER_TABS.SAVINGS_REQUEST;
+        tabUrl += CUSTOMER_TABS.DEPOSIT_REQUEST;
         break;
       case CUSTOMER_TABS.SAVINGS_WITHDRAW:
-        tabUrl += CUSTOMER_TABS.SAVINGS_WITHDRAW;
+        tabUrl += CUSTOMER_TABS.DEPOSIT_WITHDRAW;
         break;
       case CUSTOMER_TABS.SAVINGS_TRANSACTION_HISTORY:
-        tabUrl += CUSTOMER_TABS.SAVINGS_TRANSACTION_HISTORY;
+        tabUrl += CUSTOMER_TABS.DEPOSIT_TRANSACTION_HISTORY;
         break;
       case CUSTOMER_TABS.UTILS_UPDATE:
         tabUrl += CUSTOMER_TABS.UTILS_UPDATE;
@@ -67,7 +67,7 @@ const CustomerSidebar = ({ match }) => {
   const defaultKey = path === '' ? '/' : path;
 
   return (
-    <Sider theme="light" breakpoint="lg" collapsedWidth="0">
+    <Sider width="250" theme="light" breakpoint="lg" collapsedWidth="0">
       <div className="sidebar-logo">
         <img src={logo} alt="logo" />
       </div>
@@ -83,49 +83,49 @@ const CustomerSidebar = ({ match }) => {
           title={
             <span>
               <DesktopOutlined />
-              <span>Tài khoản</span>
+              <span>Account</span>
             </span>
           }
         >
-          <Menu.Item key={CUSTOMER_TABS.ACCOUNT}>Thông tin tài khoản</Menu.Item>
+          <Menu.Item key={CUSTOMER_TABS.ACCOUNT}>Account infomation</Menu.Item>
           <Menu.Item key={CUSTOMER_TABS.ACCOUNT_HISTORY}>
-            Lịch sử giao dịch
+            History transactions
           </Menu.Item>
         </SubMenu>
-        <SubMenu
-          key="sub-transaction"
-          icon={<FileOutlined />}
-          title="Chuyển tiền"
-        >
-          <Menu.Item key={CUSTOMER_TABS.TRANSACTION}>Trong ngân hàng</Menu.Item>
+        <SubMenu key="sub-transaction" icon={<FileOutlined />} title="Transfer">
+          <Menu.Item key={CUSTOMER_TABS.TRANSACTION}>
+            Transfer inside system
+          </Menu.Item>
           <Menu.Item key={CUSTOMER_TABS.TRANSACTION_EXTERNAL}>
-            Liên ngân hàng
+            Transfer outside system
           </Menu.Item>
         </SubMenu>
         <SubMenu
           key="sub-savings"
           icon={<CreditCardOutlined />}
-          title="Tiền gửi"
+          title="Deposit"
         >
           <Menu.Item key={CUSTOMER_TABS.SAVINGS_REQUEST}>
-            Mở tài khoản
+            Open new deposit account
           </Menu.Item>
           <Menu.Item key={CUSTOMER_TABS.SAVINGS_WITHDRAW}>
-            Rút tiền gửi
+            Close term deposit account
           </Menu.Item>
           <Menu.Item key={CUSTOMER_TABS.SAVINGS_TRANSACTION_HISTORY}>
-            Lịch sử giao dịch
+            Deposit transactions
           </Menu.Item>
         </SubMenu>
         <SubMenu
           key="sub-utils"
           icon={<SettingOutlined />}
-          title="Tiện ích khác"
+          title="Other utilities"
         >
           <Menu.Item key={CUSTOMER_TABS.UTILS_UPDATE}>
-            Cập nhật thông tin
+            Update information
           </Menu.Item>
-          <Menu.Item key={CUSTOMER_TABS.UTILS_PASSWORD}>Đổi mật khẩu</Menu.Item>
+          <Menu.Item key={CUSTOMER_TABS.UTILS_PASSWORD}>
+            Change password
+          </Menu.Item>
         </SubMenu>
       </Menu>
     </Sider>

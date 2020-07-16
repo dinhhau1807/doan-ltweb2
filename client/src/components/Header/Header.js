@@ -42,9 +42,9 @@ const HeaderComponent = ({
             overlay={
               <Menu>
                 <Menu.Item onClick={handleChangePassword}>
-                  Đổi mật khẩu
+                  Change password
                 </Menu.Item>
-                <Menu.Item onClick={handleLogout}>Đăng xuất</Menu.Item>
+                <Menu.Item onClick={handleLogout}>Logout</Menu.Item>
               </Menu>
             }
           >

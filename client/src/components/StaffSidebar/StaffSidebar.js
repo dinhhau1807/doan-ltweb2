@@ -40,7 +40,7 @@ const StaffSidebar = ({ match }) => {
   const defaultKey = path === '' ? '/' : path;
 
   return (
-    <Sider theme="light" breakpoint="lg" collapsedWidth="0">
+    <Sider width="250" theme="light" breakpoint="lg" collapsedWidth="0">
       <div className="sidebar-logo">
         <img src={logo} alt="logo" />
       </div>
@@ -50,16 +50,16 @@ const StaffSidebar = ({ match }) => {
         onSelect={selectTab}
       >
         <Menu.Item key={STAFF_TABS.CUSTOMER} icon={<UserOutlined />}>
-          Khách hàng
+          Customers
         </Menu.Item>
         <Menu.Item key={STAFF_TABS.IDENTITY} icon={<UserAddOutlined />}>
-          Duyệt tài khoản
+          Identities
         </Menu.Item>
         <Menu.Item key={STAFF_TABS.TRANSACTION} icon={<FileOutlined />}>
-          Lịch sử giao dịch
+          Transactions
         </Menu.Item>
         <Menu.Item key={STAFF_TABS.STAFF} icon={<ApartmentOutlined />}>
-          Nhân viên
+          Employees
         </Menu.Item>
       </Menu>
     </Sider>

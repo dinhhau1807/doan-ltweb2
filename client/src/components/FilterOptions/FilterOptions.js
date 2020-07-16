@@ -117,7 +117,7 @@ const FilterOptions = ({ columnFilter, paramsTable, fetchData }) => {
           }
         >
           <span className="filter__dropdown-label">
-            <DownOutlined style={{ marginRight: '8px' }} /> Tìm kiếm nâng cao
+            <DownOutlined style={{ marginRight: '8px' }} /> Advanced search
           </span>
         </Dropdown>
       </div>

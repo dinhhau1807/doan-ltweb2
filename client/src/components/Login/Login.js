@@ -20,9 +20,9 @@ const Login = ({ login, history }) => {
   const onFinish = async values => {
     try {
       setLoading(true);
-      const { email, password } = values;
+      const { username, password } = values;
       const { token } = await login('/customers/login', {
-        username: email,
+        username,
         password
       });
       createCookie(TOKEN_KEY, token);
@@ -39,24 +39,22 @@ const Login = ({ login, history }) => {
         <h2 className="public-form__header">A2HL Internet Banking</h2>
         <Form name="form" className="form" onFinish={onFinish}>
           <Form.Item
-            name="email"
-            rules={[{ required: true, message: 'Email không được bỏ trống!' }]}
+            name="username"
+            rules={[{ required: true, message: 'Username is required!' }]}
           >
             <Input
               prefix={<UserOutlined className="site-form-item-icon" />}
-              placeholder="Email"
+              placeholder="Username"
             />
           </Form.Item>
           <Form.Item
             name="password"
-            rules={[
-              { required: true, message: 'Mật khẩu không được bỏ trống!' }
-            ]}
+            rules={[{ required: true, message: 'Password is required!' }]}
           >
             <Input
               prefix={<LockOutlined className="site-form-item-icon" />}
               type="password"
-              placeholder="Mật khẩu"
+              placeholder="Password"
             />
           </Form.Item>
 
@@ -67,14 +65,14 @@ const Login = ({ login, history }) => {
               type="primary"
               htmlType="submit"
             >
-              Đăng nhập
+              Login
             </Button>
           </Form.Item>
 
           <Form.Item>
-            <a href="/">Quên mật khẩu</a>{' '}
+            <a href="/">Forgot passsword</a>{' '}
             <span>
-              hoặc <a href="/register">đăng kí tại đây!</a>
+              or <a href="/register">register here!</a>
             </span>
           </Form.Item>
         </Form>
