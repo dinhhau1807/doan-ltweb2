@@ -8,13 +8,10 @@ const { Content, Footer } = Layout;
 
 export const PrivateLayout = ({ isStaffRoute, children }) => {
   return (
-    <Layout style={{ minHeight: '100vh' }}>
+    <Layout>
       {isStaffRoute ? <StaffSidebar /> : <CustomerSidebar />}
-      <Layout>
-        <Header
-          style={{ padding: 0, background: '#fff' }}
-          isStaffRoute={isStaffRoute}
-        />
+      <Layout style={{ width: '100%' }}>
+        <Header style={{ background: '#fff' }} isStaffRoute={isStaffRoute} />
         <Content style={{ margin: '16px' }}>
           <Suspense fallback={<Spin className="spinning"></Spin>}>
             <div className="main">{children}</div>

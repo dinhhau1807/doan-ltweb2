@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { withRouter } from 'react-router-dom';
 import { Layout, Menu } from 'antd';
 import {
   DesktopOutlined,
@@ -6,19 +7,23 @@ import {
   FileOutlined,
   CreditCardOutlined
 } from '@ant-design/icons';
-
-import './CustomerSidebar.scss';
 import { history } from '../../utils/helpers';
 import { CUSTOMER_TABS } from '../../constants/GlobalConstants';
 import logo from '../../images/logo.png';
+import './CustomerSidebar.scss';
 
 const { Sider } = Layout;
 const { SubMenu } = Menu;
 
 const rootSegment = '';
 
-const CustomerSidebar = () => {
-  const [openKeys, setOpenKeys] = useState(['sub-account']);
+const CustomerSidebar = ({ match }) => {
+  const [openKeys, setOpenKeys] = useState([
+    'sub-account',
+    'sub-transaction',
+    'sub-savings',
+    'sub-utils'
+  ]);
 
   const onOpenChange = openKeys => {
     setOpenKeys(openKeys);
@@ -58,8 +63,11 @@ const CustomerSidebar = () => {
     history.push(tabUrl);
   };
 
+  const path = match.path.replace(rootSegment, '');
+  const defaultKey = path === '' ? '/' : path;
+
   return (
-    <Sider theme="light">
+    <Sider theme="light" breakpoint="lg" collapsedWidth="0">
       <div className="sidebar-logo">
         <img src={logo} alt="logo" />
       </div>
@@ -67,7 +75,7 @@ const CustomerSidebar = () => {
         mode="inline"
         openKeys={openKeys}
         onOpenChange={onOpenChange}
-        defaultSelectedKeys={[CUSTOMER_TABS.ACCOUNT]}
+        defaultSelectedKeys={[defaultKey]}
         onSelect={selectTab}
       >
         <SubMenu
@@ -124,4 +132,4 @@ const CustomerSidebar = () => {
   );
 };
 
-export default CustomerSidebar;
+export default withRouter(CustomerSidebar);

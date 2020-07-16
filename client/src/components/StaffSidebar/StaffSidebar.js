@@ -7,10 +7,10 @@ import {
   UserAddOutlined,
   ApartmentOutlined
 } from '@ant-design/icons';
-import './StaffSidebar.scss';
 import { history } from '../../utils/helpers';
 import { STAFF_TABS } from '../../constants/GlobalConstants';
 import logo from '../../images/logo.png';
+import './StaffSidebar.scss';
 
 const { Sider } = Layout;
 
@@ -40,7 +40,7 @@ const StaffSidebar = ({ match }) => {
   const defaultKey = path === '' ? '/' : path;
 
   return (
-    <Sider theme="light">
+    <Sider theme="light" breakpoint="lg" collapsedWidth="0">
       <div className="sidebar-logo">
         <img src={logo} alt="logo" />
       </div>
