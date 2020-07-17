@@ -474,3 +474,37 @@ exports.getAllTransactions = asyncHandler(async (req, res, next) => {
     items: transactions.rows,
   });
 });
+
+exports.updateAccountStatus = asyncHandler(async (req, res, next) => {
+  const { idAccount, status } = req.body;
+
+  const newStatus = STATUS[status];
+  if (!newStatus) {
+    return next(new AppError('Invalid status!', 400));
+  }
+  if (
+    newStatus === STATUS.deleted &&
+    req.user.Role.roleDescription !== ROLE.admin
+  ) {
+    return next(
+      new AppError('You do not have permission to perform this action!', 401)
+    );
+  }
+
+  const account = await Account.findOne({
+    attributes,
+    where: { id: idAccount },
+  });
+  if (!account) {
+    return next(new AppError("Can't find this account!", 404));
+  }
+
+  account.status = newStatus;
+  account.accessFailedCount = 0;
+  await account.save();
+
+  return res.status(200).json({
+    status: 'success',
+    data: account,
+  });
+});
