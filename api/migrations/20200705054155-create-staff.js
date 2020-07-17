@@ -20,6 +20,9 @@ module.exports = {
       roleId: {
         type: Sequelize.INTEGER,
       },
+      passwordUpdatedAt: {
+        type: Sequelize.DATE,
+      },
       status: {
         type: Sequelize.STRING,
       },

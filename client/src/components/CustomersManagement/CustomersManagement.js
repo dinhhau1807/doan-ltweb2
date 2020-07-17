@@ -35,7 +35,7 @@ const CustomersManagement = ({
 
   const tableColumns = [
     {
-      title: 'Mã KH',
+      title: 'Customer ID',
       dataIndex: 'id',
       sorter: false,
       render: (text, record) => (
@@ -45,7 +45,7 @@ const CustomersManagement = ({
       )
     },
     {
-      title: 'Họ tên',
+      title: 'Fullname',
       dataIndex: 'name',
       sorter: true
     },
@@ -60,22 +60,22 @@ const CustomersManagement = ({
       sorter: true
     },
     {
-      title: 'Ngày sinh',
+      title: 'Birthday',
       dataIndex: 'dateOfBirth',
       sorter: false
     },
     {
-      title: 'Điện thoại',
+      title: 'Phone',
       dataIndex: 'phoneNumber',
       sorter: true
     },
     {
-      title: 'Địa chỉ',
+      title: 'Address',
       dataIndex: 'address',
       sorter: true
     },
     {
-      title: 'Tình trạng',
+      title: 'Status',
       dataIndex: 'status',
       sorter: false,
       render: (text, record) => {
@@ -179,7 +179,7 @@ const CustomersManagement = ({
 
   return (
     <div className="customers-management">
-      <h2 className="page-header">THÔNG TIN KHÁCH HÀNG</h2>
+      <h2 className="page-header">CUSTOMERS INFORMATION</h2>
       <FilterOptions
         columnFilter={FILTER_CUSTOMERS}
         fetchData={fetchDataTable}

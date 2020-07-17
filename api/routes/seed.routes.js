@@ -72,7 +72,7 @@ router.post(
     });
 
     res.status(200).json({
-      data: { id: transaction.id, accountSourceId },
+      data: { id: transaction.id, accountSourceId, accountDestination },
     });
   })
 );

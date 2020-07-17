@@ -1,14 +1,29 @@
 const asyncHandler = require('express-async-handler');
 const { Op } = require('sequelize');
+
 const AppError = require('../utils/appError');
-const { STATUS } = require('../utils/statusEnum');
-const ROLE = require('../utils/roleEnum');
-const { Customer, Identity, Account, Transaction } = require('../models');
+const passwordValidator = require('../utils/passwordValidator');
+const { STATUS, TRANS_STATUS } = require('../utils/enums/statusEnum');
+const ACCOUNT_TYPE = require('../utils/enums/accountTypeEnum');
+const CURRENCY_UNIT = require('../utils/enums/currencyUnitEnum');
+const ROLE = require('../utils/enums/roleEnum');
+const {
+  Staff,
+  Customer,
+  Identity,
+  Account,
+  Transaction,
+} = require('../models');
 
 const findCustomer = asyncHandler(async (id) => {
   const customer = await Customer.findOne({
     attributes: {
-      exclude: ['password', 'verifyCode'],
+      exclude: [
+        'password',
+        'verifyCode',
+        'accessFailedCount',
+        'passwordUpdatedAt',
+      ],
     },
     where: {
       [Op.and]: [
@@ -22,6 +37,318 @@ const findCustomer = asyncHandler(async (id) => {
     },
   });
   return customer;
+});
+
+// PERSONAL INFO MANAGEMENT -----------------------------------------------------
+exports.getInfo = asyncHandler(async (req, res, next) => {
+  const staff = { ...req.user.dataValues };
+
+  delete staff.password;
+  delete staff.roleId;
+  delete staff.Role;
+  delete staff.passwordUpdatedAt;
+
+  res.status(200).json({ status: 'success', data: staff });
+});
+
+exports.updateInfo = asyncHandler(async (req, res, next) => {
+  const staff = req.user;
+  const { name } = req.body;
+
+  await Staff.update({ name }, { where: { id: staff.id } });
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Update information successful.',
+  });
+});
+
+exports.updatePassword = asyncHandler(async (req, res, next) => {
+  const staff = req.user;
+  const { oldPassword, newPassword } = req.body;
+  const matchedOldPwd = await passwordValidator.verifyHashedPassword(
+    oldPassword,
+    staff.password
+  );
+  const matchedNewPwd = await passwordValidator.verifyHashedPassword(
+    newPassword,
+    staff.password
+  );
+  if (!matchedOldPwd) {
+    return next(new AppError('Old password incorrect.', 401));
+  }
+  if (matchedNewPwd) {
+    return next(
+      new AppError('New password must be different from current password.', 401)
+    );
+  }
+
+  const newPasswordHashed = await passwordValidator.createHashedPassword(
+    newPassword
+  );
+
+  await Staff.update(
+    { password: newPasswordHashed, passwordUpdatedAt: new Date() },
+    { where: { id: staff.id } }
+  );
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Change password successful.',
+  });
+});
+
+// CUSTOMER MANAGEMENT -----------------------------------------------------
+exports.getAllCustomers = asyncHandler(async (req, res, next) => {
+  let { page, limit, sortBy, sortType } = req.query;
+  const attributes = ['username', 'email', 'name', 'phoneNumber', 'address'];
+  const sortTypes = ['asc', 'desc'];
+
+  if (!page || page <= 0) page = 1;
+  if (!limit || limit <= 0) limit = 10;
+
+  if (!sortType || (sortType && !sortTypes.includes(sortType)))
+    sortType = 'asc';
+  if (!sortBy || (sortBy && !attributes.includes(sortBy))) sortBy = 'username';
+
+  const filterArr = [];
+  attributes.forEach((attr) => {
+    if (req.query[attr]) {
+      const obj = {};
+      obj[attr] = { [Op.like]: `%${req.query[attr]}%` };
+      filterArr.push(obj);
+    }
+  });
+
+  const customers = await Customer.findAndCountAll({
+    attributes: {
+      exclude: [
+        'password',
+        'verifyCode',
+        'accessFailedCount',
+        'passwordUpdatedAt',
+      ],
+    },
+    where: {
+      [Op.and]: [
+        {
+          status: {
+            [Op.ne]: STATUS.deleted,
+          },
+        },
+        ...filterArr,
+      ],
+    },
+    order: [[sortBy, sortType]],
+    offset: (page - 1) * limit,
+    limit,
+  });
+
+  return res.status(200).json({
+    status: 'success',
+    totalItems: customers.count,
+    items: customers.rows,
+  });
+});
+
+exports.getCustomer = asyncHandler(async (req, res, next) => {
+  const customer = await findCustomer(req.params.id);
+
+  if (!customer) {
+    return next(new AppError('Customer not found.', 404));
+  }
+
+  return res.status(200).json({
+    status: 'success',
+    data: customer,
+  });
+});
+
+exports.getCustomerIdentity = asyncHandler(async (req, res, next) => {
+  const identity = await Identity.findOne({
+    where: {
+      id: req.params.id,
+    },
+  });
+
+  if (!identity) {
+    return next(new AppError('Identity not found.', 404));
+  }
+
+  return res.status(200).json({
+    status: 'success',
+    data: identity,
+  });
+});
+
+exports.getCustomerAccounts = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+
+  const customer = await findCustomer(id);
+  if (!customer) {
+    return next(new AppError('Customer not found.', 404));
+  }
+
+  const accounts = await Account.findAll({ where: { customerId: id } });
+
+  return res.status(200).json({
+    status: 'success',
+    data: accounts,
+  });
+});
+
+exports.getCustomerTransactions = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+
+  const customer = await findCustomer(id);
+  if (!customer) {
+    return next(new AppError('Customer not found.', 404));
+  }
+
+  const transactions = await Transaction.findAll({
+    where: {
+      [Op.or]: { accountSourceId: id, accountDestination: id },
+    },
+  });
+
+  return res.status(200).json({
+    status: 'success',
+    data: transactions,
+  });
+});
+
+exports.getAllIdentities = asyncHandler(async (req, res, next) => {
+  // eslint-disable-next-line prefer-const
+  let { page, limit, sortBy, sortType, registrationDate } = req.query;
+  const attributes = ['customerId', 'identityNumber', 'registrationDate'];
+  const sortTypes = ['asc', 'desc'];
+
+  if (!page || page <= 0) page = 1;
+  if (!limit || limit <= 0) limit = 10;
+
+  if (!sortType || (sortType && !sortTypes.includes(sortType)))
+    sortType = 'asc';
+  if (!sortBy || (sortBy && !attributes.includes(sortBy)))
+    sortBy = 'customerId';
+
+  const filterArr = [];
+  if (req.query.identityNumber) {
+    const obj = {};
+    obj.identityNumber = { [Op.like]: `%${req.query.identityNumber}%` };
+    filterArr.push(obj);
+  }
+
+  if (req.query.customerId) {
+    const obj = {};
+    obj.customerId = { [Op.eq]: `${req.query.customerId}` };
+    filterArr.push(obj);
+  }
+
+  if (req.query.registrationDate) {
+    const obj = {};
+    obj.registrationDate = {
+      [Op.between]: [
+        new Date(`${registrationDate}%`),
+        new Date(`${registrationDate}%`).setDate(
+          new Date(`${registrationDate}%`).getDate() + 1
+        ),
+      ],
+    };
+    filterArr.push(obj);
+  }
+
+  if (req.query.approved) {
+    if (req.query.approved === 'true') {
+      const obj = {};
+      obj.staffIdApproved = { [Op.not]: null };
+      filterArr.push(obj);
+    }
+    if (req.query.approved === 'false') {
+      const obj = {};
+      obj.staffIdApproved = { [Op.is]: null };
+      filterArr.push(obj);
+    }
+  }
+
+  const identities = await Identity.findAndCountAll({
+    attributes: {
+      exclude: ['frontImage', 'backImage'],
+    },
+    where: {
+      [Op.and]: [...filterArr],
+    },
+    order: [[sortBy, sortType]],
+    offset: (page - 1) * limit,
+    limit,
+  });
+
+  return res.status(200).json({
+    status: 'success',
+    totalItems: identities.count,
+    items: identities.rows,
+  });
+});
+
+exports.getIdentity = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+
+  const identity = await Identity.findOne({
+    where: { id },
+  });
+
+  if (!identity) {
+    return next(new AppError('Identity not found.', 404));
+  }
+
+  return res.status(200).json({
+    status: 'success',
+    data: identity,
+  });
+});
+
+exports.approveCustomer = asyncHandler(async (req, res, next) => {
+  const staff = req.user;
+  const { idCustomer, amount } = req.body;
+
+  const customer = await Identity.findOne({
+    where: { customerId: idCustomer },
+  });
+  if (!customer) {
+    return next(new AppError('Customer not found.', 404));
+  }
+
+  customer.staffIdApproved = staff.id;
+  await customer.save();
+
+  const customerApproved = await Customer.findOne({
+    attributes: {
+      exclude: [
+        'password',
+        'verifyCode',
+        'accessFailedCount',
+        'passwordUpdatedAt',
+      ],
+    },
+    where: { id: idCustomer },
+  });
+
+  customerApproved.status = STATUS.active;
+  await customerApproved.save();
+
+  await Account.create({
+    customerId: idCustomer,
+    type: ACCOUNT_TYPE.payment,
+    currentBalance: amount,
+    currentUnit: CURRENCY_UNIT.VND,
+    status: STATUS.active,
+    interestRate: 0,
+    term: 0,
+  });
+
+  return res.status(200).json({
+    status: 'success',
+    message: 'Customer has been approved.',
+  });
 });
 
 exports.updateCustomerStatus = asyncHandler(async (req, res, next) => {
@@ -51,143 +378,25 @@ exports.updateCustomerStatus = asyncHandler(async (req, res, next) => {
   }
 
   customer.status = newStatus;
-  customer.save();
-
-  return res.status(200).json({
-    status: 'success',
-    data: customer,
-  });
-});
-
-exports.getAllCustomers = asyncHandler(async (req, res, next) => {
-  let { page, limit, sortBy, sortType } = req.query;
-  const attributes = ['username', 'email', 'name', 'phoneNumber', 'address'];
-  const sortTypes = ['asc', 'desc'];
-
-  if (!page || page <= 0) page = 1;
-  if (!limit || limit <= 0) limit = 10;
-
-  if (!sortType || (sortType && !sortTypes.includes(sortType)))
-    sortType = 'asc';
-  if (!sortBy || (sortBy && !attributes.includes(sortBy))) sortBy = 'username';
-
-  const filterArr = [];
-  attributes.forEach((attr) => {
-    if (req.query[attr]) {
-      const obj = {};
-      obj[attr] = { [Op.like]: `%${req.query[attr]}%` };
-      filterArr.push(obj);
-    }
-  });
-
-  const customers = await Customer.findAndCountAll({
-    attributes: {
-      exclude: ['password', 'verifyCode'],
-    },
-    where: {
-      [Op.and]: [
-        {
-          status: {
-            [Op.ne]: STATUS.deleted,
-          },
-        },
-        ...filterArr,
-      ],
-    },
-    order: [[sortBy, sortType]],
-    offset: (page - 1) * limit,
-    limit,
-  });
-
-  return res.status(200).json({
-    status: 'success',
-    totalItems: customers.count,
-    items: customers.rows,
-  });
-});
-
-exports.approveCustomer = asyncHandler(async (req, res, next) => {
-  const staff = req.user;
-  const { idCustomer } = req.body;
-
-  const customer = await Identity.findOne({
-    where: { customerId: idCustomer },
-  });
-  if (!customer) {
-    return next(new AppError('Customer not found.', 404));
-  }
-
-  customer.staffIdApproved = staff.id;
+  customer.accessFailedCount = 0;
   await customer.save();
 
-  const customerApproved = await Customer.findOne({
-    attributes: {
-      exclude: ['password', 'verifyCode'],
-    },
-    where: { id: idCustomer },
-  });
-
-  customerApproved.status = STATUS.active;
-  await customerApproved.save();
-
-  return res.status(200).json({
-    status: 'success',
-    message: 'Customer has been approved',
-  });
-});
-
-exports.getCustomer = asyncHandler(async (req, res, next) => {
-  const customer = await findCustomer(req.params.id);
-
-  if (!customer) {
-    return next(new AppError('Customer not found.', 404));
-  }
-
   return res.status(200).json({
     status: 'success',
     data: customer,
   });
 });
 
-exports.getCustomerAccounts = asyncHandler(async (req, res, next) => {
-  const { idCustomer } = req.body;
-
-  const customer = await findCustomer(idCustomer);
-  if (!customer) {
-    return next(new AppError('Customer not found.', 404));
-  }
-
-  const accounts = await Account.findAll({ where: { customerId: idCustomer } });
-
-  return res.status(200).json({
-    status: 'success',
-    data: accounts,
-  });
-});
-
-exports.getCustomerTransactions = asyncHandler(async (req, res, next) => {
-  const { idCustomer } = req.body;
-
-  const customer = await findCustomer(idCustomer);
-  if (!customer) {
-    return next(new AppError('Customer not found.', 404));
-  }
-
-  const transactions = await Transaction.findAll({
-    where: {
-      [Op.or]: { accountSourceId: idCustomer, accountDestination: idCustomer },
-    },
-  });
-
-  return res.status(200).json({
-    status: 'success',
-    data: transactions,
-  });
-});
-
-exports.getAllIdentities = asyncHandler(async (req, res, next) => {
+exports.getAllTransactions = asyncHandler(async (req, res, next) => {
+  const { fromDate, toDate, status } = req.query;
   let { page, limit, sortBy, sortType } = req.query;
-  const attributes = ['customerId', 'identityNumber', 'registrationDate'];
+  const attributes = [
+    'accountSourceId',
+    'accountDestination',
+    'bankDestinationId',
+    'status',
+    'createdAt',
+  ];
   const sortTypes = ['asc', 'desc'];
 
   if (!page || page <= 0) page = 1;
@@ -195,50 +404,73 @@ exports.getAllIdentities = asyncHandler(async (req, res, next) => {
 
   if (!sortType || (sortType && !sortTypes.includes(sortType)))
     sortType = 'asc';
-  if (!sortBy || (sortBy && !attributes.includes(sortBy)))
-    sortBy = 'customerId';
+  if (!sortBy || (sortBy && !attributes.includes(sortBy))) sortBy = 'createdAt';
 
   const filterArr = [];
   attributes.forEach((attr) => {
     if (req.query[attr]) {
       const obj = {};
-      obj[attr] = { [Op.like]: `%${req.query[attr]}%` };
+      obj[attr] = { [Op.eq]: `${req.query[attr]}` };
       filterArr.push(obj);
     }
   });
 
-  const identities = await Identity.findAndCountAll({
+  if (status && TRANS_STATUS[status]) {
+    const obj = {};
+    obj.status = { [Op.eq]: TRANS_STATUS[status] };
+    filterArr.push(obj);
+  }
+
+  if (req.query.createdAt && !fromDate && !toDate) {
+    const obj = {};
+    obj.createdAt = {
+      [Op.and]: [
+        {
+          [Op.gte]: new Date(`${req.query.createdAt}%`),
+        },
+        {
+          [Op.lte]: new Date(`${req.query.createdAt}%`).setDate(
+            new Date(`${req.query.createdAt}%`).getDate() + 1
+          ),
+        },
+      ],
+    };
+    filterArr.push(obj);
+  }
+
+  if (fromDate && toDate) {
+    const obj = {};
+    obj.createdAt = {
+      [Op.between]: [
+        new Date(`${fromDate}%`),
+        new Date(`${toDate}%`).setDate(new Date(`${toDate}%`).getDate() + 1),
+      ],
+    };
+    filterArr.push(obj);
+  }
+
+  const transactions = await Transaction.findAndCountAll({
     attributes: {
-      exclude: ['frontImage', 'backImage', 'staffIdApproved'],
+      exclude: ['otpCode', 'otpCreatedDate', 'otpExpiredDate'],
     },
     where: {
-      ...filterArr,
+      [Op.and]: [...filterArr],
     },
     order: [[sortBy, sortType]],
     offset: (page - 1) * limit,
     limit,
   });
 
-  return res.status(200).json({
-    status: 'success',
-    totalItems: identities.count,
-    items: identities.rows,
-  });
-});
-
-exports.getIdentity = asyncHandler(async (req, res, next) => {
-  const identity = await Identity.findOne({
-    where: {
-      id: req.params.idCustomer,
-    },
-  });
-
-  if (!identity) {
-    return next(new AppError('Identity not found.', 404));
+  if (transactions.count === 0) {
+    return res.status(404).json({
+      status: 'error',
+      message: 'Transaction not found.',
+    });
   }
 
   return res.status(200).json({
     status: 'success',
-    data: identity,
+    totalItems: transactions.count,
+    items: transactions.rows,
   });
 });

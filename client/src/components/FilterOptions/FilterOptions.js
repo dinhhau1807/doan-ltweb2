@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Input, Dropdown, Checkbox, Row, Col } from 'antd';
+import { Input, Dropdown, Checkbox, Row, Col, DatePicker, Select } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { debounce, find } from 'lodash';
+import { DATE_FORMAT } from '../../constants/GlobalConstants';
 
 import './FilterOptions.scss';
 
@@ -38,9 +39,6 @@ const FilterOptions = ({ columnFilter, paramsTable, fetchData }) => {
       //remove unchecked option from selectedList
       for (let i = 0; i < selectedList.length; i++) {
         if (selectedList[i].columnName === value) {
-          //trigger change filter when unchecking a option
-          emitChangeDebounced(value);
-
           selectedList.splice(i, 1);
           break;
         }
@@ -53,6 +51,15 @@ const FilterOptions = ({ columnFilter, paramsTable, fetchData }) => {
   const onInputChange = e => {
     const { name, value } = e.target;
     emitChangeDebounced(name, value);
+  };
+
+  const onDatePickerChange = (date, dateString, columnName) => {
+    const dateSearch = date ? date.format(DATE_FORMAT) : undefined;
+    emitChangeDebounced(columnName, dateSearch);
+  };
+
+  const onSelectChange = columnName => value => {
+    emitChangeDebounced(columnName, value);
   };
 
   function emitChangeFilter(key, value) {
@@ -110,7 +117,7 @@ const FilterOptions = ({ columnFilter, paramsTable, fetchData }) => {
           }
         >
           <span className="filter__dropdown-label">
-            <DownOutlined style={{ marginRight: '8px' }} /> Tìm kiếm nâng cao
+            <DownOutlined style={{ marginRight: '8px' }} /> Advanced search
           </span>
         </Dropdown>
       </div>
@@ -139,6 +146,68 @@ const FilterOptions = ({ columnFilter, paramsTable, fetchData }) => {
                           placeholder={option.placeholder}
                           onChange={onInputChange}
                         />
+                      </div>
+                    </Col>
+                  );
+                case 'datepicker':
+                  return (
+                    <Col
+                      key={option.columnName}
+                      xs={20}
+                      sm={16}
+                      md={12}
+                      lg={8}
+                      xl={6}
+                    >
+                      <div className="filter__option">
+                        <label htmlFor={option.columnName}>
+                          {option.label}
+                        </label>
+                        <DatePicker
+                          style={{ display: 'block' }}
+                          format={DATE_FORMAT}
+                          id={option.columnName}
+                          name={option.columnName}
+                          placeholder={option.placeholder}
+                          onChange={(date, dateString) =>
+                            onDatePickerChange(
+                              date,
+                              dateString,
+                              option.columnName
+                            )
+                          }
+                        />
+                      </div>
+                    </Col>
+                  );
+                case 'select':
+                  return (
+                    <Col
+                      key={option.columnName}
+                      xs={20}
+                      sm={16}
+                      md={12}
+                      lg={8}
+                      xl={6}
+                    >
+                      <div className="filter__option">
+                        <label htmlFor={option.columnName}>
+                          {option.label}
+                        </label>
+                        <Select
+                          style={{ display: 'block' }}
+                          id={option.columnName}
+                          name={option.columnName}
+                          placeholder={option.placeholder}
+                          onChange={onSelectChange(option.columnName)}
+                        >
+                          {!!option.options &&
+                            option.options.map((item, index) => (
+                              <Select.Option value={item.key} key={index}>
+                                {item.value}
+                              </Select.Option>
+                            ))}
+                        </Select>
                       </div>
                     </Col>
                   );

@@ -33,6 +33,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
+      passwordUpdatedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
       status: {
         type: DataTypes.STRING,
         allowNull: false,

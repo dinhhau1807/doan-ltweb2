@@ -17,7 +17,7 @@ const layout = {
 
 const validateMessages = {
   // eslint-disable-next-line no-template-curly-in-string
-  required: '${label} không được bỏ trống!'
+  required: '${label} is required!'
 };
 
 const propTypes = {
@@ -70,15 +70,15 @@ const AddStaffModal = ({ createStaff, fetchData, paramsTable }) => {
   return (
     <div>
       <Button type="primary" onClick={showModal}>
-        <PlusOutlined /> Thêm mới
+        <PlusOutlined /> Create
       </Button>
       <Modal
-        title="Thêm mới nhân viên"
+        title="Create new account"
         visible={visible}
         onCancel={handleCancel}
         footer={[
           <Button key="back" loading={loading} onClick={handleCancel}>
-            Hủy bỏ
+            Cancel
           </Button>,
           <Button
             key="submit"
@@ -87,7 +87,7 @@ const AddStaffModal = ({ createStaff, fetchData, paramsTable }) => {
             type="primary"
             loading={loading}
           >
-            Thêm mới
+            Create
           </Button>
         ]}
       >
@@ -100,17 +100,17 @@ const AddStaffModal = ({ createStaff, fetchData, paramsTable }) => {
         >
           <Form.Item
             name="username"
-            label="Tên đăng nhập"
+            label="Username"
             rules={[{ required: true }]}
           >
             <Input />
           </Form.Item>
-          <Form.Item name="name" label="Họ tên" rules={[{ required: true }]}>
+          <Form.Item name="name" label="Fullname" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
           <Form.Item
             name="password"
-            label="Mật khẩu"
+            label="Password"
             rules={[{ required: true }]}
           >
             <Input.Password

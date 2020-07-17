@@ -1,6 +1,6 @@
 const express = require('express');
 
-const ROLE = require('../utils/roleEnum');
+const ROLE = require('../utils/enums/roleEnum');
 const authController = require('../controllers/auth.controller');
 const staffController = require('../controllers/staff.controller');
 
@@ -15,14 +15,28 @@ router.use(
   authController.restrictTo(ROLE.staff, ROLE.admin)
 );
 
-router.get('/customers', staffController.getAllCustomers);
-router.get('/customers/identities', staffController.getAllIdentities);
-router.get('/customers/identities/:idCustomer', staffController.getIdentity);
+router
+  .route('/me')
+  .get(staffController.getInfo)
+  .put(staffController.updateInfo);
+
+router.put('/updatePassword', staffController.updatePassword);
+
 router.post('/customers/status', staffController.updateCustomerStatus);
 router.post('/customers/approve', staffController.approveCustomer);
 
-router.get('/customers/transactions', staffController.getCustomerTransactions);
-router.get('/customers/accounts', staffController.getCustomerAccounts);
+router.get('/customers', staffController.getAllCustomers);
 router.get('/customers/:id', staffController.getCustomer);
+router.get('/customers/:id/identity', staffController.getCustomerIdentity);
+router.get('/customers/:id/accounts', staffController.getCustomerAccounts);
+router.get(
+  '/customers/:id/transactions',
+  staffController.getCustomerTransactions
+);
+
+router.get('/identities', staffController.getAllIdentities);
+router.get('/identities/:id', staffController.getIdentity);
+
+router.get('/transactionHistory', staffController.getAllTransactions);
 
 module.exports = router;

@@ -1,11 +1,6 @@
 require('dotenv').config({ path: './.env' });
 var axios = require('axios');
-
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+const { getRandomInt } = require('./utils');
 
 axios
   .get(`${process.env.URL}/api/seeds/customers`)
@@ -19,7 +14,7 @@ axios
       const data = {
         customerId: id,
         type: 'payment',
-        currentBalance: getRandomInt(1000000, 100000001),
+        currentBalance: getRandomInt(1000000, 100000000),
         currentUnit: 'VND',
         status: 'active',
         interestRate: 0,

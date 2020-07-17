@@ -40,7 +40,7 @@ const LoginStaff = ({ login, history }) => {
         <Form name="form" className="form" onFinish={onFinish}>
           <Form.Item
             name="email"
-            rules={[{ required: true, message: 'Email không được bỏ trống!' }]}
+            rules={[{ required: true, message: 'Email is required!' }]}
           >
             <Input
               prefix={<UserOutlined className="site-form-item-icon" />}
@@ -49,14 +49,12 @@ const LoginStaff = ({ login, history }) => {
           </Form.Item>
           <Form.Item
             name="password"
-            rules={[
-              { required: true, message: 'Mật khẩu không được bỏ trống!' }
-            ]}
+            rules={[{ required: true, message: 'Password is required!' }]}
           >
             <Input
               prefix={<LockOutlined className="site-form-item-icon" />}
               type="password"
-              placeholder="Mật khẩu"
+              placeholder="Password"
             />
           </Form.Item>
 
@@ -67,7 +65,7 @@ const LoginStaff = ({ login, history }) => {
               type="primary"
               htmlType="submit"
             >
-              Đăng nhập
+              Login
             </Button>
           </Form.Item>
         </Form>
