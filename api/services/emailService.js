@@ -38,7 +38,7 @@ class EmailService {
   }
 
   async sendOTPCode(otpCode) {
-    const template = `Your otp code is: ${otpCode}.`;
+    const template = `Your OTP code is: ${otpCode}.`;
     await this.send(template, 'Verify OTP Code!');
   }
 }
