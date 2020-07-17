@@ -1,9 +1,14 @@
 const asyncHandler = require('express-async-handler');
 const { Op } = require('sequelize');
+const fx = require('money');
 
-const { Customer, Transaction } = require('../models');
+const { Customer, Transaction, Account } = require('../models');
 const AppError = require('../utils/appError');
 const passwordValidator = require('../utils/passwordValidator');
+const { STATUS } = require('../utils/enums/statusEnum');
+const CURRENCY_UNIT = require('../utils/enums/currencyUnitEnum');
+const ACCOUNT_TYPE = require('../utils/enums/accountTypeEnum');
+const otpGenerator = require('../utils/otpGenerator');
 
 exports.getInfo = asyncHandler(async (req, res, next) => {
   const customer = { ...req.user.dataValues };
@@ -143,4 +148,63 @@ exports.transactionsHistory = asyncHandler(async (req, res, next) => {
     totalItems: transactions.count,
     items: transactions.rows,
   });
+});
+
+exports.internalTransfer = asyncHandler(async (req, res, next) => {
+  // const customer = req.user;
+  // const {
+  //   idAccountSource,
+  //   idAccountDestination,
+  //   amount,
+  //   currencyUnit,
+  // } = req.body;
+  // if (!CURRENCY_UNIT[currencyUnit.toUpperCase()]) {
+  //   return next(new AppError('Currency unit is not valid!', 400));
+  // }
+  // if (Number.isNaN(parseFloat(amount)) || !Number.isFinite(amount)) {
+  //   return next(new AppError('Amount must be a numeric value!', 400));
+  // }
+  // const accountDestination = await Account.findOne({
+  //   where: {
+  //     [Op.and]: [
+  //       { id: idAccountDestination },
+  //       { customerId: { [Op.ne]: customer.id } },
+  //       { status: { [Op.notIn]: [STATUS.blocked, STATUS.deleted] } },
+  //       { type: ACCOUNT_TYPE.payment },
+  //     ],
+  //   },
+  // });
+  // if (!accountDestination) {
+  //   return next(new AppError('Account destination not found or blocked!', 404));
+  // }
+  // const accountSource = await Account.findOne({
+  //   where: {
+  //     [Op.and]: [
+  //       { id: idAccountSource },
+  //       { customerId: customer.id },
+  //       { status: { [Op.notIn]: [STATUS.deleted] } },
+  //       { type: ACCOUNT_TYPE.payment },
+  //     ],
+  //   },
+  // });
+  // if (!accountSource) {
+  //   return next(new AppError('Your account not found!', 404));
+  // }
+  // if (accountSource.status === STATUS.blocked) {
+  //   return next(
+  //     new AppError(
+  //       'Your account is blocked! Please contact staff to unblock.',
+  //       403
+  //     )
+  //   );
+  // }
+  // // if(accountSource.amount >= )
+  // // const newTransaction = await Transaction.create({
+  // //   accountSourceId: accountSource.id,
+  // //   accountDestination: accountDestination.id,
+  // //   amount,
+  // // });
+  // return res.status(200).json({
+  //   status: 'success',
+  // });
 });
