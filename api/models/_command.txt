@@ -6,4 +6,4 @@ sequelize model:create --name Role --attributes roleDescription:string
 sequelize model:create --name Account --attributes customerId:integer,type:string,currentBalance:decimal,currentUnit:string,status:string,interestRate:decimal,term:date
 sequelize model:create --name DepositTerm --attributes period:integer,interestRate:decimal
 sequelize model:create --name Bank --attributes name:string
-sequelize model:create --name Transaction --attributes accountSourceId:integer,accountDestination:integer,bankDestinationId:integer,amount:decimal,description:string,status:string,otpCode:string,otpCreatedDate:date,otpExpiredDate:date
+sequelize model:create --name Transaction --attributes accountSourceId:integer,accountDestination:integer,bankDestinationId:integer,amount:decimal,currencyUnit:string,description:string,status:string,otpCode:string,otpCreatedDate:date,otpExpiredDate:date

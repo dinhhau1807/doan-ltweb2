@@ -20,6 +20,9 @@ module.exports = {
       amount: {
         type: Sequelize.DECIMAL,
       },
+      currencyUnit: {
+        type: Sequelize.STRING,
+      },
       description: {
         type: Sequelize.STRING,
       },
