@@ -282,6 +282,13 @@ exports.internalTransferConfirm = asyncHandler(async (req, res, next) => {
     return next(new AppError('Transaction not found!'), 404);
   }
 
+  // Check if OTP was expired
+  if (transaction.otpExpiredDate < new Date()) {
+    transaction.status = TRANS_STATUS.failed;
+    transaction.save();
+    return next(new AppError('OTP was expired!'), 403);
+  }
+
   // Get account destination
   const accountDestination = await Account.findOne({
     where: {
