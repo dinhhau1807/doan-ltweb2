@@ -492,7 +492,6 @@ exports.updateAccountStatus = asyncHandler(async (req, res, next) => {
   }
 
   const account = await Account.findOne({
-    attributes,
     where: { id: idAccount },
   });
   if (!account) {
@@ -500,7 +499,6 @@ exports.updateAccountStatus = asyncHandler(async (req, res, next) => {
   }
 
   account.status = newStatus;
-  account.accessFailedCount = 0;
   await account.save();
 
   return res.status(200).json({
