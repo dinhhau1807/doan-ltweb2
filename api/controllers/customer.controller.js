@@ -4,7 +4,7 @@ const { Op } = require('sequelize');
 const { Customer, Transaction, Account } = require('../models');
 const AppError = require('../utils/appError');
 const passwordValidator = require('../utils/passwordValidator');
-const { STATUS } = require('../utils/enums/statusEnum');
+const { STATUS, TRANS_STATUS } = require('../utils/enums/statusEnum');
 const CURRENCY_UNIT = require('../utils/enums/currencyUnitEnum');
 const ACCOUNT_TYPE = require('../utils/enums/accountTypeEnum');
 const otpGenerator = require('../utils/otpGenerator');
@@ -232,7 +232,7 @@ exports.internalTransferRequest = asyncHandler(async (req, res, next) => {
   const otpCreatedDate = new Date();
   const otpExpiredDate = new Date(otpCreatedDate.getTime() + 10 * 60000);
 
-  const newTransaction = await Transaction.create({
+  await Transaction.create({
     accountSourceId: accountSource.id,
     accountDestination: accountDestination.id,
     amount,
@@ -249,15 +249,80 @@ exports.internalTransferRequest = asyncHandler(async (req, res, next) => {
 
   return res.status(200).json({
     status: 'success',
-    moneyConverted: amountConverted,
-    accountSource,
-    currencyUnit,
-    newTransaction,
+    message: 'OTP code was sent your email!',
   });
 });
 
 exports.internalTransferConfirm = asyncHandler(async (req, res, next) => {
+  const customer = req.user;
+  const { otpCode } = req.body;
+
+  if (!otpCode) {
+    return next(new AppError('OTP code cannot be empty!'), 400);
+  }
+
+  // Get account ids
+  let accounts = await Account.findAll({
+    attributes: ['id'],
+    where: {
+      customerId: customer.id,
+    },
+  });
+  accounts = accounts.map((account) => account.id);
+
+  const transaction = await Transaction.findOne({
+    where: {
+      accountSourceId: { [Op.in]: accounts },
+      otpCode: `${otpCode}`,
+      status: TRANS_STATUS.pending,
+    },
+  });
+
+  if (!transaction) {
+    return next(new AppError('Transaction not found!'), 404);
+  }
+
+  // Get account destination
+  const accountDestination = await Account.findOne({
+    where: {
+      id: transaction.accountDestination,
+      status: { [Op.notIn]: [STATUS.blocked, STATUS.deleted] },
+    },
+  });
+  if (!accountDestination) {
+    return next(new AppError('Account destination not found or blocked!', 404));
+  }
+
+  // Get account source
+  const accountSource = await Account.findOne({
+    where: {
+      id: transaction.accountSourceId,
+      status: { [Op.notIn]: [STATUS.deleted, STATUS.blocked] },
+    },
+  });
+  if (!accountSource) {
+    return next(new AppError('Your account not found or blocked!', 404));
+  }
+
+  // Calculation and update database
+  accountSource.currentBalance -= convert(transaction.amount)
+    .from(transaction.currencyUnit)
+    .to(accountSource.currentUnit);
+
+  accountDestination.currentBalance =
+    +accountDestination.currentBalance +
+    convert(transaction.amount)
+      .from(transaction.currencyUnit)
+      .to(accountDestination.currentUnit);
+
+  transaction.status = TRANS_STATUS.succeed;
+
+  accountSource.save();
+  accountDestination.save();
+  transaction.save();
+
   return res.status(200).json({
     status: 'success',
+    message: 'Your transaction is succeed!',
   });
 });
