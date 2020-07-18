@@ -23,6 +23,7 @@ router
 router.put('/updatePassword', staffController.updatePassword);
 
 router.post('/customers/status', staffController.updateCustomerStatus);
+router.post('/accounts/status', staffController.updateAccountStatus);
 router.post('/customers/approve', staffController.approveCustomer);
 
 router.get('/customers', staffController.getAllCustomers);
