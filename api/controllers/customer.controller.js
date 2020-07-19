@@ -10,6 +10,7 @@ const ACCOUNT_TYPE = require('../utils/enums/accountTypeEnum');
 const otpGenerator = require('../utils/otpGenerator');
 const convert = require('../utils/currencyConverter');
 const EmailService = require('../services/emailService');
+const OTPService = require('../services/otpService');
 
 exports.getInfo = asyncHandler(async (req, res, next) => {
   const customer = { ...req.user.dataValues };
@@ -246,6 +247,10 @@ exports.internalTransferRequest = asyncHandler(async (req, res, next) => {
   // Send otp code to user
   const email = new EmailService(req.user);
   await email.sendOTPCode(otpCode);
+
+  //For production
+  // const otp = new OTPService(req.user);
+  // await otp.sendOTPCode(otpCode);
 
   return res.status(200).json({
     status: 'success',

@@ -25,6 +25,7 @@
     "sequelize-cli": "^6.2.0",
     "sharp": "^0.25.4",
     "shortid": "^2.2.15",
+    "twilio": "^3.48.0",
     "uuid": "^8.2.0"
   },
   "devDependencies": {
