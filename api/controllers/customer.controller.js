@@ -544,3 +544,18 @@ exports.savingsTransactionsHistory = asyncHandler(async (req, res, next) => {
     items: transactions.rows,
   });
 });
+
+exports.getPaymentAccount = asyncHandler(async (req, res, next) => {
+  const customer = req.user;
+
+  const paymentAccount = await Account.findOne({
+    where: {
+      [Op.and]: [{ customerId: customer.id }, { type: ACCOUNT_TYPE.payment }],
+    },
+  });
+
+  return res.status(200).json({
+    status: 'success',
+    data: paymentAccount,
+  });
+});
