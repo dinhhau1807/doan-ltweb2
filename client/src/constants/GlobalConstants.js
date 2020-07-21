@@ -27,4 +27,10 @@ export const ENTITY_STATUS = {
   deleted: { label: 'Deleted', color: '#d50000' }
 };
 
+export const TRANSACTION_STATUS = {
+  pending: { label: 'Pending', color: '#fbc02d' },
+  succeed: { label: 'Succeed', color: '#64dd17' },
+  failed: { label: 'Failed', color: '#d50000' }
+};
+
 export const DATE_FORMAT = 'yyyy/MM/DD';
