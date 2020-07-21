@@ -35,4 +35,6 @@ router.post(
   customerController.internalTransferConfirm
 );
 
+router.post('/registerSavingAccount', customerController.registerSavingAccount);
+
 module.exports = router;

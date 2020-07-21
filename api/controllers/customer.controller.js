@@ -1,7 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const { Op } = require('sequelize');
 
-const { Customer, Transaction, Account } = require('../models');
+const { Customer, Transaction, Account, DepositTerm } = require('../models');
 const AppError = require('../utils/appError');
 const passwordValidator = require('../utils/passwordValidator');
 const { STATUS, TRANS_STATUS } = require('../utils/enums/statusEnum');
@@ -336,5 +336,84 @@ exports.internalTransferConfirm = asyncHandler(async (req, res, next) => {
   return res.status(200).json({
     status: 'success',
     message: 'Your transaction is succeed!',
+  });
+});
+
+exports.registerSavingAccount = asyncHandler(async (req, res, next) => {
+  const customerInfo = req.user;
+  const { amount, term } = req.body;
+
+  const getInterestRate = await DepositTerm.findOne({
+    where: {
+      period: term,
+    },
+  });
+
+  if (!getInterestRate) {
+    return next(new AppError('Term is invalid!', 400));
+  }
+
+  if (Number.isNaN(parseFloat(amount)) || !Number.isFinite(amount)) {
+    return next(new AppError('Amount must be a numeric value!', 400));
+  }
+
+  // Check account source
+  const customerPayment = await Account.findOne({
+    where: {
+      [Op.and]: [
+        { customerId: customerInfo.id },
+        { status: { [Op.notIn]: [STATUS.deleted] } },
+        { type: ACCOUNT_TYPE.payment },
+      ],
+    },
+  });
+
+  if (customerPayment.status === STATUS.blocked) {
+    return next(
+      new AppError(
+        'Your account is blocked! Please contact staff to unblock.',
+        403
+      )
+    );
+  }
+
+  if (customerPayment.currentBalance < amount) {
+    return next(new AppError('Your account does not have enough money!'));
+  }
+
+  await Account.create({
+    customerId: customerInfo.id,
+    type: ACCOUNT_TYPE.saving,
+    currentBalance: amount,
+    currentUnit: customerPayment.currentUnit,
+    status: STATUS.active,
+    term,
+    interestRate: getInterestRate.interestRate,
+  });
+
+  // Calculation and update database
+  customerPayment.currentBalance -= amount;
+  await customerPayment.save();
+
+  // Create new transaction
+  const otpCode = otpGenerator();
+  const otpCreatedDate = new Date();
+  const otpExpiredDate = new Date(otpCreatedDate.getTime() + 10 * 60000);
+
+  await Transaction.create({
+    accountSourceId: customerInfo.id,
+    accountDestination: customerInfo.id,
+    amount,
+    currencyUnit: customerPayment.currentUnit,
+    description: 'Deposit money into savings account',
+    status: TRANS_STATUS.succeed,
+    otpCode,
+    otpCreatedDate,
+    otpExpiredDate,
+  });
+
+  return res.status(200).json({
+    status: 'success',
+    message: 'Successful registration of savings account!',
   });
 });
