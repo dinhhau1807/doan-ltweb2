@@ -12,6 +12,30 @@ const convert = require('../utils/currencyConverter');
 const EmailService = require('../services/emailService');
 const OTPService = require('../services/otpService');
 
+const findCustomer = asyncHandler(async (id) => {
+  const customer = await Customer.findOne({
+    attributes: {
+      exclude: [
+        'password',
+        'verifyCode',
+        'accessFailedCount',
+        'passwordUpdatedAt',
+      ],
+    },
+    where: {
+      [Op.and]: [
+        { id },
+        {
+          status: {
+            [Op.ne]: STATUS.deleted,
+          },
+        },
+      ],
+    },
+  });
+  return customer;
+});
+
 exports.getInfo = asyncHandler(async (req, res, next) => {
   const customer = { ...req.user.dataValues };
 
@@ -542,5 +566,20 @@ exports.savingsTransactionsHistory = asyncHandler(async (req, res, next) => {
     status: 'success',
     totalItems: transactions.count,
     items: transactions.rows,
+  });
+});
+
+exports.getPaymentAccount = asyncHandler(async (req, res, next) => {
+  const customer = req.user;
+
+  const paymentAccount = await Account.findOne({
+    where: {
+      [Op.and]: [{ customerId: customer.id }, { type: ACCOUNT_TYPE.payment }],
+    },
+  });
+
+  return res.status(200).json({
+    status: 'success',
+    data: paymentAccount,
   });
 });

@@ -42,4 +42,6 @@ router.post(
 router.get('/savingsAccount', customerController.getAllSavingsAccount);
 router.get('/savingsHistory', customerController.savingsTransactionsHistory);
 
+router.get('/paymentAccount', customerController.getPaymentAccount);
+
 module.exports = router;
