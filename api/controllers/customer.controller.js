@@ -241,9 +241,11 @@ exports.internalTransferRequest = asyncHandler(async (req, res, next) => {
   const email = new EmailService(req.user);
   await email.sendOTPCode(otpCode);
 
-  //For production
-  // const otp = new OTPService(req.user);
-  // await otp.sendOTPCode(otpCode);
+  // Send otp code to user with SMS
+  if (process.env.SMS_ENABLE_OTP) {
+    const otp = new OTPService(req.user);
+    await otp.sendOTPCode(otpCode);
+  }
 
   return res.status(200).json({
     status: 'success',

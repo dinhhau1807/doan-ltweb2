@@ -1,11 +1,11 @@
-const accountSid = process.env.ACCOUNT_SID;
-const authToken = process.env.AUTH_TOKEN;
+const accountSid = process.env.SMS_ACCOUNT_SID;
+const authToken = process.env.SMS_AUTH_TOKEN;
 const client = require('twilio')(accountSid, authToken);
 
 class OTPService {
   constructor(user) {
     this.to = user.phoneNumber;
-    this.from = process.env.FROM_PHONE;
+    this.from = process.env.SMS_FROM_PHONE;
   }
 
   async send(template) {
