@@ -40,5 +40,6 @@ router.post(
   customerController.registerSavingAccount
 );
 router.get('/savingsAccount', customerController.getAllSavingsAccount);
+router.get('/savingsHistory', customerController.savingsTransactionsHistory);
 
 module.exports = router;
