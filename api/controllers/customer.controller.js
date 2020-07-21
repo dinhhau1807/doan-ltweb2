@@ -12,30 +12,6 @@ const convert = require('../utils/currencyConverter');
 const EmailService = require('../services/emailService');
 const OTPService = require('../services/otpService');
 
-const findCustomer = asyncHandler(async (id) => {
-  const customer = await Customer.findOne({
-    attributes: {
-      exclude: [
-        'password',
-        'verifyCode',
-        'accessFailedCount',
-        'passwordUpdatedAt',
-      ],
-    },
-    where: {
-      [Op.and]: [
-        { id },
-        {
-          status: {
-            [Op.ne]: STATUS.deleted,
-          },
-        },
-      ],
-    },
-  });
-  return customer;
-});
-
 exports.getInfo = asyncHandler(async (req, res, next) => {
   const customer = { ...req.user.dataValues };
 
