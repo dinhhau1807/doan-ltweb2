@@ -95,3 +95,69 @@ export const FILTER_IDENTITIES = {
     }
   ]
 };
+
+export const FILTER_TRANSACTIONS = {
+  // default column
+  default: {
+    columnName: 'accountSourceId',
+    placeholder: 'Input the ID of source account'
+  },
+
+  //optional columns
+  options: [
+    {
+      label: 'ID of source account',
+      type: 'input',
+      columnName: 'accountSourceId',
+      placeholder: ''
+    },
+    {
+      label: 'ID of destination account',
+      type: 'input',
+      columnName: 'accountDestination',
+      placeholder: ''
+    },
+    {
+      label: 'Bank ID',
+      type: 'input',
+      columnName: 'bankDestinationId',
+      placeholder: ''
+    },
+    {
+      label: 'Created Date',
+      type: 'datepicker',
+      columnName: 'createDate',
+      placeholder: ''
+    },
+    {
+      label: 'From Date - To Date',
+      type: 'rangePicker',
+      columnName: ['fromDate', 'toDate'],
+      placeholder: ''
+    },
+    {
+      label: 'Status',
+      type: 'select',
+      columnName: 'status',
+      options: [
+        {
+          key: '',
+          value: 'All'
+        },
+        {
+          key: 'pending',
+          value: 'Pending'
+        },
+        {
+          key: 'succeed',
+          value: 'Succeed'
+        },
+        {
+          key: 'failed',
+          value: 'Failed'
+        }
+      ],
+      placeholder: ''
+    }
+  ]
+};

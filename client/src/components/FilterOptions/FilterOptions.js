@@ -7,6 +7,16 @@ import { DATE_FORMAT } from '../../constants/GlobalConstants';
 
 import './FilterOptions.scss';
 
+const { RangePicker } = DatePicker;
+
+const breakpoints = {
+  xs: 20,
+  sm: 16,
+  md: 12,
+  lg: 8,
+  xl: 6
+};
+
 const propTypes = {
   columnFilter: PropTypes.object,
   paramsTable: PropTypes.object,
@@ -58,23 +68,50 @@ const FilterOptions = ({ columnFilter, paramsTable, fetchData }) => {
     emitChangeDebounced(columnName, dateSearch);
   };
 
+  const onRangePickerChange = (date, dateString, columnName) => {
+    const dateSearch = [];
+
+    date && date[0]
+      ? dateSearch.push(date[0].format(DATE_FORMAT))
+      : dateSearch.push(undefined);
+    date && date[1]
+      ? dateSearch.push(date[1].format(DATE_FORMAT))
+      : dateSearch.push(undefined);
+
+    emitChangeDebounced(columnName, dateSearch);
+  };
+
   const onSelectChange = columnName => value => {
     emitChangeDebounced(columnName, value);
   };
 
   function emitChangeFilter(key, value) {
     const filterParams = { ...paramsTable, page: 1 };
-    //remove empty value from params
-    filterParams[key] = value ? '' + value : undefined;
 
-    //remove key which its checkbox just been unchecked
+    //range picker case
+    //remove empty value from params
+    if (Array.isArray(key) && Array.isArray(value)) {
+      key.forEach((item, index) => {
+        filterParams[item] = value[index]
+          ? ('' + value[index]).trim()
+          : undefined;
+      });
+    } else {
+      filterParams[key] = value ? ('' + value).trim() : undefined;
+    }
+
+    //remove key which its checkbox unchecked
     const keyParams = Object.keys(filterParams);
     const ignoreKey = ['page', 'limit', 'sortBy', 'sortType'];
     for (let i = 0; i < keyParams.length; i++) {
       if (ignoreKey.indexOf(keyParams[i]) === -1) {
         const findItem = find(optionsSelected, function (item) {
+          if (Array.isArray(item.columnName)) {
+            return item.columnName.indexOf(keyParams[i]) > -1;
+          }
           return item.columnName === keyParams[i];
         });
+        //*: except for the default column
         if (!findItem && keyParams[i] !== columnFilter.default.columnName) {
           filterParams[keyParams[i]] = undefined;
         }
@@ -128,14 +165,7 @@ const FilterOptions = ({ columnFilter, paramsTable, fetchData }) => {
               switch (option.type) {
                 case 'input':
                   return (
-                    <Col
-                      key={option.columnName}
-                      xs={20}
-                      sm={16}
-                      md={12}
-                      lg={8}
-                      xl={6}
-                    >
+                    <Col key={option.columnName} {...breakpoints}>
                       <div className="filter__option">
                         <label htmlFor={option.columnName}>
                           {option.label}
@@ -151,14 +181,7 @@ const FilterOptions = ({ columnFilter, paramsTable, fetchData }) => {
                   );
                 case 'datepicker':
                   return (
-                    <Col
-                      key={option.columnName}
-                      xs={20}
-                      sm={16}
-                      md={12}
-                      lg={8}
-                      xl={6}
-                    >
+                    <Col key={option.columnName} {...breakpoints}>
                       <div className="filter__option">
                         <label htmlFor={option.columnName}>
                           {option.label}
@@ -182,14 +205,7 @@ const FilterOptions = ({ columnFilter, paramsTable, fetchData }) => {
                   );
                 case 'select':
                   return (
-                    <Col
-                      key={option.columnName}
-                      xs={20}
-                      sm={16}
-                      md={12}
-                      lg={8}
-                      xl={6}
-                    >
+                    <Col key={option.columnName} {...breakpoints}>
                       <div className="filter__option">
                         <label htmlFor={option.columnName}>
                           {option.label}
@@ -200,6 +216,7 @@ const FilterOptions = ({ columnFilter, paramsTable, fetchData }) => {
                           name={option.columnName}
                           placeholder={option.placeholder}
                           onChange={onSelectChange(option.columnName)}
+                          defaultValue=""
                         >
                           {!!option.options &&
                             option.options.map((item, index) => (
@@ -208,6 +225,27 @@ const FilterOptions = ({ columnFilter, paramsTable, fetchData }) => {
                               </Select.Option>
                             ))}
                         </Select>
+                      </div>
+                    </Col>
+                  );
+                case 'rangePicker':
+                  return (
+                    <Col key={option.columnName} {...breakpoints}>
+                      <div className="filter__option">
+                        <label htmlFor={option.columnName}>
+                          {option.label}
+                        </label>
+                        <RangePicker
+                          id={option.columnName}
+                          format={DATE_FORMAT}
+                          onChange={(date, dateString) =>
+                            onRangePickerChange(
+                              date,
+                              dateString,
+                              option.columnName
+                            )
+                          }
+                        />
                       </div>
                     </Col>
                   );

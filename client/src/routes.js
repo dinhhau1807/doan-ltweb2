@@ -19,6 +19,9 @@ const IdentitiesManagement = lazy(() =>
   import('./pages/IdentitiesManagementPage')
 );
 const IdentityDetails = lazy(() => import('./pages/IdentityDetailsPage'));
+const TransactionsManagement = lazy(() =>
+  import('./pages/TransactionsManagementPage')
+);
 
 export const routes = [
   {
@@ -73,6 +76,14 @@ export const routes = [
     isStaffRoute: true,
     layout: PrivateLayout,
     component: IdentityDetails
+  },
+  {
+    path: '/a2hl-management/transaction',
+    exact: true,
+    isPrivate: true,
+    isStaffRoute: true,
+    layout: PrivateLayout,
+    component: TransactionsManagement
   },
   {
     path: '/a2hl-management/login',

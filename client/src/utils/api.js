@@ -36,8 +36,13 @@ instanceNext.interceptors.response.use(
       // clear token
       eraseCookie(TOKEN_KEY);
 
+      let redirectTo = '';
+      const manageSegment = '/a2hl-management';
+      if (window.location.href.indexOf(manageSegment) > -1) {
+        redirectTo += manageSegment;
+      }
       // redirect to login page
-      history.push('/login');
+      history.push(`${redirectTo}/login`);
     }
 
     if (error.response) {
