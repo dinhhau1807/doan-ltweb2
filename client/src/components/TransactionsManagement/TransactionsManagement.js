@@ -4,6 +4,9 @@ import FilterOptions from '../FilterOptions/FilterOptions';
 import { FILTER_TRANSACTIONS } from '../../constants/ColumnFilter';
 import { getErrorMessage } from '../../utils/helpers';
 import { Table, message } from 'antd';
+import { connect } from 'react-redux';
+import { getTransactions } from '../../actions/StaffTransactionsActions';
+import { TRANSACTION_STATUS } from '../../constants/GlobalConstants';
 
 import './TransactionsManagement.scss';
 
@@ -120,6 +123,7 @@ const TransactionsManagement = ({ getTransactions, transactionStatus }) => {
       const paper = { ...pagination };
       paper.total = totalItems;
       paper.current = customParams.page;
+      paper.pageSize = customParams.pageSize;
 
       setLoading(false);
       setPagination(paper);
@@ -156,4 +160,8 @@ const TransactionsManagement = ({ getTransactions, transactionStatus }) => {
 TransactionsManagement.propTypes = propTypes;
 TransactionsManagement.defaultProps = defaultProps;
 
-export default TransactionsManagement;
+const mapStateToProps = () => {
+  return { getTransactions, transactionStatus: TRANSACTION_STATUS };
+};
+
+export default connect(mapStateToProps)(TransactionsManagement);

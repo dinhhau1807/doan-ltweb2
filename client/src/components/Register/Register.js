@@ -1,16 +1,9 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import {
-  LOGIN_URL,
-  TOKEN_KEY,
-  DATE_FORMAT
-} from '../../constants/GlobalConstants';
-import {
-  createCookie,
-  getBase64,
-  getErrorMessage,
-  b64toBlob
-} from '../../utils/helpers';
+import { connect } from 'react-redux';
+import { register } from '../../actions/UserActions';
+import { LOGIN_URL, DATE_FORMAT } from '../../constants/GlobalConstants';
+import { getBase64, getErrorMessage, b64toBlob } from '../../utils/helpers';
 
 import './Register.scss';
 import {
@@ -128,9 +121,9 @@ const Register = ({ register, history }) => {
         formData.append(propsName[i], blob);
       }
 
-      const { token } = await register(formData);
-      createCookie(TOKEN_KEY, token);
-      history.push('/');
+      await register(formData);
+      message.success('New account is created');
+      history.push('/login');
     } catch (err) {
       message.error(getErrorMessage(err), 10);
       setLoading(false);
@@ -154,7 +147,7 @@ const Register = ({ register, history }) => {
           onFinish={onFinish}
           validateMessages={validateMessages}
         >
-          <Row>
+          <Row gutter={8}>
             <Col span={12}>
               <Form.Item
                 name="username"
@@ -175,7 +168,7 @@ const Register = ({ register, history }) => {
                 label="Password"
                 rules={[{ required: true }]}
               >
-                <Input type="password" />
+                <Input.Password />
               </Form.Item>
               <Form.Item
                 name="confirmPassword"
@@ -195,7 +188,7 @@ const Register = ({ register, history }) => {
                   })
                 ]}
               >
-                <Input type="password" />
+                <Input.Password />
               </Form.Item>
               <Form.Item
                 name="name"
@@ -229,7 +222,7 @@ const Register = ({ register, history }) => {
             <Col span={12}>
               <Form.Item
                 name="identityNumber"
-                label="Your identification ID No"
+                label="Identification ID No"
                 rules={[{ required: true }]}
               >
                 <Input />
@@ -314,4 +307,10 @@ const Register = ({ register, history }) => {
 Register.propTypes = propTypes;
 Register.defaultProps = defaultProps;
 
-export default Register;
+const mapStateToProps = () => {
+  return {
+    register
+  };
+};
+
+export default connect(mapStateToProps)(Register);

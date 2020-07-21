@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { createCookie, getErrorMessage } from '../../utils/helpers';
 import { TOKEN_KEY } from '../../constants/GlobalConstants';
-
+import { connect } from 'react-redux';
+import { login } from '../../actions/UserActions';
 import { Form, Input, Button, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import './Login.scss';
@@ -84,4 +85,10 @@ const Login = ({ login, history }) => {
 Login.propTypes = propTypes;
 Login.defaultProps = defaultProps;
 
-export default Login;
+const mapStateToProps = () => {
+  return {
+    login
+  };
+};
+
+export default connect(mapStateToProps)(Login);

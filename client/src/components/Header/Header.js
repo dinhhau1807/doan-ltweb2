@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import { fetchUser, logout } from '../../actions/UserActions';
 import { Menu, Dropdown, Spin } from 'antd';
 import { UserOutlined, DownOutlined } from '@ant-design/icons';
+import { getUser } from '../../selectors/UserSelectors';
+
 import './Header.scss';
 
 const HeaderComponent = ({
@@ -64,7 +66,7 @@ const HeaderComponent = ({
 
 const mapStateToProps = state => {
   return {
-    user: state.user
+    user: getUser(state)
   };
 };
 

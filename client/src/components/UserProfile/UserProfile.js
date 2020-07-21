@@ -4,6 +4,9 @@ import { Form, Input, Button, Row, Col, message, DatePicker } from 'antd';
 import { getErrorMessage } from '../../utils/helpers';
 import moment from 'moment';
 import { DATE_FORMAT } from '../../constants/GlobalConstants';
+import { connect } from 'react-redux';
+import { updateProfile } from '../../actions/UserActions';
+import { getUser } from '../../selectors/UserSelectors';
 
 import './UserProfile.scss';
 
@@ -110,4 +113,8 @@ const UserProfile = ({ loading, data, updateProfile }) => {
 UserProfile.propTypes = propTypes;
 UserProfile.defaultProps = defaultProps;
 
-export default UserProfile;
+const mapStateToProps = state => {
+  return { ...getUser(state) };
+};
+
+export default connect(mapStateToProps, { updateProfile })(UserProfile);

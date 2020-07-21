@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { createCookie, getErrorMessage } from '../../utils/helpers';
 import { TOKEN_KEY } from '../../constants/GlobalConstants';
-
 import { Form, Input, Button, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { connect } from 'react-redux';
+import { login } from '../../actions/UserActions';
+
 import './LoginStaff.scss';
 
 const propTypes = {
@@ -77,4 +79,10 @@ const LoginStaff = ({ login, history }) => {
 LoginStaff.propTypes = propTypes;
 LoginStaff.defaultProps = defaultProps;
 
-export default LoginStaff;
+const mapStateToProps = () => {
+  return {
+    login
+  };
+};
+
+export default connect(mapStateToProps)(LoginStaff);
