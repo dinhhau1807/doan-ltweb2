@@ -417,3 +417,73 @@ exports.registerSavingAccount = asyncHandler(async (req, res, next) => {
     message: 'Successful registration of savings account!',
   });
 });
+
+exports.getAllSavingsAccount = asyncHandler(async (req, res, next) => {
+  const customer = req.user;
+  let { page, limit, sortBy, sortType } = req.query;
+  const attributes = ['term', 'interestRate', 'createdAt'];
+  const sortTypes = ['asc', 'desc'];
+
+  if (!page || page <= 0) page = 1;
+  if (!limit || limit <= 0) limit = 10;
+
+  if (!sortType || (sortType && !sortTypes.includes(sortType)))
+    sortType = 'asc';
+  if (!sortBy || (sortBy && !attributes.includes(sortBy))) sortBy = 'createdAt';
+
+  const filterArr = [];
+  attributes.forEach((attr) => {
+    if (req.query.createdAt) {
+      const obj = {};
+      obj.createdAt = {
+        [Op.and]: [
+          {
+            [Op.gte]: new Date(`${req.query.createdAt}%`),
+          },
+          {
+            [Op.lte]: new Date(`${req.query.createdAt}%`).setDate(
+              new Date(`${req.query.createdAt}%`).getDate() + 1
+            ),
+          },
+        ],
+      };
+      filterArr.push(obj);
+    }
+
+    if (req.query[attr]) {
+      const obj = {};
+      obj[attr] = { [Op.eq]: `${req.query[attr]}` };
+      filterArr.push(obj);
+    }
+  });
+
+  const savingsAccount = await Account.findAndCountAll({
+    where: {
+      [Op.and]: [
+        {
+          [Op.and]: {
+            customerId: customer.id,
+            type: ACCOUNT_TYPE.saving,
+          },
+        },
+        ...filterArr,
+      ],
+    },
+    order: [[sortBy, sortType]],
+    offset: (page - 1) * limit,
+    limit,
+  });
+
+  if (savingsAccount.count === 0) {
+    return res.status(404).json({
+      status: 'error',
+      message: 'You do not have savings account.',
+    });
+  }
+
+  return res.status(200).json({
+    status: 'success',
+    totalItems: savingsAccount.count,
+    items: savingsAccount.rows,
+  });
+});
