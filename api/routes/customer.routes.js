@@ -39,9 +39,9 @@ router.post(
   '/registerSavingsAccount',
   customerController.registerSavingAccount
 );
-router.get('/savingsAccount', customerController.getAllSavingsAccount);
-router.get('/savingsHistory', customerController.savingsTransactionsHistory);
+router.get('/deposit', customerController.getAllSavingsAccount);
+router.get('/depositHistory', customerController.savingsTransactionsHistory);
 
-router.get('/paymentAccount', customerController.getPaymentAccount);
+router.get('/account', customerController.getPaymentAccount);
 
 module.exports = router;
