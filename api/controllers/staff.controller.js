@@ -461,13 +461,6 @@ exports.getAllTransactions = asyncHandler(async (req, res, next) => {
     limit,
   });
 
-  if (transactions.count === 0) {
-    return res.status(404).json({
-      status: 'error',
-      message: 'Transaction not found.',
-    });
-  }
-
   return res.status(200).json({
     status: 'success',
     totalItems: transactions.count,

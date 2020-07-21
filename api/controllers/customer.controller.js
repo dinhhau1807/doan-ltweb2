@@ -138,13 +138,6 @@ exports.transactionsHistory = asyncHandler(async (req, res, next) => {
     limit,
   });
 
-  if (transactions.count === 0) {
-    return res.status(404).json({
-      status: 'error',
-      message: 'Transaction not found in this time.',
-    });
-  }
-
   return res.status(200).json({
     status: 'success',
     totalItems: transactions.count,
@@ -474,13 +467,6 @@ exports.getAllSavingsAccount = asyncHandler(async (req, res, next) => {
     limit,
   });
 
-  if (savingsAccount.count === 0) {
-    return res.status(404).json({
-      status: 'error',
-      message: 'You do not have savings account.',
-    });
-  }
-
   return res.status(200).json({
     status: 'success',
     totalItems: savingsAccount.count,
@@ -551,13 +537,6 @@ exports.savingsTransactionsHistory = asyncHandler(async (req, res, next) => {
     offset: (page - 1) * limit,
     limit,
   });
-
-  if (transactions.count === 0) {
-    return res.status(404).json({
-      status: 'error',
-      message: 'Transaction not found in this time.',
-    });
-  }
 
   return res.status(200).json({
     status: 'success',
