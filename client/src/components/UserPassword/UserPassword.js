@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Input, Button, Row, Col, message } from 'antd';
 import { getErrorMessage } from '../../utils/helpers';
+import { connect } from 'react-redux';
+import { changePassword } from '../../actions/UserActions';
 
 import './UserPassword.scss';
 
@@ -105,4 +107,10 @@ const UserPassword = ({ changePassword }) => {
 UserPassword.propTypes = propTypes;
 UserPassword.defaultProps = defaultProps;
 
-export default UserPassword;
+const mapStateToProps = () => {
+  return {
+    changePassword
+  };
+};
+
+export default connect(mapStateToProps)(UserPassword);

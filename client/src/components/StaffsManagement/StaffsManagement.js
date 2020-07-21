@@ -7,6 +7,13 @@ import { FILTER_STAFFS } from '../../constants/ColumnFilter';
 import { getErrorMessage } from '../../utils/helpers';
 import EditStatusDropdown from '../EditStatusDropdown/EditStatusDropdown';
 import AddStaffModal from '../AddStaffModal/AddStaffModal';
+import { connect } from 'react-redux';
+import {
+  getStaffs,
+  changeStaffStatus,
+  createStaff
+} from '../../actions/StaffsActions';
+import { ENTITY_STATUS } from '../../constants/GlobalConstants';
 
 import './StaffsManagement.scss';
 
@@ -150,6 +157,7 @@ const StaffsManagement = ({
       const paper = { ...pagination };
       paper.total = totalItems;
       paper.current = customParams.page;
+      paper.pageSize = customParams.pageSize;
 
       setLoading(false);
       setPagination(paper);
@@ -197,4 +205,13 @@ const StaffsManagement = ({
 StaffsManagement.propTypes = propTypes;
 StaffsManagement.defaultProps = defaultProps;
 
-export default StaffsManagement;
+const mapStateToProps = () => {
+  return {
+    getStaffs,
+    changeStaffStatus,
+    staffStatus: ENTITY_STATUS,
+    createStaff
+  };
+};
+
+export default connect(mapStateToProps)(StaffsManagement);

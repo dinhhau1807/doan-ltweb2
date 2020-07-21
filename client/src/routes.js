@@ -2,25 +2,31 @@ import { lazy } from 'react';
 import { PrivateLayout, PublicLayout } from './layouts';
 
 const UserPage = lazy(() => import('./pages/UserPage'));
-const UserPasswordPage = lazy(() => import('./pages/UserPasswordPage'));
-const UserProfilePage = lazy(() => import('./pages/UserProfilePage'));
+const UserPassword = lazy(() =>
+  import('./components/UserPassword/UserPassword')
+);
+const UserProfile = lazy(() => import('./components/UserProfile/UserProfile'));
 
-const NotFound = lazy(() => import('./pages/NotFoundPage'));
+const NotFound = lazy(() => import('./components/NotFound/NotFound'));
 
-const LoginPage = lazy(() => import('./pages/LoginPage'));
-const RegisterPage = lazy(() => import('./pages/RegisterPage'));
-const LoginStaffPage = lazy(() => import('./pages/LoginStaffPage'));
+const Login = lazy(() => import('./components/Login/Login'));
+const Register = lazy(() => import('./components/Register/Register'));
+const LoginStaff = lazy(() => import('./components/LoginStaff/LoginStaff'));
 
 const CustomersManagement = lazy(() =>
-  import('./pages/CustomersManagementPage')
+  import('./components/CustomersManagement/CustomersManagement')
 );
-const StaffsManagement = lazy(() => import('./pages/StaffsManagementPage'));
+const StaffsManagement = lazy(() =>
+  import('./components/StaffsManagement/StaffsManagement')
+);
 const IdentitiesManagement = lazy(() =>
-  import('./pages/IdentitiesManagementPage')
+  import('./components/IdentitiesManagement/IdentitiesManagement')
 );
-const IdentityDetails = lazy(() => import('./pages/IdentityDetailsPage'));
+const IdentityDetails = lazy(() =>
+  import('./components/IdentityDetails/IdentityDetails')
+);
 const TransactionsManagement = lazy(() =>
-  import('./pages/TransactionsManagementPage')
+  import('./components/TransactionsManagement/TransactionsManagement')
 );
 
 export const routes = [
@@ -36,14 +42,14 @@ export const routes = [
     exact: true,
     isPrivate: true,
     layout: PrivateLayout,
-    component: UserPasswordPage
+    component: UserPassword
   },
   {
     path: '/profile',
     exact: true,
     isPrivate: true,
     layout: PrivateLayout,
-    component: UserProfilePage
+    component: UserProfile
   },
   {
     path: '/a2hl-management',
@@ -89,19 +95,19 @@ export const routes = [
     path: '/a2hl-management/login',
     exact: true,
     layout: PublicLayout,
-    component: LoginStaffPage
+    component: LoginStaff
   },
   {
     path: '/login',
     exact: true,
     layout: PublicLayout,
-    component: LoginPage
+    component: Login
   },
   {
     path: '/register',
     exact: true,
     layout: PublicLayout,
-    component: RegisterPage
+    component: Register
   },
   {
     path: '*',

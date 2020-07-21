@@ -4,6 +4,8 @@ import FilterOptions from '../FilterOptions/FilterOptions';
 import { FILTER_IDENTITIES } from '../../constants/ColumnFilter';
 import { getErrorMessage } from '../../utils/helpers';
 import { Table, message } from 'antd';
+import { connect } from 'react-redux';
+import { getIdentities } from '../../actions/StaffIdentitiesActions';
 
 import './IdentitiesManagement.scss';
 
@@ -100,6 +102,7 @@ const IdentitiesManagement = ({ getIdentities, history }) => {
       const paper = { ...pagination };
       paper.total = totalItems;
       paper.current = customParams.page;
+      paper.pageSize = customParams.pageSize;
 
       setLoading(false);
       setPagination(paper);
@@ -136,4 +139,10 @@ const IdentitiesManagement = ({ getIdentities, history }) => {
 IdentitiesManagement.propTypes = propTypes;
 IdentitiesManagement.defaultProps = defaultProps;
 
-export default IdentitiesManagement;
+const mapStateToProps = () => {
+  return {
+    getIdentities
+  };
+};
+
+export default connect(mapStateToProps)(IdentitiesManagement);

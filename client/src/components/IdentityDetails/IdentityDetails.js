@@ -4,6 +4,11 @@ import moment from 'moment';
 import { Row, Col, Typography, Spin, message, Button } from 'antd';
 import { getErrorMessage } from '../../utils/helpers';
 import { DATE_FORMAT } from '../../constants/GlobalConstants';
+import { connect } from 'react-redux';
+import {
+  getIdentity,
+  approveIdentity
+} from '../../actions/StaffIdentitiesActions';
 
 import './IdentityDetails.scss';
 
@@ -95,24 +100,24 @@ const IdentityDetails = ({ getIdentity, approveIdentity, match }) => {
           <Col>
             <Row>
               <Paragraph>
-                <strong>Mã xác nhận:</strong>{' '}
-              </Paragraph>{' '}
+                <strong>ID: </strong>
+              </Paragraph>
               <Paragraph>{id}</Paragraph>
             </Row>
           </Col>
           <Col>
             <Row>
               <Paragraph>
-                <strong>Số CMND:</strong>{' '}
-              </Paragraph>{' '}
+                <strong>No: </strong>
+              </Paragraph>
               <Paragraph>{identityNumber}</Paragraph>
             </Row>
           </Col>
           <Col>
             <Row>
               <Paragraph>
-                <strong>Ngày đăng kí:</strong>{' '}
-              </Paragraph>{' '}
+                <strong>Issued on: </strong>
+              </Paragraph>
               <Paragraph>
                 {moment(registrationDate).format(DATE_FORMAT)}
               </Paragraph>
@@ -154,4 +159,8 @@ const IdentityDetails = ({ getIdentity, approveIdentity, match }) => {
 IdentityDetails.propTypes = propTypes;
 IdentityDetails.defaultProps = defaultProps;
 
-export default IdentityDetails;
+const mapStateToProps = () => {
+  return { getIdentity, approveIdentity };
+};
+
+export default connect(mapStateToProps)(IdentityDetails);

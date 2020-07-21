@@ -6,6 +6,12 @@ import FilterOptions from '../FilterOptions/FilterOptions';
 import { FILTER_CUSTOMERS } from '../../constants/ColumnFilter';
 import { getErrorMessage } from '../../utils/helpers';
 import EditStatusDropdown from '../EditStatusDropdown/EditStatusDropdown';
+import { connect } from 'react-redux';
+import {
+  getCustomers,
+  changeCustomerStatus
+} from '../../actions/StaffCustomersActions';
+import { ENTITY_STATUS } from '../../constants/GlobalConstants';
 
 import './CustomersManagement.scss';
 
@@ -167,6 +173,7 @@ const CustomersManagement = ({
       const paper = { ...pagination };
       paper.total = totalItems;
       paper.current = customParams.page;
+      paper.pageSize = customParams.pageSize;
 
       setLoading(false);
       setPagination(paper);
@@ -203,4 +210,12 @@ const CustomersManagement = ({
 CustomersManagement.propTypes = propTypes;
 CustomersManagement.defaultProps = defaultProps;
 
-export default CustomersManagement;
+const mapStateToProps = () => {
+  return {
+    getCustomers,
+    changeCustomerStatus,
+    customerStatus: ENTITY_STATUS
+  };
+};
+
+export default connect(mapStateToProps)(CustomersManagement);
