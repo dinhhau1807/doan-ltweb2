@@ -1,7 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const { Op } = require('sequelize');
 
-const { Customer, Transaction, Account } = require('../models');
+const { Customer, Transaction, Account, DepositTerm } = require('../models');
 const AppError = require('../utils/appError');
 const passwordValidator = require('../utils/passwordValidator');
 const { STATUS, TRANS_STATUS } = require('../utils/enums/statusEnum');
@@ -336,5 +336,232 @@ exports.internalTransferConfirm = asyncHandler(async (req, res, next) => {
   return res.status(200).json({
     status: 'success',
     message: 'Your transaction is succeed!',
+  });
+});
+
+exports.registerSavingAccount = asyncHandler(async (req, res, next) => {
+  const customerInfo = req.user;
+  const { amount, term } = req.body;
+
+  const getInterestRate = await DepositTerm.findOne({
+    where: {
+      period: term,
+    },
+  });
+
+  if (!getInterestRate) {
+    return next(new AppError('Term is invalid!', 400));
+  }
+
+  if (Number.isNaN(parseFloat(amount)) || !Number.isFinite(amount)) {
+    return next(new AppError('Amount must be a numeric value!', 400));
+  }
+
+  // Check account source
+  const customerPayment = await Account.findOne({
+    where: {
+      [Op.and]: [
+        { customerId: customerInfo.id },
+        { status: { [Op.notIn]: [STATUS.deleted] } },
+        { type: ACCOUNT_TYPE.payment },
+      ],
+    },
+  });
+
+  if (customerPayment.status === STATUS.blocked) {
+    return next(
+      new AppError(
+        'Your account is blocked! Please contact staff to unblock.',
+        403
+      )
+    );
+  }
+
+  if (customerPayment.currentBalance < amount) {
+    return next(new AppError('Your account does not have enough money!'));
+  }
+
+  await Account.create({
+    customerId: customerInfo.id,
+    type: ACCOUNT_TYPE.saving,
+    currentBalance: amount,
+    currentUnit: customerPayment.currentUnit,
+    status: STATUS.active,
+    term,
+    interestRate: getInterestRate.interestRate,
+  });
+
+  // Calculation and update database
+  customerPayment.currentBalance -= amount;
+  await customerPayment.save();
+
+  // Create new transaction
+  const otpCode = otpGenerator();
+  const otpCreatedDate = new Date();
+  const otpExpiredDate = new Date(otpCreatedDate.getTime() + 10 * 60000);
+
+  await Transaction.create({
+    accountSourceId: customerInfo.id,
+    accountDestination: customerInfo.id,
+    amount,
+    currencyUnit: customerPayment.currentUnit,
+    description: 'Deposit money into savings account',
+    status: TRANS_STATUS.succeed,
+    otpCode,
+    otpCreatedDate,
+    otpExpiredDate,
+  });
+
+  return res.status(200).json({
+    status: 'success',
+    message: 'Successful registration of savings account!',
+  });
+});
+
+exports.getAllSavingsAccount = asyncHandler(async (req, res, next) => {
+  const customer = req.user;
+  let { page, limit, sortBy, sortType } = req.query;
+  const attributes = ['term', 'interestRate', 'createdAt'];
+  const sortTypes = ['asc', 'desc'];
+
+  if (!page || page <= 0) page = 1;
+  if (!limit || limit <= 0) limit = 10;
+
+  if (!sortType || (sortType && !sortTypes.includes(sortType)))
+    sortType = 'asc';
+  if (!sortBy || (sortBy && !attributes.includes(sortBy))) sortBy = 'createdAt';
+
+  const filterArr = [];
+  attributes.forEach((attr) => {
+    if (req.query.createdAt) {
+      const obj = {};
+      obj.createdAt = {
+        [Op.and]: [
+          {
+            [Op.gte]: new Date(`${req.query.createdAt}%`),
+          },
+          {
+            [Op.lte]: new Date(`${req.query.createdAt}%`).setDate(
+              new Date(`${req.query.createdAt}%`).getDate() + 1
+            ),
+          },
+        ],
+      };
+      filterArr.push(obj);
+    }
+
+    if (req.query[attr]) {
+      const obj = {};
+      obj[attr] = { [Op.eq]: `${req.query[attr]}` };
+      filterArr.push(obj);
+    }
+  });
+
+  const savingsAccount = await Account.findAndCountAll({
+    where: {
+      [Op.and]: [
+        {
+          [Op.and]: {
+            customerId: customer.id,
+            type: ACCOUNT_TYPE.saving,
+          },
+        },
+        ...filterArr,
+      ],
+    },
+    order: [[sortBy, sortType]],
+    offset: (page - 1) * limit,
+    limit,
+  });
+
+  if (savingsAccount.count === 0) {
+    return res.status(404).json({
+      status: 'error',
+      message: 'You do not have savings account.',
+    });
+  }
+
+  return res.status(200).json({
+    status: 'success',
+    totalItems: savingsAccount.count,
+    items: savingsAccount.rows,
+  });
+});
+
+exports.savingsTransactionsHistory = asyncHandler(async (req, res, next) => {
+  const customer = req.user;
+  const { fromDate, toDate } = req.query;
+  let { page, limit, sortBy, sortType } = req.query;
+  const attributes = ['createdAt'];
+  const sortTypes = ['asc', 'desc'];
+
+  if (!page || page <= 0) page = 1;
+  if (!limit || limit <= 0) limit = 10;
+
+  if (!sortType || (sortType && !sortTypes.includes(sortType)))
+    sortType = 'asc';
+  if (!sortBy || (sortBy && !attributes.includes(sortBy))) sortBy = 'createdAt';
+
+  const filterArr = [];
+  attributes.forEach((attr) => {
+    if (req.query[attr] && !fromDate && !toDate) {
+      const obj = {};
+      obj[attr] = {
+        [Op.and]: [
+          {
+            [Op.gte]: new Date(`${req.query[attr]}%`),
+          },
+          {
+            [Op.lte]: new Date(`${req.query[attr]}%`).setDate(
+              new Date(`${req.query[attr]}%`).getDate() + 1
+            ),
+          },
+        ],
+      };
+      filterArr.push(obj);
+    }
+    if (fromDate && toDate) {
+      const obj = {};
+      obj.createdAt = {
+        [Op.between]: [
+          new Date(`${fromDate}%`),
+          new Date(`${toDate}%`).setDate(new Date(`${toDate}%`).getDate() + 1),
+        ],
+      };
+      filterArr.push(obj);
+    }
+  });
+
+  const transactions = await Transaction.findAndCountAll({
+    attributes: {
+      exclude: ['otpCode', 'otpCreatedDate', 'otpExpiredDate'],
+    },
+    where: {
+      [Op.and]: [
+        {
+          [Op.and]: {
+            accountSourceId: customer.id,
+            accountDestination: customer.id,
+          },
+        },
+        ...filterArr,
+      ],
+    },
+    order: [[sortBy, sortType]],
+    offset: (page - 1) * limit,
+    limit,
+  });
+
+  if (transactions.count === 0) {
+    return res.status(404).json({
+      status: 'error',
+      message: 'Transaction not found in this time.',
+    });
+  }
+
+  return res.status(200).json({
+    status: 'success',
+    totalItems: transactions.count,
+    items: transactions.rows,
   });
 });
