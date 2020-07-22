@@ -35,10 +35,7 @@ router.post(
   customerController.internalTransferConfirm
 );
 
-router.post(
-  '/registerSavingsAccount',
-  customerController.registerSavingAccount
-);
+router.post('/registerDeposit', customerController.registerSavingAccount);
 router.get('/deposit', customerController.getAllSavingsAccount);
 router.get('/depositHistory', customerController.savingsTransactionsHistory);
 
