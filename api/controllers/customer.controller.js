@@ -335,6 +335,7 @@ exports.internalTransferConfirm = asyncHandler(async (req, res, next) => {
 });
 
 exports.registerSavingAccount = asyncHandler(async (req, res, next) => {
+  const MIN_AMOUNT_VND = 3000000;
   const customerInfo = req.user;
   const { amount, term } = req.body;
 
@@ -372,8 +373,24 @@ exports.registerSavingAccount = asyncHandler(async (req, res, next) => {
     );
   }
 
+  const MIN_AMOUNT_USD = convert(MIN_AMOUNT_VND).from('VND').to('USD');
+
   if (customerPayment.currentBalance < amount) {
     return next(new AppError('Your account does not have enough money!'));
+  }
+
+  if (
+    (amount < MIN_AMOUNT_VND && customerPayment.currentUnit === 'VND') ||
+    (amount < MIN_AMOUNT_USD && customerPayment.currentUnit === 'USD')
+  ) {
+    return next(
+      new AppError(
+        'Minimum amount to register savings account is ' +
+          `${MIN_AMOUNT_VND}` +
+          ' VND or $' +
+          `${MIN_AMOUNT_USD}`
+      )
+    );
   }
 
   await Account.create({
