@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import moment from 'moment';
 import { message, Table } from 'antd';
 import { fetchAccount } from '../../actions/CustomerActions';
 import { getErrorMessage } from '../../utils/helpers';
+import {
+  ENTITY_STATUS,
+  DATE_FORMAT,
+  HOUR_FORMAT
+} from '../../constants/GlobalConstants';
 
 import './CustomerAccount.scss';
 
@@ -24,7 +30,29 @@ const CustomerAccount = () => {
     },
     {
       title: 'Created Date',
-      dataIndex: 'createdAt'
+      dataIndex: 'createdAt',
+      render: text => {
+        const datetime =
+          moment(text).utc().format(DATE_FORMAT) +
+          ' ' +
+          moment(text).utc().format(HOUR_FORMAT);
+        return <span>{datetime}</span>;
+      }
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      render: text => {
+        const style = { fontWeight: '700' };
+        const status = ENTITY_STATUS[text];
+        let label = 'Other';
+        if (status) {
+          label = status.label;
+          style.color = status.color;
+        }
+
+        return <span style={style}>{label}</span>;
+      }
     }
   ];
 

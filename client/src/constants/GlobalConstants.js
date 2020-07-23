@@ -34,3 +34,4 @@ export const TRANSACTION_STATUS = {
 };
 
 export const DATE_FORMAT = 'yyyy/MM/DD';
+export const HOUR_FORMAT = 'HH:mm:ss';
