@@ -118,6 +118,16 @@ exports.transactionsHistory = asyncHandler(async (req, res, next) => {
     }
   });
 
+  const account = await Account.findOne({
+    where: {
+      customerId: customer.id,
+    },
+  });
+
+  if (!account) {
+    return next(new AppError('You did not have any account.', 400));
+  }
+
   const transactions = await Transaction.findAndCountAll({
     attributes: {
       exclude: ['otpCode', 'otpCreatedDate', 'otpExpiredDate'],
@@ -126,8 +136,8 @@ exports.transactionsHistory = asyncHandler(async (req, res, next) => {
       [Op.and]: [
         {
           [Op.or]: {
-            accountSourceId: customer.id,
-            accountDestination: customer.id,
+            accountSourceId: account.id,
+            accountDestination: account.id,
           },
         },
         ...filterArr,
