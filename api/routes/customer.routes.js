@@ -34,12 +34,17 @@ router.post(
   customerController.internalTransferConfirm
 );
 
-router.get('/deposit', customerController.getAllSavingsAccount);
-router.get('/depositHistory', customerController.savingsTransactionsHistory);
+router.get('/deposit', customerController.getAllDeposit);
+router.get('/depositHistory', customerController.depositHistory);
 router.post(
-  '/registerSavingsAccount',
-  customerController.registerSavingAccount
+  '/depositRegisterRequest',
+  customerController.depositRegisterRequest
+);
+router.post(
+  '/depositRegisterConfirm',
+  customerController.depositRegisterConfirm
 );
 router.post('/withdrawRequest', customerController.withdrawalOfDepositRequest);
+router.post('/withdrawConfirm', customerController.withdrawalOfDepositConfirm);
 
 module.exports = router;

@@ -10,7 +10,7 @@ const ACCOUNT_TYPE = require('../utils/enums/accountTypeEnum');
 const otpGenerator = require('../utils/otpGenerator');
 const convert = require('../utils/currencyConverter');
 const EmailService = require('../services/emailService');
-const OTPService = require('../services/otpService');
+const SmsService = require('../services/smsService');
 
 exports.getInfo = asyncHandler(async (req, res, next) => {
   const customer = { ...req.user.dataValues };
@@ -243,13 +243,13 @@ exports.internalTransferRequest = asyncHandler(async (req, res, next) => {
 
   // Send otp code to user with SMS
   if (process.env.SMS_ENABLE_OTP) {
-    const otp = new OTPService(req.user);
-    await otp.sendOTPCode(otpCode);
+    const sms = new SmsService(req.user);
+    await sms.sendOTPCode(otpCode);
   }
 
   return res.status(200).json({
     status: 'success',
-    message: 'OTP code was sent your email!',
+    message: 'OTP code was sent to your email/phone!',
   });
 });
 
@@ -285,7 +285,7 @@ exports.internalTransferConfirm = asyncHandler(async (req, res, next) => {
   // Check if OTP was expired
   if (transaction.otpExpiredDate < new Date()) {
     transaction.status = TRANS_STATUS.failed;
-    transaction.save();
+    await transaction.save();
     return next(new AppError('OTP was expired!'), 403);
   }
 
@@ -324,9 +324,9 @@ exports.internalTransferConfirm = asyncHandler(async (req, res, next) => {
 
   transaction.status = TRANS_STATUS.succeed;
 
-  accountSource.save();
-  accountDestination.save();
-  transaction.save();
+  await accountSource.save();
+  await accountDestination.save();
+  await transaction.save();
 
   return res.status(200).json({
     status: 'success',
@@ -334,9 +334,25 @@ exports.internalTransferConfirm = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.registerSavingAccount = asyncHandler(async (req, res, next) => {
+exports.depositRegisterRequest = asyncHandler(async (req, res, next) => {
+  const MIN_AMOUNT_VND = 3000000;
   const customerInfo = req.user;
   const { amount, term } = req.body;
+
+  const checkDepositExist = await Account.findOne({
+    where: {
+      [Op.and]: [
+        { customerId: customerInfo.id },
+        { status: STATUS.inactive },
+        { type: ACCOUNT_TYPE.saving },
+        { currentBalance: 0 },
+      ],
+    },
+  });
+
+  if (checkDepositExist) {
+    return next(new AppError('You have an ongoing transaction!', 400));
+  }
 
   const getInterestRate = await DepositTerm.findOne({
     where: {
@@ -372,23 +388,35 @@ exports.registerSavingAccount = asyncHandler(async (req, res, next) => {
     );
   }
 
+  const MIN_AMOUNT_USD = convert(MIN_AMOUNT_VND).from('VND').to('USD');
+
   if (customerPayment.currentBalance < amount) {
     return next(new AppError('Your account does not have enough money!'));
+  }
+
+  if (
+    (amount < MIN_AMOUNT_VND && customerPayment.currentUnit === 'VND') ||
+    (amount < MIN_AMOUNT_USD && customerPayment.currentUnit === 'USD')
+  ) {
+    return next(
+      new AppError(
+        'Minimum amount to register savings account is ' +
+          `${MIN_AMOUNT_VND}` +
+          ' VND or $' +
+          `${MIN_AMOUNT_USD}`
+      )
+    );
   }
 
   await Account.create({
     customerId: customerInfo.id,
     type: ACCOUNT_TYPE.saving,
-    currentBalance: amount,
+    currentBalance: 0,
     currentUnit: customerPayment.currentUnit,
-    status: STATUS.active,
+    status: STATUS.inactive,
     term,
     interestRate: getInterestRate.interestRate,
   });
-
-  // Calculation and update database
-  customerPayment.currentBalance -= amount;
-  await customerPayment.save();
 
   // Create new transaction
   const otpCode = otpGenerator();
@@ -401,19 +429,114 @@ exports.registerSavingAccount = asyncHandler(async (req, res, next) => {
     amount,
     currencyUnit: customerPayment.currentUnit,
     description: 'Deposit money into savings account',
-    status: TRANS_STATUS.succeed,
     otpCode,
     otpCreatedDate,
     otpExpiredDate,
   });
 
+  // Send otp code to user
+  const email = new EmailService(req.user);
+  await email.sendOTPCode(otpCode);
+
+  // Send otp code to user with SMS
+  if (process.env.SMS_ENABLE_OTP) {
+    const sms = new SmsService(req.user);
+    await sms.sendOTPCode(otpCode);
+  }
+
   return res.status(200).json({
     status: 'success',
-    message: 'Successful registration of savings account!',
+    message: 'OTP code was sent to your email/phone!',
   });
 });
 
-exports.getAllSavingsAccount = asyncHandler(async (req, res, next) => {
+exports.depositRegisterConfirm = asyncHandler(async (req, res, next) => {
+  const customer = req.user;
+  const { otpCode } = req.body;
+
+  if (!otpCode) {
+    return next(new AppError('OTP code cannot be empty!'), 400);
+  }
+
+  // Get account ids
+  let accounts = await Account.findAll({
+    attributes: ['id'],
+    where: {
+      customerId: customer.id,
+    },
+  });
+  accounts = accounts.map((account) => account.id);
+
+  const transaction = await Transaction.findOne({
+    where: {
+      accountSourceId: { [Op.in]: accounts },
+      otpCode: `${otpCode}`,
+      status: TRANS_STATUS.pending,
+    },
+  });
+
+  if (!transaction) {
+    return next(new AppError('Transaction not found!'), 404);
+  }
+
+  // Check if OTP was expired
+  if (transaction.otpExpiredDate < new Date()) {
+    transaction.status = TRANS_STATUS.failed;
+    await transaction.save();
+    return next(new AppError('OTP was expired!'), 403);
+  }
+
+  // Get account source
+  const accountSource = await Account.findOne({
+    where: {
+      id: transaction.accountSourceId,
+      status: { [Op.notIn]: [STATUS.deleted, STATUS.blocked] },
+    },
+  });
+  if (!accountSource) {
+    return next(new AppError('Your account not found or blocked!', 404));
+  }
+
+  // Get account destination
+  const accountDestination = await Account.findOne({
+    where: {
+      [Op.and]: [
+        { customerId: transaction.accountDestination },
+        { status: STATUS.inactive },
+        { type: ACCOUNT_TYPE.saving },
+        { currentBalance: 0 },
+      ],
+    },
+  });
+  if (!accountDestination) {
+    return next(new AppError('Account destination not found or blocked!', 404));
+  }
+
+  // Calculation and update database
+  accountSource.currentBalance -= convert(transaction.amount)
+    .from(transaction.currencyUnit)
+    .to(accountSource.currentUnit);
+
+  accountDestination.currentBalance =
+    +accountDestination.currentBalance +
+    convert(transaction.amount)
+      .from(transaction.currencyUnit)
+      .to(accountDestination.currentUnit);
+
+  accountDestination.status = STATUS.active;
+  transaction.status = TRANS_STATUS.succeed;
+
+  await accountSource.save();
+  await accountDestination.save();
+  await transaction.save();
+
+  return res.status(200).json({
+    status: 'success',
+    message: 'Your transaction is succeed!',
+  });
+});
+
+exports.getAllDeposit = asyncHandler(async (req, res, next) => {
   const customer = req.user;
   let { page, limit, sortBy, sortType } = req.query;
   const attributes = ['term', 'interestRate', 'createdAt'];
@@ -452,7 +575,7 @@ exports.getAllSavingsAccount = asyncHandler(async (req, res, next) => {
     }
   });
 
-  const savingsAccount = await Account.findAndCountAll({
+  const deposit = await Account.findAndCountAll({
     where: {
       [Op.and]: [
         {
@@ -471,12 +594,12 @@ exports.getAllSavingsAccount = asyncHandler(async (req, res, next) => {
 
   return res.status(200).json({
     status: 'success',
-    totalItems: savingsAccount.count,
-    items: savingsAccount.rows,
+    totalItems: deposit.count,
+    items: deposit.rows,
   });
 });
 
-exports.savingsTransactionsHistory = asyncHandler(async (req, res, next) => {
+exports.depositHistory = asyncHandler(async (req, res, next) => {
   const customer = req.user;
   const { fromDate, toDate } = req.query;
   let { page, limit, sortBy, sortType } = req.query;
@@ -668,7 +791,7 @@ exports.withdrawalOfDepositRequest = asyncHandler(async (req, res, next) => {
     accountSourceId: savingAccount.id,
     accountDestination: paymentAccount.id,
     amount: interest,
-    currencyUnit: paymentAccount.currencyUnit,
+    currencyUnit: paymentAccount.currentUnit,
     description: 'Withdrawal of deposit to payment account!',
     otpCode,
     otpCreatedDate,
@@ -681,8 +804,8 @@ exports.withdrawalOfDepositRequest = asyncHandler(async (req, res, next) => {
 
   // Send otp code to user with SMS
   if (process.env.SMS_ENABLE_OTP) {
-    const otp = new OTPService(req.user);
-    await otp.sendOTPCode(otpCode);
+    const sms = new SmsService(req.user);
+    await sms.sendOTPCode(otpCode);
   }
 
   return res.status(200).json({
@@ -692,4 +815,82 @@ exports.withdrawalOfDepositRequest = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.withdrawalOfDepositConfirm = asyncHandler(async (req, res, next) => {});
+exports.withdrawalOfDepositConfirm = asyncHandler(async (req, res, next) => {
+  const customer = req.user;
+  const { otpCode } = req.body;
+
+  if (!otpCode) {
+    return next(new AppError('OTP code cannot be empty!'), 400);
+  }
+
+  // Get account ids
+  let accounts = await Account.findAll({
+    attributes: ['id'],
+    where: {
+      customerId: customer.id,
+    },
+  });
+  accounts = accounts.map((account) => account.id);
+
+  const transaction = await Transaction.findOne({
+    where: {
+      accountSourceId: { [Op.in]: accounts },
+      otpCode: `${otpCode}`,
+      status: TRANS_STATUS.pending,
+    },
+  });
+
+  if (!transaction) {
+    return next(new AppError('Transaction not found!'), 404);
+  }
+
+  // Check if OTP was expired
+  if (transaction.otpExpiredDate < new Date()) {
+    transaction.status = TRANS_STATUS.failed;
+    await transaction.save();
+    return next(new AppError('OTP was expired!'), 403);
+  }
+
+  // Get account destination
+  const accountDestination = await Account.findOne({
+    where: {
+      id: transaction.accountDestination,
+      status: { [Op.notIn]: [STATUS.blocked, STATUS.deleted] },
+    },
+  });
+  if (!accountDestination) {
+    return next(new AppError('Account destination not found or blocked!', 404));
+  }
+
+  // Get account source
+  const accountSource = await Account.findOne({
+    where: {
+      id: transaction.accountSourceId,
+      status: { [Op.notIn]: [STATUS.deleted, STATUS.blocked] },
+    },
+  });
+  if (!accountSource) {
+    return next(new AppError('Your account not found or blocked!', 404));
+  }
+
+  // Calculation and update database
+  accountSource.currentBalance = 0;
+
+  accountDestination.currentBalance =
+    +accountDestination.currentBalance +
+    convert(transaction.amount)
+      .from(transaction.currencyUnit)
+      .to(accountDestination.currentUnit);
+
+  transaction.status = TRANS_STATUS.succeed;
+  accountSource.status = STATUS.blocked;
+
+  await accountSource.save();
+  await accountDestination.save();
+  await transaction.save();
+
+  return res.status(200).json({
+    status: 'success',
+    message: 'Your transaction is succeed!',
+  });
+});
