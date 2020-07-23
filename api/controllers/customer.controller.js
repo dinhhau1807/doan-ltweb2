@@ -121,6 +121,7 @@ exports.transactionsHistory = asyncHandler(async (req, res, next) => {
   const account = await Account.findOne({
     where: {
       customerId: customer.id,
+      type: ACCOUNT_TYPE.payment,
     },
   });
 
