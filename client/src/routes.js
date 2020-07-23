@@ -5,8 +5,12 @@ const UserPassword = lazy(() =>
   import('./components/UserPassword/UserPassword')
 );
 const UserProfile = lazy(() => import('./components/UserProfile/UserProfile'));
+
 const CustomerAccount = lazy(() =>
   import('./components/CustomerAccount/CustomerAccount')
+);
+const AccountTransactions = lazy(() =>
+  import('./components/AccountTransactions/AccountTransactions')
 );
 
 const NotFound = lazy(() => import('./components/NotFound/NotFound'));
@@ -45,6 +49,13 @@ export const routes = [
     isPrivate: true,
     layout: PrivateLayout,
     component: UserPassword
+  },
+  {
+    path: '/history',
+    exact: true,
+    isPrivate: true,
+    layout: PrivateLayout,
+    component: AccountTransactions
   },
   {
     path: '/profile',
