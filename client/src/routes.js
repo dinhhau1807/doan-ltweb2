@@ -1,11 +1,13 @@
 import { lazy } from 'react';
 import { PrivateLayout, PublicLayout } from './layouts';
 
-const UserPage = lazy(() => import('./pages/UserPage'));
 const UserPassword = lazy(() =>
   import('./components/UserPassword/UserPassword')
 );
 const UserProfile = lazy(() => import('./components/UserProfile/UserProfile'));
+const CustomerAccount = lazy(() =>
+  import('./components/CustomerAccount/CustomerAccount')
+);
 
 const NotFound = lazy(() => import('./components/NotFound/NotFound'));
 
@@ -35,7 +37,7 @@ export const routes = [
     exact: true,
     isPrivate: true,
     layout: PrivateLayout,
-    component: UserPage
+    component: CustomerAccount
   },
   {
     path: '/password',
