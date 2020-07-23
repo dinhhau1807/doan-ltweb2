@@ -3,7 +3,7 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.bulkInsert(
-      'DepositTerm',
+      'DepositTerms',
       [
         {
           period: 1,
@@ -65,6 +65,6 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkDelete('DepositTerm', null, {});
+    await queryInterface.bulkDelete('DepositTerms', null, {});
   },
 };

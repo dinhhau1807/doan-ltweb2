@@ -21,11 +21,10 @@ router
   .route('/me')
   .get(customerController.getInfo)
   .put(customerController.updateInfo);
-
 router.put('/updatePassword', customerController.updatePassword);
 
+router.get('/account', customerController.getPaymentAccount);
 router.get('/transactionHistory', customerController.transactionsHistory);
-
 router.post(
   '/internalTransferRequest',
   customerController.internalTransferRequest
@@ -35,6 +34,8 @@ router.post(
   customerController.internalTransferConfirm
 );
 
+router.get('/deposit', customerController.getAllDeposit);
+router.get('/depositHistory', customerController.depositHistory);
 router.post(
   '/depositRegisterRequest',
   customerController.depositRegisterRequest
@@ -43,9 +44,7 @@ router.post(
   '/depositRegisterConfirm',
   customerController.depositRegisterConfirm
 );
-router.get('/deposit', customerController.getAllDeposit);
-router.get('/depositHistory', customerController.depositHistory);
-
-router.get('/account', customerController.getPaymentAccount);
+router.post('/withdrawRequest', customerController.withdrawalOfDepositRequest);
+router.post('/withdrawConfirm', customerController.withdrawalOfDepositConfirm);
 
 module.exports = router;
