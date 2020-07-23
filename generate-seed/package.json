@@ -4,6 +4,7 @@
   "description": "",
   "scripts": {
     "seed:customer": "node seed_customer_identity.js",
+    "seed:approve": "node seed_active_approve_customer.js",
     "seed:account": "node seed_accounts.js",
     "seed:transaction": "node seed_transactions.js"
   },
