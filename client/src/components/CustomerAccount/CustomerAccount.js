@@ -8,6 +8,7 @@ import {
   DATE_FORMAT,
   HOUR_FORMAT
 } from '../../constants/GlobalConstants';
+import { formatMoney } from '../../utils/helpers';
 
 import './CustomerAccount.scss';
 
@@ -22,7 +23,8 @@ const CustomerAccount = () => {
     },
     {
       title: 'Balance',
-      dataIndex: 'currentBalance'
+      dataIndex: 'currentBalance',
+      render: text => <span>{formatMoney(text)}</span>
     },
     {
       title: 'Currency Unit',

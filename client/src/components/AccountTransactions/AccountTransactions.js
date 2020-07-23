@@ -3,10 +3,10 @@ import moment from 'moment';
 import { message, Table } from 'antd';
 import FilterDate from '../FilterDate/FilterDate';
 import { getAccountTransactions } from '../../actions/CustomerActions';
-import { getErrorMessage } from '../../utils/helpers';
+import { getErrorMessage, formatMoney } from '../../utils/helpers';
+import { DATE_FORMAT } from '../../constants/GlobalConstants';
 
 import './AccountTransactions.scss';
-import { DATE_FORMAT } from '../../constants/GlobalConstants';
 
 const AccountTransactions = () => {
   const [dataTable, setDataTable] = useState([]);
@@ -35,7 +35,9 @@ const AccountTransactions = () => {
       title: 'Amount',
       dataIndex: 'amount',
       sorter: false,
-      render: (text, record) => <span>{`${text} ${record.currencyUnit}`}</span>
+      render: (text, record) => (
+        <span>{`${formatMoney(text)} ${record.currencyUnit}`}</span>
+      )
     }
   ];
 
