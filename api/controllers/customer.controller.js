@@ -345,6 +345,15 @@ exports.internalTransferConfirm = asyncHandler(async (req, res, next) => {
   });
 });
 
+exports.getDepositTerms = asyncHandler(async (req, res, next) => {
+  const depositTerms = await DepositTerm.findAll();
+
+  return res.status(200).json({
+    status: 'success',
+    data: depositTerms,
+  });
+});
+
 exports.depositRegisterRequest = asyncHandler(async (req, res, next) => {
   const MIN_AMOUNT_VND = 3000000;
   const customerInfo = req.user;
