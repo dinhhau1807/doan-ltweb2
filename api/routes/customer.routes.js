@@ -13,6 +13,7 @@ router.post(
   authController.compressIdentityImages,
   authController.customerRegister
 );
+router.get('/depositTerms', customerController.getDepositTerms);
 
 // Auth route
 router.use(authController.authorize, authController.restrictToCustomer);
