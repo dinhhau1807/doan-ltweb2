@@ -342,7 +342,7 @@ exports.depositRegisterRequest = asyncHandler(async (req, res, next) => {
   const customerInfo = req.user;
   const { amount, term } = req.body;
 
-  const checkDepositExist = await Account.findOne({
+  const customerDeposit = await Account.findOne({
     where: {
       [Op.and]: [
         { customerId: customerInfo.id },
@@ -353,8 +353,8 @@ exports.depositRegisterRequest = asyncHandler(async (req, res, next) => {
     },
   });
 
-  if (checkDepositExist) {
-    return next(new AppError('You have an ongoing transaction!', 400));
+  if (customerDeposit) {
+    return next(new AppError('Deposit account exists!', 400));
   }
 
   const getInterestRate = await DepositTerm.findOne({
@@ -427,8 +427,8 @@ exports.depositRegisterRequest = asyncHandler(async (req, res, next) => {
   const otpExpiredDate = new Date(otpCreatedDate.getTime() + 10 * 60000);
 
   await Transaction.create({
-    accountSourceId: customerInfo.id,
-    accountDestination: customerInfo.id,
+    accountSourceId: customerPayment.id,
+    accountDestination: customerPayment.id,
     amount,
     currencyUnit: customerPayment.currentUnit,
     description: 'Deposit money into savings account',
