@@ -5,7 +5,6 @@ const { Customer, Transaction, Account, DepositTerm } = require('../models');
 const AppError = require('../utils/appError');
 const passwordValidator = require('../utils/passwordValidator');
 const { STATUS, TRANS_STATUS } = require('../utils/enums/statusEnum');
-const CURRENCY_UNIT = require('../utils/enums/currencyUnitEnum');
 const ACCOUNT_TYPE = require('../utils/enums/accountTypeEnum');
 const otpGenerator = require('../utils/otpGenerator');
 const convert = require('../utils/currencyConverter');
@@ -162,14 +161,8 @@ exports.internalTransferRequest = asyncHandler(async (req, res, next) => {
     idAccountSource,
     idAccountDestination,
     amount,
-    currencyUnit,
     description,
   } = req.body;
-
-  // Check currency unit & amount
-  if (!CURRENCY_UNIT[currencyUnit]) {
-    return next(new AppError('Currency unit is not valid!', 400));
-  }
 
   if (Number.isNaN(parseFloat(amount)) || !Number.isFinite(amount)) {
     return next(new AppError('Amount must be a numeric value!', 400));
@@ -214,17 +207,7 @@ exports.internalTransferRequest = asyncHandler(async (req, res, next) => {
     );
   }
 
-  // Check account source have enough money to make transaction
-  let amountConverted = null;
-  try {
-    amountConverted = convert(amount)
-      .from(currencyUnit)
-      .to(accountSource.currentUnit);
-  } catch (err) {
-    return next(err);
-  }
-
-  if (accountSource.currentBalance < amountConverted) {
+  if (accountSource.currentBalance < amount) {
     return next(
       new AppError(
         'Your account does not have enough money to make this transaction!'
@@ -241,7 +224,7 @@ exports.internalTransferRequest = asyncHandler(async (req, res, next) => {
     accountSourceId: accountSource.id,
     accountDestination: accountDestination.id,
     amount,
-    currencyUnit,
+    currencyUnit: accountSource.currentUnit,
     description: description || '',
     otpCode,
     otpCreatedDate,
@@ -253,7 +236,7 @@ exports.internalTransferRequest = asyncHandler(async (req, res, next) => {
   await email.sendOTPCode(otpCode);
 
   // Send otp code to user with SMS
-  if (process.env.SMS_ENABLE_OTP) {
+  if (process.env.SMS_ENABLE_OTP === 'true') {
     const sms = new SmsService(req.user);
     await sms.sendOTPCode(otpCode);
   }
@@ -459,7 +442,7 @@ exports.depositRegisterRequest = asyncHandler(async (req, res, next) => {
   await email.sendOTPCode(otpCode);
 
   // Send otp code to user with SMS
-  if (process.env.SMS_ENABLE_OTP) {
+  if (process.env.SMS_ENABLE_OTP === 'true') {
     const sms = new SmsService(req.user);
     await sms.sendOTPCode(otpCode);
   }
@@ -823,7 +806,7 @@ exports.withdrawalOfDepositRequest = asyncHandler(async (req, res, next) => {
   await email.sendOTPCode(otpCode);
 
   // Send otp code to user with SMS
-  if (process.env.SMS_ENABLE_OTP) {
+  if (process.env.SMS_ENABLE_OTP === 'true') {
     const sms = new SmsService(req.user);
     await sms.sendOTPCode(otpCode);
   }
