@@ -317,6 +317,13 @@ exports.approveCustomer = asyncHandler(async (req, res, next) => {
     return next(new AppError('Customer not found.', 404));
   }
 
+  if (!idCustomer) {
+    return next(new AppError('Id customer is required', 400));
+  }
+  if (Number.isNaN(parseFloat(amount)) || !Number.isFinite(amount)) {
+    return next(new AppError('Amount must be a numeric value!', 400));
+  }
+
   customer.staffIdApproved = staff.id;
   await customer.save();
 
