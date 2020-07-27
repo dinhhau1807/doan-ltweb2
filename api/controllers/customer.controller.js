@@ -504,7 +504,7 @@ exports.depositRegisterConfirm = asyncHandler(async (req, res, next) => {
   const accountDestination = await Account.findOne({
     where: {
       [Op.and]: [
-        { customerId: transaction.accountDestination },
+        { id: transaction.accountDestination },
         { status: STATUS.inactive },
         { type: ACCOUNT_TYPE.saving },
         { currentBalance: 0 },
