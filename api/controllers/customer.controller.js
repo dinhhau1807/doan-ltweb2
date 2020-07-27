@@ -411,7 +411,7 @@ exports.depositRegisterRequest = asyncHandler(async (req, res, next) => {
     );
   }
 
-  await Account.create({
+  const customerSavings = await Account.create({
     customerId: customerInfo.id,
     type: ACCOUNT_TYPE.saving,
     currentBalance: 0,
@@ -428,7 +428,7 @@ exports.depositRegisterRequest = asyncHandler(async (req, res, next) => {
 
   await Transaction.create({
     accountSourceId: customerPayment.id,
-    accountDestination: customerPayment.id,
+    accountDestination: customerSavings.id,
     amount,
     currencyUnit: customerPayment.currentUnit,
     description: 'Deposit money into savings account',
