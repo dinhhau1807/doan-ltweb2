@@ -36,6 +36,7 @@ router.post(
 );
 
 router.get('/deposit', customerController.getAllDeposit);
+router.get('/deposit/:id', customerController.getDeposit);
 router.get('/depositHistory', customerController.depositHistory);
 router.post(
   '/depositRegisterRequest',
