@@ -342,20 +342,10 @@ exports.depositRegisterRequest = asyncHandler(async (req, res, next) => {
   const customerInfo = req.user;
   const { amount, term } = req.body;
 
-  const customerDeposit = await Account.findOne({
-    where: {
-      [Op.and]: [
-        { customerId: customerInfo.id },
-        { status: STATUS.inactive },
-        { type: ACCOUNT_TYPE.saving },
-        { currentBalance: 0 },
-      ],
-    },
-  });
-
-  if (customerDeposit) {
-    return next(new AppError('Deposit account exists!', 400));
-  }
+  // Create new transaction
+  const otpCode = otpGenerator();
+  const otpCreatedDate = new Date();
+  const otpExpiredDate = new Date(otpCreatedDate.getTime() + 10 * 60000);
 
   const getInterestRate = await DepositTerm.findOne({
     where: {
@@ -411,31 +401,61 @@ exports.depositRegisterRequest = asyncHandler(async (req, res, next) => {
     );
   }
 
-  const customerSavings = await Account.create({
-    customerId: customerInfo.id,
-    type: ACCOUNT_TYPE.saving,
-    currentBalance: 0,
-    currentUnit: customerPayment.currentUnit,
-    status: STATUS.inactive,
-    term,
-    interestRate: getInterestRate.interestRate,
+  const customerDeposit = await Account.findOne({
+    where: {
+      [Op.and]: [
+        { customerId: customerInfo.id },
+        { status: STATUS.inactive },
+        { type: ACCOUNT_TYPE.saving },
+      ],
+    },
   });
 
-  // Create new transaction
-  const otpCode = otpGenerator();
-  const otpCreatedDate = new Date();
-  const otpExpiredDate = new Date(otpCreatedDate.getTime() + 10 * 60000);
+  if (customerDeposit) {
+    customerDeposit.currentBalance = amount;
+    customerDeposit.term = term;
+    customerDeposit.currentUnit = customerPayment.currentUnit;
+    customerDeposit.interestRate = getInterestRate.interestRate;
+    await customerDeposit.save();
 
-  await Transaction.create({
-    accountSourceId: customerPayment.id,
-    accountDestination: customerSavings.id,
-    amount,
-    currencyUnit: customerPayment.currentUnit,
-    description: 'Deposit money into savings account',
-    otpCode,
-    otpCreatedDate,
-    otpExpiredDate,
-  });
+    const transaction = await Transaction.findOne({
+      where: {
+        accountSourceId: customerPayment.id,
+        accountDestination: customerDeposit.id,
+        status: TRANS_STATUS.pending,
+      },
+    });
+    if (transaction) {
+      transaction.amount = amount;
+      transaction.otpCode = otpCode;
+      transaction.otpCreatedDate = otpCreatedDate;
+      transaction.otpExpiredDate = otpExpiredDate;
+      await transaction.save();
+    }
+  }
+
+  if (!customerDeposit) {
+    const customerSavings = await Account.create({
+      customerId: customerInfo.id,
+      type: ACCOUNT_TYPE.saving,
+      currentBalance: amount,
+      currentUnit: customerPayment.currentUnit,
+      status: STATUS.inactive,
+      term,
+      interestRate: getInterestRate.interestRate,
+    });
+
+    await Transaction.create({
+      accountSourceId: customerPayment.id,
+      accountDestination: customerSavings.id,
+      amount,
+      currencyUnit: customerPayment.currentUnit,
+      description: 'Deposit money into savings account',
+      otpCode,
+      otpCreatedDate,
+      otpExpiredDate,
+    });
+  }
 
   // Send otp code to user
   const email = new EmailService(req.user);
@@ -507,7 +527,7 @@ exports.depositRegisterConfirm = asyncHandler(async (req, res, next) => {
         { id: transaction.accountDestination },
         { status: STATUS.inactive },
         { type: ACCOUNT_TYPE.saving },
-        { currentBalance: 0 },
+        { currentBalance: transaction.amount },
       ],
     },
   });
@@ -519,12 +539,6 @@ exports.depositRegisterConfirm = asyncHandler(async (req, res, next) => {
   accountSource.currentBalance -= convert(transaction.amount)
     .from(transaction.currencyUnit)
     .to(accountSource.currentUnit);
-
-  accountDestination.currentBalance =
-    +accountDestination.currentBalance +
-    convert(transaction.amount)
-      .from(transaction.currencyUnit)
-      .to(accountDestination.currentUnit);
 
   accountDestination.status = STATUS.active;
   transaction.status = TRANS_STATUS.succeed;
