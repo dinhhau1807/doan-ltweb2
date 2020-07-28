@@ -41,13 +41,13 @@ const CustomerSidebar = ({ match }) => {
       case CUSTOMER_TABS.TRANSACTION_EXTERNAL:
         tabUrl += CUSTOMER_TABS.TRANSACTION_EXTERNAL;
         break;
-      case CUSTOMER_TABS.SAVINGS_REQUEST:
+      case CUSTOMER_TABS.DEPOSIT_REQUEST:
         tabUrl += CUSTOMER_TABS.DEPOSIT_REQUEST;
         break;
-      case CUSTOMER_TABS.SAVINGS_WITHDRAW:
+      case CUSTOMER_TABS.DEPOSIT_WITHDRAW:
         tabUrl += CUSTOMER_TABS.DEPOSIT_WITHDRAW;
         break;
-      case CUSTOMER_TABS.SAVINGS_TRANSACTION_HISTORY:
+      case CUSTOMER_TABS.DEPOSIT_TRANSACTION_HISTORY:
         tabUrl += CUSTOMER_TABS.DEPOSIT_TRANSACTION_HISTORY;
         break;
       case CUSTOMER_TABS.UTILS_UPDATE:
@@ -105,13 +105,13 @@ const CustomerSidebar = ({ match }) => {
           icon={<CreditCardOutlined />}
           title="Deposit"
         >
-          <Menu.Item key={CUSTOMER_TABS.SAVINGS_REQUEST}>
+          <Menu.Item key={CUSTOMER_TABS.DEPOSIT_REQUEST}>
             Open new deposit account
           </Menu.Item>
-          <Menu.Item key={CUSTOMER_TABS.SAVINGS_WITHDRAW}>
+          <Menu.Item key={CUSTOMER_TABS.DEPOSIT_WITHDRAW}>
             Close term deposit account
           </Menu.Item>
-          <Menu.Item key={CUSTOMER_TABS.SAVINGS_TRANSACTION_HISTORY}>
+          <Menu.Item key={CUSTOMER_TABS.DEPOSIT_TRANSACTION_HISTORY}>
             Deposit transactions
           </Menu.Item>
         </SubMenu>
