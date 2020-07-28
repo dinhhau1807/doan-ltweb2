@@ -35,3 +35,5 @@ export const TRANSACTION_STATUS = {
 
 export const DATE_FORMAT = 'yyyy/MM/DD';
 export const HOUR_FORMAT = 'HH:mm:ss';
+
+export const MIN_DEPOSIT_AMOUNT = 3000000;
