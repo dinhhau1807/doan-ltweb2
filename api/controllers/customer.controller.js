@@ -616,6 +616,27 @@ exports.getAllDeposit = asyncHandler(async (req, res, next) => {
   });
 });
 
+exports.getDeposit = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const customer = req.user;
+  const account = await Account.findOne({
+    where: {
+      id,
+      customerId: customer.id,
+      type: ACCOUNT_TYPE.saving,
+    },
+  });
+
+  if (!account) {
+    return next(new AppError('Account not found.', 404));
+  }
+
+  return res.status(200).json({
+    status: 'success',
+    data: account,
+  });
+});
+
 exports.depositHistory = asyncHandler(async (req, res, next) => {
   const customer = req.user;
   const { fromDate, toDate } = req.query;
