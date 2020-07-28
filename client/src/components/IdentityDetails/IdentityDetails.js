@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import { Row, Col, Typography, Spin, message, Button } from 'antd';
+import { Row, Col, Typography, Spin, message, Button, Input, Form } from 'antd';
 import { getErrorMessage } from '../../utils/helpers';
 import { DATE_FORMAT } from '../../constants/GlobalConstants';
 import { connect } from 'react-redux';
@@ -74,12 +74,17 @@ const IdentityDetails = ({ getIdentity, approveIdentity, match }) => {
     setApproved(staffIdApproved !== null);
   }, [identity]);
 
-  const onHandleApprove = (id, approved) => async () => {
+  const onFinish = async values => {
     if (!approved) {
       try {
         setLoading(true);
 
-        const data = await approveIdentity({ idCustomer: +id });
+        const { customerId } = identity;
+        const { amount } = values;
+        const data = await approveIdentity({
+          idCustomer: +customerId,
+          amount: +amount
+        });
 
         setApproved(true);
 
@@ -91,7 +96,7 @@ const IdentityDetails = ({ getIdentity, approveIdentity, match }) => {
     }
   };
 
-  const { id, customerId, identityNumber, registrationDate } = identity;
+  const { id, identityNumber, registrationDate } = identity;
 
   return (
     <div>
@@ -141,15 +146,25 @@ const IdentityDetails = ({ getIdentity, approveIdentity, match }) => {
           </Col>
         </Row>
         <Row>
-          <Button
-            disabled={approved}
-            loading={loading}
-            onClick={onHandleApprove(customerId, approved)}
-            style={{ marginTop: '10px' }}
-            type="primary"
-          >
-            {approved ? 'Đã xác nhận' : 'Xác nhận'}
-          </Button>
+          <Form style={{ margin: '10px 0' }} onFinish={onFinish}>
+            <Form.Item
+              name="amount"
+              label="Amount"
+              rules={[{ required: true, message: 'Amount is required' }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item>
+              <Button
+                disabled={approved}
+                loading={loading}
+                htmlType="submit"
+                type="primary"
+              >
+                {approved ? 'Approved' : 'Approve'}
+              </Button>
+            </Form.Item>
+          </Form>
         </Row>
       </Spin>
     </div>
