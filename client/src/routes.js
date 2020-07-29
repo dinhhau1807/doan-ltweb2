@@ -22,6 +22,10 @@ const DepositTransactions = lazy(() =>
   import('./components/DepositTransactions/DepositTransactions')
 );
 
+const TransferInsideSystem = lazy(() =>
+  import('./components/TransferInsideSystem/TransferInsideSystem')
+);
+
 const NotFound = lazy(() => import('./components/NotFound/NotFound'));
 
 const Login = lazy(() => import('./components/Login/Login'));
@@ -86,6 +90,13 @@ export const routes = [
     isPrivate: true,
     layout: PrivateLayout,
     component: DepositTransactions
+  },
+  {
+    path: '/transaction',
+    exact: true,
+    isPrivate: true,
+    layout: PrivateLayout,
+    component: TransferInsideSystem
   },
   {
     path: '/profile',
