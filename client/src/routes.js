@@ -18,6 +18,9 @@ const OpenDepositAccount = lazy(() =>
 const CloseDepositAccount = lazy(() =>
   import('./components/CloseDepositAccount/CloseDepositAccount')
 );
+const DepositTransactions = lazy(() =>
+  import('./components/DepositTransactions/DepositTransactions')
+);
 
 const NotFound = lazy(() => import('./components/NotFound/NotFound'));
 
@@ -76,6 +79,13 @@ export const routes = [
     isPrivate: true,
     layout: PrivateLayout,
     component: CloseDepositAccount
+  },
+  {
+    path: '/deposit-history',
+    exact: true,
+    isPrivate: true,
+    layout: PrivateLayout,
+    component: DepositTransactions
   },
   {
     path: '/profile',

@@ -35,3 +35,7 @@ export const withdrawDepositRequest = body => {
 export const withdrawDepositConfirm = body => {
   return fetchApi('/customers/withdrawConfirm', 'POST', body);
 };
+
+export const getDepositTransactions = (params = {}) => {
+  return fetchApi('/customers/depositHistory', 'GET', null, params);
+};
