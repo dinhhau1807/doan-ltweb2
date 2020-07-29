@@ -683,24 +683,27 @@ exports.depositHistory = asyncHandler(async (req, res, next) => {
   });
 
   // Get account source
-  const accountSource = await Account.findOne({
+  let accountSource = await Account.findAll({
     where: {
       [Op.and]: [{ customerId: customer.id }, { type: ACCOUNT_TYPE.saving }],
     },
   });
+
+  accountSource = accountSource.map((account) => account.id);
 
   if (!accountSource) {
     return next(new AppError('Your account not found!', 404));
   }
 
   // Get account Destination
-  const accountDestination = await Account.findOne({
+  let accountDestination = await Account.findAll({
     where: {
       status: { [Op.notIn]: [STATUS.deleted, STATUS.blocked] },
       customerId: customer.id,
       type: ACCOUNT_TYPE.payment,
     },
   });
+  accountDestination = accountDestination.map((account) => account.id);
 
   if (!accountDestination) {
     return next(new AppError('Account destination not found or blocked!', 404));
@@ -714,8 +717,8 @@ exports.depositHistory = asyncHandler(async (req, res, next) => {
       [Op.and]: [
         {
           [Op.and]: {
-            accountSourceId: accountSource.id,
-            accountDestination: accountDestination.id,
+            accountSourceId: { [Op.in]: accountSource },
+            accountDestination: { [Op.in]: accountDestination },
           },
         },
         ...filterArr,
