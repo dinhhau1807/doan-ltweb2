@@ -682,6 +682,30 @@ exports.depositHistory = asyncHandler(async (req, res, next) => {
     }
   });
 
+  // Get account source
+  const accountSource = await Account.findOne({
+    where: {
+      [Op.and]: [{ customerId: customer.id }, { type: ACCOUNT_TYPE.saving }],
+    },
+  });
+
+  if (!accountSource) {
+    return next(new AppError('Your account not found!', 404));
+  }
+
+  // Get account Destination
+  const accountDestination = await Account.findOne({
+    where: {
+      status: { [Op.notIn]: [STATUS.deleted, STATUS.blocked] },
+      customerId: customer.id,
+      type: ACCOUNT_TYPE.payment,
+    },
+  });
+
+  if (!accountDestination) {
+    return next(new AppError('Account destination not found or blocked!', 404));
+  }
+
   const transactions = await Transaction.findAndCountAll({
     attributes: {
       exclude: ['otpCode', 'otpCreatedDate', 'otpExpiredDate'],
@@ -690,8 +714,8 @@ exports.depositHistory = asyncHandler(async (req, res, next) => {
       [Op.and]: [
         {
           [Op.and]: {
-            accountSourceId: customer.id,
-            accountDestination: customer.id,
+            accountSourceId: accountSource.id,
+            accountDestination: accountDestination.id,
           },
         },
         ...filterArr,
