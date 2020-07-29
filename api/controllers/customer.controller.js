@@ -599,6 +599,7 @@ exports.getAllDeposit = asyncHandler(async (req, res, next) => {
           [Op.and]: {
             customerId: customer.id,
             type: ACCOUNT_TYPE.saving,
+            status: STATUS.active,
           },
         },
         ...filterArr,
