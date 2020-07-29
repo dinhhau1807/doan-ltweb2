@@ -156,12 +156,15 @@ const OpenDepositAccount = ({ data: user, history }) => {
       await registerDepositConfirm(body);
 
       message.success('Deposit account is created');
-      //history.push('/');
+
+      setOtpCodeFormVisible(false);
+      setLoading(false);
+
+      history.push('/');
     } catch (err) {
+      setLoading(false);
       message.error(getErrorMessage(err));
     }
-
-    setLoading(false);
   };
 
   const renderTerms = () => {

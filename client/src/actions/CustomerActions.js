@@ -19,3 +19,19 @@ export const registerDepositRequest = body => {
 export const registerDepositConfirm = body => {
   return fetchApi('/customers/depositRegisterConfirm', 'POST', body);
 };
+
+export const getDepositAccounts = () => {
+  return fetchApi('/customers/deposit', 'GET');
+};
+
+export const getDepositAccount = id => {
+  return fetchApi('/customers/deposit/' + id, 'GET');
+};
+
+export const withdrawDepositRequest = body => {
+  return fetchApi('/customers/withdrawRequest', 'POST', body);
+};
+
+export const withdrawDepositConfirm = body => {
+  return fetchApi('/customers/withdrawConfirm', 'POST', body);
+};
