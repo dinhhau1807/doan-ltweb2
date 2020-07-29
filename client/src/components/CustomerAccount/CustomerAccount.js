@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 import { message, Table } from 'antd';
-import { fetchAccount } from '../../actions/CustomerActions';
-import { getErrorMessage } from '../../utils/helpers';
+import {
+  fetchAccount,
+  getDepositAccounts
+} from '../../actions/CustomerActions';
+import { getErrorMessage, formatMoney } from '../../utils/helpers';
 import {
   ENTITY_STATUS,
   DATE_FORMAT,
   HOUR_FORMAT
 } from '../../constants/GlobalConstants';
-import { formatMoney } from '../../utils/helpers';
+import { fetchAll } from '../../utils/api';
 
 import './CustomerAccount.scss';
 
@@ -34,11 +37,35 @@ const CustomerAccount = () => {
       title: 'Created Date',
       dataIndex: 'createdAt',
       render: text => {
-        const datetime =
-          moment(text).utc().format(DATE_FORMAT) +
-          ' ' +
-          moment(text).utc().format(HOUR_FORMAT);
-        return <span>{datetime}</span>;
+        return (
+          <span>
+            {moment(text).format(DATE_FORMAT) +
+              ' ' +
+              moment(text).format(HOUR_FORMAT)}
+          </span>
+        );
+      }
+    },
+    {
+      title: 'Interest rate',
+      dataIndex: 'interestRate',
+      render: text => <span>{+text > 0 ? text : ''}</span>
+    },
+    {
+      title: 'Maturity Date',
+      dataIndex: 'term',
+      render: (text, record) => {
+        if (+text > 0) {
+          const { term, createdAt } = record;
+          return (
+            <span>
+              {moment(createdAt).add(term).format(DATE_FORMAT) +
+                ' ' +
+                moment(createdAt).add(term).format(HOUR_FORMAT)}
+            </span>
+          );
+        }
+        return '';
       }
     },
     {
@@ -62,8 +89,11 @@ const CustomerAccount = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const { data } = await fetchAccount();
-        setAccount([data]);
+        const [
+          { data: dataAccount },
+          { items: dataDeposits }
+        ] = await fetchAll([fetchAccount(), getDepositAccounts()]);
+        setAccount([dataAccount, ...dataDeposits]);
       } catch (err) {
         message.error(getErrorMessage(err));
       }
@@ -83,6 +113,7 @@ const CustomerAccount = () => {
           dataSource={account}
           columns={tableColumns}
           loading={loading}
+          pagination={{ page: 1, pageSize: 100 }}
         />
       </div>
     </div>
