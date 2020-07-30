@@ -146,6 +146,14 @@ export const routes = [
     component: TransactionsManagement
   },
   {
+    path: '/a2hl-management/password',
+    exact: true,
+    isPrivate: true,
+    isStaffRoute: true,
+    layout: PrivateLayout,
+    component: UserPassword
+  },
+  {
     path: '/a2hl-management/login',
     exact: true,
     layout: PublicLayout,

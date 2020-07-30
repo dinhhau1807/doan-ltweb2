@@ -32,6 +32,10 @@ const HeaderComponent = ({
     history.push(isStaffRoute ? '/a2hl-management/password' : '/password');
   };
 
+  const handleChangeProfile = () => {
+    history.push(isStaffRoute ? '/a2hl-management/profile' : '/profile');
+  };
+
   const { loading, data } = user;
   return (
     <header className="header" style={style}>
@@ -43,6 +47,9 @@ const HeaderComponent = ({
           <Dropdown
             overlay={
               <Menu>
+                <Menu.Item onClick={handleChangeProfile}>
+                  Update Profile
+                </Menu.Item>
                 <Menu.Item onClick={handleChangePassword}>
                   Change password
                 </Menu.Item>

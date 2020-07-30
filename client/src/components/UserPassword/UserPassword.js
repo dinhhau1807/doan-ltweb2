@@ -26,13 +26,15 @@ const defaultProps = {};
 const UserPassword = ({ changePassword }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-
   const onFinish = async values => {
     try {
       setLoading(true);
 
       const { oldPassword, newPassword } = values;
-      const data = await changePassword('customers', {
+      const route = window.location.href.includes('/a2hl-management')
+        ? 'staffs'
+        : 'customers';
+      const data = await changePassword(route, {
         oldPassword,
         newPassword
       });
