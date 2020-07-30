@@ -5,6 +5,7 @@ import {
   UPDATE_USER_REQUEST,
   UPDATE_USER_SUCCESS
 } from '../constants/actions';
+import moment from 'moment';
 
 const initialState = {
   loading: false,
@@ -22,7 +23,12 @@ export default function (state = initialState, { type, payload }) {
     case FETCH_USER_SUCCESS:
       return {
         ...state,
-        data: payload.user,
+        data: {
+          ...payload.user,
+          dateOfBirth: payload.user.dateOfBirth
+            ? moment(payload.user.dateOfBirth)
+            : undefined
+        },
         loading: false
       };
     case USER_LOGOUT:

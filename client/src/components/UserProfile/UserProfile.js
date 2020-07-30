@@ -2,11 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Form, Input, Button, Row, Col, message, DatePicker } from 'antd';
 import { getErrorMessage } from '../../utils/helpers';
-import moment from 'moment';
 import { DATE_FORMAT } from '../../constants/GlobalConstants';
 import { connect } from 'react-redux';
 import { updateProfile } from '../../actions/UserActions';
 import { getUser } from '../../selectors/UserSelectors';
+import {
+  CUSTOMER_PROFILE_INPUTS,
+  STAFF_PROFILE_INPUTS
+} from '../../constants/ColumnFilter';
 
 import './UserProfile.scss';
 
@@ -29,19 +32,14 @@ const propTypes = {
 const defaultProps = {};
 
 const UserProfile = ({ loading, data, updateProfile }) => {
+  const route = window.location.href.includes('/a2hl-management')
+    ? 'staffs'
+    : 'customers';
+
   const onFinish = async values => {
     try {
-      const { name, phoneNumber, dateOfBirth, address } = values;
-      const body = {
-        name,
-        phoneNumber,
-        dateOfBirth: dateOfBirth.format(DATE_FORMAT),
-        address
-      };
-
-      const data = await updateProfile('customers', body);
-
-      message.success(data.message);
+      await updateProfile(route, { ...values });
+      message.success('Update information successful');
     } catch (err) {
       message.error(getErrorMessage(err));
     }
@@ -51,8 +49,8 @@ const UserProfile = ({ loading, data, updateProfile }) => {
     return null;
   }
 
-  const { name, phoneNumber, address, dateOfBirth } = data;
-
+  const inputs =
+    route === 'staffs' ? STAFF_PROFILE_INPUTS : CUSTOMER_PROFILE_INPUTS;
   return (
     <div>
       <h2 className="page-header">Update information</h2>
@@ -63,41 +61,34 @@ const UserProfile = ({ loading, data, updateProfile }) => {
             name="form"
             onFinish={onFinish}
             validateMessages={validateMessages}
-            initialValues={{
-              name,
-              phoneNumber,
-              address,
-              dateOfBirth: moment(dateOfBirth)
-            }}
+            initialValues={{ ...data }}
           >
-            <Form.Item
-              name="name"
-              label="Fullname"
-              rules={[{ required: true }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="dateOfBirth"
-              label="Birthday"
-              rules={[{ required: true }]}
-            >
-              <DatePicker />
-            </Form.Item>
-            <Form.Item
-              name="phoneNumber"
-              label="Phone"
-              rules={[{ required: true }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="address"
-              label="Address"
-              rules={[{ required: true }]}
-            >
-              <Input />
-            </Form.Item>
+            {inputs.map(input => {
+              switch (input.type) {
+                case 'input':
+                  return (
+                    <Form.Item
+                      key={input.name}
+                      name={input.name}
+                      label={input.label}
+                    >
+                      <Input />
+                    </Form.Item>
+                  );
+                case 'datepicker':
+                  return (
+                    <Form.Item
+                      key={input.name}
+                      name={input.name}
+                      label={input.label}
+                    >
+                      <DatePicker format={DATE_FORMAT} />
+                    </Form.Item>
+                  );
+                default:
+                  return null;
+              }
+            })}
             <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
               <Button loading={loading} type="primary" htmlType="submit">
                 Update

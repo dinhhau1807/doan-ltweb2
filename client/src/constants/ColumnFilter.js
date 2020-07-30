@@ -161,3 +161,34 @@ export const FILTER_TRANSACTIONS = {
     }
   ]
 };
+
+export const CUSTOMER_PROFILE_INPUTS = [
+  {
+    name: 'name',
+    label: 'Fullname',
+    type: 'input'
+  },
+  {
+    name: 'dateOfBirth',
+    label: 'Birthday',
+    type: 'datepicker'
+  },
+  {
+    name: 'phoneNumber',
+    label: 'Phone',
+    type: 'input'
+  },
+  {
+    name: 'address',
+    label: 'Address',
+    type: 'input'
+  }
+];
+
+export const STAFF_PROFILE_INPUTS = [
+  {
+    name: 'name',
+    label: 'Fullname',
+    type: 'input'
+  }
+];
