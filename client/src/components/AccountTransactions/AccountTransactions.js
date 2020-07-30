@@ -90,7 +90,7 @@ const AccountTransactions = () => {
 
   return (
     <div>
-      <h1 className="page-header">HISTORY TRANSACTIONS</h1>
+      <h2 className="page-header">HISTORY TRANSACTIONS</h2>
       <FilterDate fetchData={fetchDataTable} paramsTable={paramsTable} />
       <div className="table">
         <Table
