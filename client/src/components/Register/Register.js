@@ -18,6 +18,7 @@ import {
   message
 } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import CallingCodeFormItem from '../CallingCodeFormItem/CallingCodeFormItem';
 
 const layout = {
   labelCol: { span: 8 },
@@ -82,19 +83,20 @@ const Register = ({ register, history }) => {
         password,
         name,
         DoB,
+        callingCode,
         phone,
         address,
         identityNumber,
         registrationDate
       } = values;
-
+      console.log(callingCode);
       const body = {
         username,
         email,
         password,
         name,
         dateOfBirth: DoB.format(DATE_FORMAT),
-        phoneNumber: phone,
+        phoneNumber: callingCode + phone,
         address,
         identityNumber,
         registrationDate: registrationDate.format(DATE_FORMAT)
@@ -146,6 +148,7 @@ const Register = ({ register, history }) => {
           name="form"
           onFinish={onFinish}
           validateMessages={validateMessages}
+          initialValues={{ callingCode: '+84' }}
         >
           <Row gutter={8}>
             <Col span={12}>
@@ -204,12 +207,20 @@ const Register = ({ register, history }) => {
               >
                 <DatePicker format="DD-MM-yyyy" placeholder="" />
               </Form.Item>
-              <Form.Item
-                name="phone"
-                label="Phone"
-                rules={[{ required: true }]}
-              >
-                <Input />
+              <Form.Item label="Phone" rules={[{ required: true }]}>
+                <Row gutter={4}>
+                  <Col span={8}>
+                    <CallingCodeFormItem setState={setLoading} />
+                  </Col>
+                  <Col span={16}>
+                    <Form.Item
+                      name="phone"
+                      rules={[{ required: true, message: 'Phone is required' }]}
+                    >
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                </Row>
               </Form.Item>
               <Form.Item
                 name="address"

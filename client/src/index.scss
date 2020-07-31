@@ -95,3 +95,15 @@ body {
     font-size: 16px;
   }
 }
+
+.flag {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.flex-center-all {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
