@@ -210,7 +210,7 @@ const Register = ({ register, history }) => {
               <Form.Item label="Phone" rules={[{ required: true }]}>
                 <Row gutter={4}>
                   <Col span={8}>
-                    <CallingCodeFormItem setState={setLoading} />
+                    <CallingCodeFormItem />
                   </Col>
                   <Col span={16}>
                     <Form.Item
