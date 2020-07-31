@@ -44,3 +44,7 @@ export const updateProfile = (type, body) => async dispatch => {
 
   dispatch({ type: UPDATE_USER_SUCCESS, payload: { userUpdated: body } });
 };
+
+export const getCountries = url => {
+  return fetchApi(url, 'GET');
+};
