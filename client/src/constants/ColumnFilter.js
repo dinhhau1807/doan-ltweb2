@@ -176,7 +176,7 @@ export const CUSTOMER_PROFILE_INPUTS = [
   {
     name: 'phoneNumber',
     label: 'Phone',
-    type: 'input'
+    type: 'phonecallingcode'
   },
   {
     name: 'address',

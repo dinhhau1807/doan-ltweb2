@@ -3,7 +3,8 @@ import {
   FETCH_USER_SUCCESS,
   USER_LOGOUT,
   UPDATE_USER_REQUEST,
-  UPDATE_USER_SUCCESS
+  UPDATE_USER_SUCCESS,
+  UPDATE_USER_ERROR
 } from '../constants/actions';
 import { fetchApi } from '../utils/api';
 import { getErrorMessage, eraseCookie } from '../utils/helpers';
@@ -38,13 +39,16 @@ export const changePassword = (type, body) => {
 };
 
 export const updateProfile = (type, body) => async dispatch => {
-  dispatch({ type: UPDATE_USER_REQUEST });
+  try {
+    dispatch({ type: UPDATE_USER_REQUEST });
 
-  await fetchApi(`/${type}/me`, 'PUT', body);
+    await fetchApi(`/${type}/me`, 'PUT', body);
 
-  dispatch({ type: UPDATE_USER_SUCCESS, payload: { userUpdated: body } });
-};
+    message.success('Update information successful');
 
-export const getCountries = url => {
-  return fetchApi(url, 'GET');
+    dispatch({ type: UPDATE_USER_SUCCESS, payload: { userUpdated: body } });
+  } catch (err) {
+    dispatch({ type: UPDATE_USER_ERROR });
+    message.error(getErrorMessage(err));
+  }
 };
