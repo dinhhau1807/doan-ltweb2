@@ -24,10 +24,10 @@ exports.getInfo = asyncHandler(async (req, res, next) => {
 
 exports.updateInfo = asyncHandler(async (req, res, next) => {
   const customer = req.user;
-  const { name, dateOfBirth, phoneNumber, address } = req.body;
+  const { name, dateOfBirth, address } = req.body;
 
   await Customer.update(
-    { name, dateOfBirth, phoneNumber, address },
+    { name, dateOfBirth, address },
     { where: { id: customer.id } }
   );
 

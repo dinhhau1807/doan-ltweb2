@@ -81,11 +81,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         validate: {
           notEmpty: { args: true, msg: 'Phone numbers must not be blank.' },
-          isNumeric: { args: true, msg: 'Phone numbers only accept numbers.' },
-          is: {
-            args: /(03|05|07|08|09|[2|6|8|9])+([0-9]{8})\b/,
-            msg: 'Phone numbers is invalid.',
-          },
         },
       },
       address: {
