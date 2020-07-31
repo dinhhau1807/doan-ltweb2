@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { Form, Input, Button, Row, Col, message, DatePicker } from 'antd';
-import { getErrorMessage } from '../../utils/helpers';
+import { Form, Input, Button, Row, Col, DatePicker } from 'antd';
 import { DATE_FORMAT } from '../../constants/GlobalConstants';
 import { connect } from 'react-redux';
 import { updateProfile } from '../../actions/UserActions';
@@ -10,6 +9,9 @@ import {
   CUSTOMER_PROFILE_INPUTS,
   STAFF_PROFILE_INPUTS
 } from '../../constants/ColumnFilter';
+import CallingCodeFormItem from '../CallingCodeFormItem/CallingCodeFormItem';
+import { countriesCallingCode } from '../../constants/GlobalConstants';
+import { find } from 'lodash';
 
 import './UserProfile.scss';
 
@@ -35,22 +37,41 @@ const UserProfile = ({ loading, data, updateProfile }) => {
   const route = window.location.href.includes('/a2hl-management')
     ? 'staffs'
     : 'customers';
+  const inputs =
+    route === 'staffs' ? STAFF_PROFILE_INPUTS : CUSTOMER_PROFILE_INPUTS;
+
+  const getPhoneNumber = (data, countriesCallingCode) => {
+    if (data) {
+      const { phoneNumber } = data;
+      const country = find(countriesCallingCode, function (item) {
+        return phoneNumber.includes(item.callingCode);
+      });
+      let code = '';
+      if (country) {
+        code = phoneNumber.replace(country.callingCode, '');
+      }
+      return [country.callingCode, code];
+    }
+    return ['+84', ''];
+  };
+
+  const phoneNumerMemoized = useMemo(
+    () => getPhoneNumber(data, countriesCallingCode),
+    [data, countriesCallingCode]
+  );
 
   const onFinish = async values => {
-    try {
-      await updateProfile(route, { ...values });
-      message.success('Update information successful');
-    } catch (err) {
-      message.error(getErrorMessage(err));
-    }
+    const { callingCode, phoneNumber } = values;
+    updateProfile(route, {
+      ...values,
+      phoneNumber: callingCode + phoneNumber
+    });
   };
 
   if (!data) {
     return null;
   }
 
-  const inputs =
-    route === 'staffs' ? STAFF_PROFILE_INPUTS : CUSTOMER_PROFILE_INPUTS;
   return (
     <div>
       <h2 className="page-header">Update information</h2>
@@ -61,7 +82,11 @@ const UserProfile = ({ loading, data, updateProfile }) => {
             name="form"
             onFinish={onFinish}
             validateMessages={validateMessages}
-            initialValues={{ ...data }}
+            initialValues={{
+              ...data,
+              callingCode: phoneNumerMemoized[0],
+              phoneNumber: phoneNumerMemoized[1]
+            }}
           >
             {inputs.map(input => {
               switch (input.type) {
@@ -73,6 +98,30 @@ const UserProfile = ({ loading, data, updateProfile }) => {
                       label={input.label}
                     >
                       <Input />
+                    </Form.Item>
+                  );
+                case 'phonecallingcode':
+                  return (
+                    <Form.Item
+                      key={input.name}
+                      label="Phone"
+                      rules={[{ required: true }]}
+                    >
+                      <Row gutter={4}>
+                        <Col span={8}>
+                          <CallingCodeFormItem />
+                        </Col>
+                        <Col span={16}>
+                          <Form.Item
+                            name={input.name}
+                            rules={[
+                              { required: true, message: 'Phone is required' }
+                            ]}
+                          >
+                            <Input />
+                          </Form.Item>
+                        </Col>
+                      </Row>
                     </Form.Item>
                   );
                 case 'datepicker':
