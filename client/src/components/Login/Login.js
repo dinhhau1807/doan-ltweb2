@@ -71,10 +71,7 @@ const Login = ({ login, history }) => {
           </Form.Item>
 
           <Form.Item>
-            <a href="/">Forgot passsword</a>{' '}
-            <span>
-              or <a href="/register">register here!</a>
-            </span>
+            <a href="/register">Create new account</a>
           </Form.Item>
         </Form>
       </div>

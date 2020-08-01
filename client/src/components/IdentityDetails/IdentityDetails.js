@@ -4,7 +4,6 @@ import moment from 'moment';
 import { Row, Col, Typography, Spin, message, Button, Input, Form } from 'antd';
 import { getErrorMessage } from '../../utils/helpers';
 import { DATE_FORMAT } from '../../constants/GlobalConstants';
-import { connect } from 'react-redux';
 import {
   getIdentity,
   approveIdentity
@@ -15,14 +14,12 @@ import './IdentityDetails.scss';
 const { Paragraph } = Typography;
 
 const propTypes = {
-  getIdentity: PropTypes.func.isRequired,
-  approveIdentity: PropTypes.func.isRequired,
-  props: PropTypes.object
+  match: PropTypes.object
 };
 
 const defaultProps = {};
 
-const IdentityDetails = ({ getIdentity, approveIdentity, match }) => {
+const IdentityDetails = ({ match }) => {
   const [identity, setIdentity] = useState({});
   const [loading, setLoading] = useState(false);
   const [frontImageBase64, setFrontImageBase64] = useState(null);
@@ -174,8 +171,4 @@ const IdentityDetails = ({ getIdentity, approveIdentity, match }) => {
 IdentityDetails.propTypes = propTypes;
 IdentityDetails.defaultProps = defaultProps;
 
-const mapStateToProps = () => {
-  return { getIdentity, approveIdentity };
-};
-
-export default connect(mapStateToProps)(IdentityDetails);
+export default IdentityDetails;

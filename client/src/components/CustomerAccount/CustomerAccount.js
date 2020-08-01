@@ -5,12 +5,8 @@ import {
   fetchAccount,
   getDepositAccounts
 } from '../../actions/CustomerActions';
-import { getErrorMessage, formatMoney } from '../../utils/helpers';
-import {
-  ENTITY_STATUS,
-  DATE_FORMAT,
-  HOUR_FORMAT
-} from '../../constants/GlobalConstants';
+import { getErrorMessage, formatMoney, statusLabel } from '../../utils/helpers';
+import { DATETIME_FORMAT } from '../../constants/GlobalConstants';
 import { fetchAll } from '../../utils/api';
 
 import './CustomerAccount.scss';
@@ -37,13 +33,7 @@ const CustomerAccount = () => {
       title: 'Created Date',
       dataIndex: 'createdAt',
       render: text => {
-        return (
-          <span>
-            {moment(text).format(DATE_FORMAT) +
-              ' ' +
-              moment(text).format(HOUR_FORMAT)}
-          </span>
-        );
+        return <span>{moment(text).format(DATETIME_FORMAT)}</span>;
       }
     },
     {
@@ -58,11 +48,7 @@ const CustomerAccount = () => {
         if (+text > 0) {
           const { term, createdAt } = record;
           return (
-            <span>
-              {moment(createdAt).add(term).format(DATE_FORMAT) +
-                ' ' +
-                moment(createdAt).add(term).format(HOUR_FORMAT)}
-            </span>
+            <span>{moment(createdAt).add(term).format(DATETIME_FORMAT)}</span>
           );
         }
         return '';
@@ -72,14 +58,7 @@ const CustomerAccount = () => {
       title: 'Status',
       dataIndex: 'status',
       render: text => {
-        const style = { fontWeight: '700' };
-        const status = ENTITY_STATUS[text];
-        let label = 'Other';
-        if (status) {
-          label = status.label;
-          style.color = status.color;
-        }
-
+        const [label, style] = statusLabel('person', text);
         return <span style={style}>{label}</span>;
       }
     }

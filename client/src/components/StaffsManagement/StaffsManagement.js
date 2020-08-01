@@ -4,7 +4,7 @@ import { Table, Dropdown, message, Row, Col } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import FilterOptions from '../FilterOptions/FilterOptions';
 import { FILTER_STAFFS } from '../../constants/ColumnFilter';
-import { getErrorMessage } from '../../utils/helpers';
+import { getErrorMessage, statusLabel } from '../../utils/helpers';
 import EditStatusDropdown from '../EditStatusDropdown/EditStatusDropdown';
 import AddStaffModal from '../AddStaffModal/AddStaffModal';
 import { connect } from 'react-redux';
@@ -18,22 +18,12 @@ import { ENTITY_STATUS } from '../../constants/GlobalConstants';
 import './StaffsManagement.scss';
 
 const propTypes = {
-  getStaffs: PropTypes.func.isRequired,
-  changeStaffStatus: PropTypes.func.isRequired,
-  history: PropTypes.object,
-  staffStatus: PropTypes.object,
-  createStaff: PropTypes.func.isRequired
+  history: PropTypes.object
 };
 
 const defaultProps = {};
 
-const StaffsManagement = ({
-  getStaffs,
-  changeStaffStatus,
-  history,
-  staffStatus,
-  createStaff
-}) => {
+const StaffsManagement = ({ history }) => {
   const [dataTable, setDataTable] = useState([]);
   const [paramsTable, setParamsTable] = useState({});
   const [pagination, setPagination] = useState({ page: 1, pageSize: 10 });
@@ -55,7 +45,7 @@ const StaffsManagement = ({
       )
     },
     {
-      title: 'Fullnamee',
+      title: 'Fullname',
       dataIndex: 'name',
       sorter: true
     },
@@ -69,21 +59,15 @@ const StaffsManagement = ({
       dataIndex: 'status',
       sorter: false,
       render: (text, record) => {
-        const style = { fontWeight: '700', cursor: 'pointer' };
-        const status = staffStatus[text];
-        let label = 'Other';
-        if (status) {
-          label = status.label;
-          style.color = status.color;
-        }
+        const [label, style] = statusLabel('person', text);
 
         return (
           <Dropdown
             overlay={
               <EditStatusDropdown
-                statusList={Object.keys(staffStatus)
+                statusList={Object.keys(ENTITY_STATUS)
                   .filter(key => key !== text)
-                  .map(key => ({ key, label: staffStatus[key].label }))}
+                  .map(key => ({ key, label: ENTITY_STATUS[key].label }))}
                 item={record}
                 onChangeStatus={onChangeStatus}
                 disabled={loading}
@@ -143,10 +127,7 @@ const StaffsManagement = ({
       sortType: params.sortType,
 
       username: params.username,
-      email: params.email,
-      name: params.name,
-      phone: params.phone,
-      address: params.address
+      name: params.name
     };
 
     try {
@@ -171,16 +152,17 @@ const StaffsManagement = ({
   return (
     <div className="staffs-management">
       <h2 className="page-header">EMPLOYEES INFORMATION</h2>
-      <Row gutter={8}>
-        <Col span={20}>
+      <Row gutter={[8, 8]}>
+        <Col xl={20} lg={20} md={20} sm={24} xs={24}>
           <FilterOptions
             columnFilter={FILTER_STAFFS}
             fetchData={fetchDataTable}
             paramsTable={paramsTable}
           />
         </Col>
-        <Col span={4}>
+        <Col xl={4} lg={4} md={4} sm={24} xs={24}>
           <AddStaffModal
+            width="100%"
             createStaff={createStaff}
             fetchData={fetchDataTable}
             paramsTable={paramsTable}
@@ -205,13 +187,4 @@ const StaffsManagement = ({
 StaffsManagement.propTypes = propTypes;
 StaffsManagement.defaultProps = defaultProps;
 
-const mapStateToProps = () => {
-  return {
-    getStaffs,
-    changeStaffStatus,
-    staffStatus: ENTITY_STATUS,
-    createStaff
-  };
-};
-
-export default connect(mapStateToProps)(StaffsManagement);
+export default StaffsManagement;

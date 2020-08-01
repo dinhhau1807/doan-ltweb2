@@ -3,15 +3,10 @@ import moment from 'moment';
 import { message, Table } from 'antd';
 import FilterDate from '../FilterDate/FilterDate';
 import { getDepositTransactions } from '../../actions/CustomerActions';
-import { getErrorMessage, formatMoney } from '../../utils/helpers';
-import {
-  DATE_FORMAT,
-  TRANSACTION_STATUS
-} from '../../constants/GlobalConstants';
+import { getErrorMessage, formatMoney, statusLabel } from '../../utils/helpers';
+import { DATETIME_FORMAT } from '../../constants/GlobalConstants';
 
 import './DepositTransactions.scss';
-
-const transactionStatus = TRANSACTION_STATUS;
 
 const DepositTransactions = () => {
   const [dataTable, setDataTable] = useState([]);
@@ -24,7 +19,7 @@ const DepositTransactions = () => {
       title: 'Date',
       dataIndex: 'createdAt',
       sorter: true,
-      render: text => <span>{moment(text).format(DATE_FORMAT)}</span>
+      render: text => <span>{moment(text).format(DATETIME_FORMAT)}</span>
     },
     {
       title: 'Transaction Number',
@@ -48,15 +43,8 @@ const DepositTransactions = () => {
       title: 'Status',
       dataIndex: 'status',
       sorter: false,
-      render: (text, record) => {
-        const style = { fontWeight: '700' };
-        const status = transactionStatus[text];
-        let label = 'Other';
-        if (status) {
-          label = status.label;
-          style.color = status.color;
-        }
-
+      render: text => {
+        const [label, style] = statusLabel('trans', text);
         return <span style={style}>{label}</span>;
       }
     }

@@ -24,7 +24,12 @@ body {
 
 .main {
   position: relative;
+  width: 100%;
   height: 100vh;
+
+  @include mq(laptop) {
+    height: auto;
+  }
 }
 
 .spinning {
@@ -37,12 +42,16 @@ body {
 
 .public-form {
   width: 100%;
-  height: 100%;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   background-image: url('./images/public-bg.svg');
   background-size: cover;
+
+  @include mq(tablet) {
+    height: 100%;
+  }
 
   &__wrap {
     width: 100%;

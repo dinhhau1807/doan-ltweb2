@@ -10,8 +10,8 @@ import './FilterOptions.scss';
 const { RangePicker } = DatePicker;
 
 const breakpoints = {
-  xs: 20,
-  sm: 16,
+  xs: 24,
+  sm: 12,
   md: 12,
   lg: 8,
   xl: 6
@@ -236,6 +236,7 @@ const FilterOptions = ({ columnFilter, paramsTable, fetchData }) => {
                           {option.label}
                         </label>
                         <RangePicker
+                          style={{ width: '100%' }}
                           id={option.columnName}
                           format={DATE_FORMAT}
                           onChange={(date, dateString) =>

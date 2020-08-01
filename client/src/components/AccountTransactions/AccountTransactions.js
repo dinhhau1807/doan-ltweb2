@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import moment from 'moment';
 import { message, Table } from 'antd';
 import FilterDate from '../FilterDate/FilterDate';
 import { getAccountTransactions } from '../../actions/CustomerActions';
-import { getErrorMessage, formatMoney } from '../../utils/helpers';
-import { DATE_FORMAT } from '../../constants/GlobalConstants';
+import { getErrorMessage, formatMoney, statusLabel } from '../../utils/helpers';
+import { DATETIME_FORMAT } from '../../constants/GlobalConstants';
 
 import './AccountTransactions.scss';
 
@@ -19,7 +19,7 @@ const AccountTransactions = () => {
       title: 'Date',
       dataIndex: 'createdAt',
       sorter: true,
-      render: text => <span>{moment(text).format(DATE_FORMAT)}</span>
+      render: text => <span>{moment(text).format(DATETIME_FORMAT)}</span>
     },
     {
       title: 'Transaction Number',
@@ -38,6 +38,15 @@ const AccountTransactions = () => {
       render: (text, record) => (
         <span>{`${formatMoney(text)} ${record.currencyUnit}`}</span>
       )
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      sorter: false,
+      render: text => {
+        const [label, style] = statusLabel('trans', text);
+        return <span style={style}>{label}</span>;
+      }
     }
   ];
 
@@ -89,7 +98,7 @@ const AccountTransactions = () => {
   };
 
   return (
-    <div>
+    <React.Fragment>
       <h2 className="page-header">HISTORY TRANSACTIONS</h2>
       <FilterDate fetchData={fetchDataTable} paramsTable={paramsTable} />
       <div className="table">
@@ -103,7 +112,7 @@ const AccountTransactions = () => {
           onChange={onTableChange}
         />
       </div>
-    </div>
+    </React.Fragment>
   );
 };
 
