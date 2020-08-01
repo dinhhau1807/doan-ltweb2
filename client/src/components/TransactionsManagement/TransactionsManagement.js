@@ -2,22 +2,20 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import FilterOptions from '../FilterOptions/FilterOptions';
 import { FILTER_TRANSACTIONS } from '../../constants/ColumnFilter';
-import { getErrorMessage } from '../../utils/helpers';
+import { getErrorMessage, statusLabel } from '../../utils/helpers';
 import { Table, message } from 'antd';
 import { connect } from 'react-redux';
 import { getTransactions } from '../../actions/StaffTransactionsActions';
-import { TRANSACTION_STATUS } from '../../constants/GlobalConstants';
 
 import './TransactionsManagement.scss';
 
 const propTypes = {
-  getTransactions: PropTypes.func.isRequired,
-  transactionStatus: PropTypes.object
+  getTransactions: PropTypes.func.isRequired
 };
 
 const defaultProps = {};
 
-const TransactionsManagement = ({ getTransactions, transactionStatus }) => {
+const TransactionsManagement = ({ getTransactions }) => {
   const [dataTable, setDataTable] = useState([]);
   const [paramsTable, setParamsTable] = useState({});
   const [pagination, setPagination] = useState({ page: 1, pageSize: 10 });
@@ -67,15 +65,8 @@ const TransactionsManagement = ({ getTransactions, transactionStatus }) => {
       title: 'Status',
       dataIndex: 'status',
       sorter: false,
-      render: (text, record) => {
-        const style = { fontWeight: '700' };
-        const status = transactionStatus[text];
-        let label = 'Other';
-        if (status) {
-          label = status.label;
-          style.color = status.color;
-        }
-
+      render: text => {
+        const [label, style] = statusLabel('trans', text);
         return <span style={style}>{label}</span>;
       }
     }
@@ -161,7 +152,7 @@ TransactionsManagement.propTypes = propTypes;
 TransactionsManagement.defaultProps = defaultProps;
 
 const mapStateToProps = () => {
-  return { getTransactions, transactionStatus: TRANSACTION_STATUS };
+  return { getTransactions };
 };
 
 export default connect(mapStateToProps)(TransactionsManagement);

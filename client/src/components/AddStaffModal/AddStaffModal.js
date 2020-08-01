@@ -21,6 +21,7 @@ const validateMessages = {
 };
 
 const propTypes = {
+  width: PropTypes.string,
   createStaff: PropTypes.func.isRequired,
   fetchData: PropTypes.func.isRequired,
   paramsTable: PropTypes.object
@@ -30,7 +31,7 @@ const defaultProps = {
   paramsTable: {}
 };
 
-const AddStaffModal = ({ createStaff, fetchData, paramsTable }) => {
+const AddStaffModal = ({ createStaff, fetchData, paramsTable, width }) => {
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -68,8 +69,8 @@ const AddStaffModal = ({ createStaff, fetchData, paramsTable }) => {
   };
 
   return (
-    <div>
-      <Button type="primary" onClick={showModal}>
+    <div style={{ width }}>
+      <Button style={{ width: '100%' }} type="primary" onClick={showModal}>
         <PlusOutlined /> Create
       </Button>
       <Modal

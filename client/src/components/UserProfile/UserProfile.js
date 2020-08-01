@@ -41,7 +41,7 @@ const UserProfile = ({ loading, data, updateProfile }) => {
     route === 'staffs' ? STAFF_PROFILE_INPUTS : CUSTOMER_PROFILE_INPUTS;
 
   const getPhoneNumber = (data, countriesCallingCode) => {
-    if (data) {
+    if (data && data.phoneNumber) {
       const { phoneNumber } = data;
       const country = find(countriesCallingCode, function (item) {
         return phoneNumber.includes(item.callingCode);
@@ -73,79 +73,78 @@ const UserProfile = ({ loading, data, updateProfile }) => {
   }
 
   return (
-    <div>
+    <div style={{ maxWidth: '600px' }}>
       <h2 className="page-header">Update information</h2>
-      <Row>
-        <Col xs={24} sm={24} md={20} lg={12}>
-          <Form
-            {...layout}
-            name="form"
-            onFinish={onFinish}
-            validateMessages={validateMessages}
-            initialValues={{
-              ...data,
-              callingCode: phoneNumerMemoized[0],
-              phoneNumber: phoneNumerMemoized[1]
-            }}
-          >
-            {inputs.map(input => {
-              switch (input.type) {
-                case 'input':
-                  return (
-                    <Form.Item
-                      key={input.name}
-                      name={input.name}
-                      label={input.label}
-                    >
-                      <Input />
-                    </Form.Item>
-                  );
-                case 'phonecallingcode':
-                  return (
-                    <Form.Item
-                      key={input.name}
-                      label="Phone"
-                      rules={[{ required: true }]}
-                    >
-                      <Row gutter={4}>
-                        <Col span={8}>
-                          <CallingCodeFormItem />
-                        </Col>
-                        <Col span={16}>
-                          <Form.Item
-                            name={input.name}
-                            rules={[
-                              { required: true, message: 'Phone is required' }
-                            ]}
-                          >
-                            <Input />
-                          </Form.Item>
-                        </Col>
-                      </Row>
-                    </Form.Item>
-                  );
-                case 'datepicker':
-                  return (
-                    <Form.Item
-                      key={input.name}
-                      name={input.name}
-                      label={input.label}
-                    >
-                      <DatePicker format={DATE_FORMAT} />
-                    </Form.Item>
-                  );
-                default:
-                  return null;
-              }
-            })}
-            <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
-              <Button loading={loading} type="primary" htmlType="submit">
-                Update
-              </Button>
-            </Form.Item>
-          </Form>
-        </Col>
-      </Row>
+      <Form
+        {...layout}
+        name="form"
+        onFinish={onFinish}
+        validateMessages={validateMessages}
+        initialValues={{
+          ...data,
+          callingCode: phoneNumerMemoized[0],
+          phoneNumber: phoneNumerMemoized[1]
+        }}
+      >
+        {inputs.map(input => {
+          switch (input.type) {
+            case 'input':
+              return (
+                <Form.Item
+                  key={input.name}
+                  name={input.name}
+                  label={input.label}
+                  rules={[{ required: true }]}
+                >
+                  <Input />
+                </Form.Item>
+              );
+            case 'phonecallingcode':
+              return (
+                <Form.Item
+                  key={input.name}
+                  label="Phone"
+                  rules={[{ required: true }]}
+                  style={{ marginBottom: '0' }}
+                >
+                  <Row gutter={4}>
+                    <Col span={8}>
+                      <CallingCodeFormItem />
+                    </Col>
+                    <Col span={16}>
+                      <Form.Item
+                        name={input.name}
+                        rules={[
+                          { required: true, message: 'Phone is required' }
+                        ]}
+                      >
+                        <Input />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </Form.Item>
+              );
+            case 'datepicker':
+              return (
+                <Form.Item
+                  key={input.name}
+                  name={input.name}
+                  label={input.label}
+                  rules={[{ required: true }]}
+                >
+                  <DatePicker format={DATE_FORMAT} />
+                </Form.Item>
+              );
+            default:
+              return null;
+          }
+        })}
+        <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
+          <Button loading={loading} type="primary" htmlType="submit">
+            Update
+          </Button>
+        </Form.Item>
+      </Form>
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { fetchUser, logout } from '../../actions/UserActions';
@@ -8,6 +9,15 @@ import { getUser } from '../../selectors/UserSelectors';
 
 import './Header.scss';
 
+const propTypes = {
+  style: PropTypes.object,
+  isStaffRoute: PropTypes.bool,
+  user: PropTypes.object,
+  fetchUser: PropTypes.func.isRequired,
+  logout: PropTypes.func.isRequired,
+  history: PropTypes.object
+};
+
 const HeaderComponent = ({
   style,
   isStaffRoute,
@@ -16,6 +26,8 @@ const HeaderComponent = ({
   logout,
   history
 }) => {
+  const segment = isStaffRoute ? '/a2hl-management/' : '/';
+
   useEffect(() => {
     if (!user.data) {
       const type = isStaffRoute ? 'staffs' : 'customers';
@@ -25,15 +37,15 @@ const HeaderComponent = ({
 
   const handleLogout = () => {
     logout();
-    history.push(isStaffRoute ? '/a2hl-management/login' : '/login');
+    history.push(segment + 'login');
   };
 
   const handleChangePassword = () => {
-    history.push(isStaffRoute ? '/a2hl-management/password' : '/password');
+    history.push(segment + 'password');
   };
 
   const handleChangeProfile = () => {
-    history.push(isStaffRoute ? '/a2hl-management/profile' : '/profile');
+    history.push(segment + 'profile');
   };
 
   const { loading, data } = user;
@@ -70,6 +82,8 @@ const HeaderComponent = ({
     </header>
   );
 };
+
+HeaderComponent.propTypes = propTypes;
 
 const mapStateToProps = state => {
   return {

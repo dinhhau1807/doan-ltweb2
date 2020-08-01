@@ -89,7 +89,7 @@ const Register = ({ register, history }) => {
         identityNumber,
         registrationDate
       } = values;
-      console.log(callingCode);
+
       const body = {
         username,
         email,
@@ -151,7 +151,7 @@ const Register = ({ register, history }) => {
           initialValues={{ callingCode: '+84' }}
         >
           <Row gutter={8}>
-            <Col span={12}>
+            <Col xl={12} lg={12} md={24} sm={24} xs={24}>
               <Form.Item
                 name="username"
                 label="Username"
@@ -205,9 +205,17 @@ const Register = ({ register, history }) => {
                 label="Birthday"
                 rules={[{ required: true }]}
               >
-                <DatePicker format="DD-MM-yyyy" placeholder="" />
+                <DatePicker
+                  style={{ width: '100%' }}
+                  format="DD-MM-yyyy"
+                  placeholder=""
+                />
               </Form.Item>
-              <Form.Item label="Phone" rules={[{ required: true }]}>
+              <Form.Item
+                label="Phone"
+                rules={[{ required: true }]}
+                style={{ marginBottom: '0' }}
+              >
                 <Row gutter={4}>
                   <Col span={8}>
                     <CallingCodeFormItem />
@@ -230,7 +238,7 @@ const Register = ({ register, history }) => {
                 <Input.TextArea />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col xl={12} lg={12} md={24} sm={24} xs={24}>
               <Form.Item
                 name="identityNumber"
                 label="Identification ID No"
@@ -243,7 +251,11 @@ const Register = ({ register, history }) => {
                 label="Issued on"
                 rules={[{ required: true }]}
               >
-                <DatePicker format={DATE_FORMAT} placeholder="" />
+                <DatePicker
+                  style={{ width: '100%' }}
+                  format={DATE_FORMAT}
+                  placeholder=""
+                />
               </Form.Item>
               <Form.Item
                 name="photos"
@@ -297,9 +309,9 @@ const Register = ({ register, history }) => {
               </Form.Item>
             </Col>
           </Row>
-          <Row>
+          <Row align="middle" justify="center">
             <Col span={24}>
-              <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
+              <Form.Item wrapperCol={{ offset: 10 }}>
                 <Button loading={loading} type="primary" htmlType="submit">
                   Register
                 </Button>

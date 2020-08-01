@@ -7,7 +7,13 @@ import './CallingCodeFormItem.scss';
 const CallingCodeFormItem = () => {
   return (
     <Form.Item name="callingCode">
-      <Select>
+      <Select
+        showSearch
+        optionFilterProp="children"
+        filterOption={(input, option) =>
+          option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
+      >
         {countriesCallingCode.map(country => (
           <Select.Option
             className="flex-center-all"

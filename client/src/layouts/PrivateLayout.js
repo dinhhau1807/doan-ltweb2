@@ -10,15 +10,21 @@ export const PrivateLayout = ({ isStaffRoute, children }) => {
   return (
     <Layout>
       {isStaffRoute ? <StaffSidebar /> : <CustomerSidebar />}
-      <Layout style={{ width: '100%' }}>
+      <div style={{ width: '100%' }}>
         <Header style={{ background: '#fff' }} isStaffRoute={isStaffRoute} />
         <Content style={{ margin: '16px' }}>
           <Suspense fallback={<Spin className="spinning"></Spin>}>
             <div className="main">{children}</div>
           </Suspense>
         </Content>
-        <Footer style={{ textAlign: 'center' }}>A2HL Internet Banking</Footer>
-      </Layout>
+        <Footer
+          style={{
+            textAlign: 'center'
+          }}
+        >
+          A2HL Internet Banking
+        </Footer>
+      </div>
     </Layout>
   );
 };

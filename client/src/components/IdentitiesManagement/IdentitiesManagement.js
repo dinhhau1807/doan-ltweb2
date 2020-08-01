@@ -4,19 +4,17 @@ import FilterOptions from '../FilterOptions/FilterOptions';
 import { FILTER_IDENTITIES } from '../../constants/ColumnFilter';
 import { getErrorMessage } from '../../utils/helpers';
 import { Table, message } from 'antd';
-import { connect } from 'react-redux';
 import { getIdentities } from '../../actions/StaffIdentitiesActions';
 
 import './IdentitiesManagement.scss';
 
 const propTypes = {
-  getIdentities: PropTypes.func.isRequired,
   history: PropTypes.object
 };
 
 const defaultProps = {};
 
-const IdentitiesManagement = ({ getIdentities, history }) => {
+const IdentitiesManagement = ({ history }) => {
   const [dataTable, setDataTable] = useState([]);
   const [paramsTable, setParamsTable] = useState({});
   const [pagination, setPagination] = useState({ page: 1, pageSize: 10 });
@@ -139,10 +137,4 @@ const IdentitiesManagement = ({ getIdentities, history }) => {
 IdentitiesManagement.propTypes = propTypes;
 IdentitiesManagement.defaultProps = defaultProps;
 
-const mapStateToProps = () => {
-  return {
-    getIdentities
-  };
-};
-
-export default connect(mapStateToProps)(IdentitiesManagement);
+export default IdentitiesManagement;
