@@ -384,3 +384,46 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
     message: 'Verify code was sent to your email/phone!',
   });
 });
+
+exports.resetPassword = asyncHandler(async (req, res, next) => {
+  const { email, verifyCode, newPwd } = req.body;
+
+  if (!email || !verifyCode) {
+    return next(new AppError('Please provide email and verifyCode!', 400));
+  }
+
+  const customer = await Customer.findOne({
+    where: {
+      email,
+      verifyCode,
+    },
+  });
+
+  if (!customer) {
+    return next(
+      new AppError('Email/verifyCode is incorrect. Please try again!', 400)
+    );
+  }
+
+  const regexPwd = /^(?=.*[\d])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*])[\w!@#$%^&*]{8,}$/gm;
+  const matchedPwd = regexPwd.exec(newPwd);
+
+  if (!matchedPwd) {
+    return next(
+      new AppError(
+        'Password must be minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character.',
+        400
+      )
+    );
+  }
+
+  customer.password = await passwordValidator.createHashedPassword(newPwd);
+  customer.verifyCode = null;
+  customer.passwordUpdatedAt = new Date();
+  await customer.save();
+
+  return res.status(200).json({
+    status: 'success',
+    message: 'Your password have been reset!',
+  });
+});
