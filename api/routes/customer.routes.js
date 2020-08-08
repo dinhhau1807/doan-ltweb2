@@ -14,6 +14,7 @@ router.post(
   authController.customerRegister
 );
 router.get('/depositTerms', customerController.getDepositTerms);
+router.post('/forgotPassword', authController.forgotPassword);
 
 // Auth route
 router.use(authController.authorize, authController.restrictToCustomer);

@@ -11,6 +11,9 @@ const passwordValidator = require('../utils/passwordValidator');
 const { STATUS } = require('../utils/enums/statusEnum');
 const { Customer, Identity, Staff, Role } = require('../models');
 
+const EmailService = require('../services/emailService');
+const SmsService = require('../services/smsService');
+
 const multerStorage = multer.memoryStorage();
 
 const multerFilter = (req, file, cb) => {
@@ -346,5 +349,38 @@ exports.staffLogin = asyncHandler(async (req, res, next) => {
   return res.status(200).json({
     status: 'success',
     token,
+  });
+});
+
+exports.forgotPassword = asyncHandler(async (req, res, next) => {
+  const { email } = req.body;
+  const customer = await Customer.findOne({
+    where: {
+      email,
+    },
+  });
+
+  if (!customer) {
+    return next(new AppError('Email not found', 404));
+  }
+
+  customer.verifyCode = shortid.generate();
+  await customer.save();
+
+  const { verifyCode } = customer;
+
+  // Send otp code to user
+  const emailService = new EmailService(customer);
+  await emailService.sendResetPasswordCode(verifyCode);
+
+  // Send otp code to user with SMS
+  if (process.env.SMS_ENABLE_OTP === 'true') {
+    const sms = new SmsService(customer);
+    await sms.sendResetPasswordCode(verifyCode);
+  }
+
+  return res.status(200).json({
+    status: 'success',
+    message: 'Verify code was sent to your email/phone!',
   });
 });
