@@ -340,6 +340,7 @@ exports.approveCustomer = asyncHandler(async (req, res, next) => {
   });
 
   customerApproved.status = STATUS.active;
+  customerApproved.verifyCode = null;
   await customerApproved.save();
 
   await Account.create({

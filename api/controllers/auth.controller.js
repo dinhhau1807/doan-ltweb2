@@ -11,6 +11,9 @@ const passwordValidator = require('../utils/passwordValidator');
 const { STATUS } = require('../utils/enums/statusEnum');
 const { Customer, Identity, Staff, Role } = require('../models');
 
+const EmailService = require('../services/emailService');
+const SmsService = require('../services/smsService');
+
 const multerStorage = multer.memoryStorage();
 
 const multerFilter = (req, file, cb) => {
@@ -346,5 +349,81 @@ exports.staffLogin = asyncHandler(async (req, res, next) => {
   return res.status(200).json({
     status: 'success',
     token,
+  });
+});
+
+exports.forgotPassword = asyncHandler(async (req, res, next) => {
+  const { email } = req.body;
+  const customer = await Customer.findOne({
+    where: {
+      email,
+    },
+  });
+
+  if (!customer) {
+    return next(new AppError('Email not found', 404));
+  }
+
+  customer.verifyCode = shortid.generate();
+  await customer.save();
+
+  const { verifyCode } = customer;
+
+  // Send otp code to user
+  const emailService = new EmailService(customer);
+  await emailService.sendResetPasswordCode(verifyCode);
+
+  // Send otp code to user with SMS
+  if (process.env.SMS_ENABLE_OTP === 'true') {
+    const sms = new SmsService(customer);
+    await sms.sendResetPasswordCode(verifyCode);
+  }
+
+  return res.status(200).json({
+    status: 'success',
+    message: 'Verify code was sent to your email/phone!',
+  });
+});
+
+exports.resetPassword = asyncHandler(async (req, res, next) => {
+  const { email, verifyCode, newPwd } = req.body;
+
+  if (!email || !verifyCode) {
+    return next(new AppError('Please provide email and verifyCode!', 400));
+  }
+
+  const customer = await Customer.findOne({
+    where: {
+      email,
+      verifyCode,
+    },
+  });
+
+  if (!customer) {
+    return next(
+      new AppError('Email/verifyCode is incorrect. Please try again!', 400)
+    );
+  }
+
+  const regexPwd = /^(?=.*[\d])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*])[\w!@#$%^&*]{8,}$/gm;
+  const matchedPwd = regexPwd.exec(newPwd);
+
+  if (!matchedPwd) {
+    return next(
+      new AppError(
+        'Password must be minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character.',
+        400
+      )
+    );
+  }
+
+  customer.password = await passwordValidator.createHashedPassword(newPwd);
+  customer.verifyCode = null;
+  customer.passwordUpdatedAt = new Date();
+  await customer.save();
+
+  return res.status(200).json({
+    status: 'success',
+    message: 'Your password have been reset!',
   });
 });
