@@ -31,6 +31,12 @@ const NotFound = lazy(() => import('./components/NotFound/NotFound'));
 const Login = lazy(() => import('./components/Login/Login'));
 const Register = lazy(() => import('./components/Register/Register'));
 const LoginStaff = lazy(() => import('./components/LoginStaff/LoginStaff'));
+const PasswordRecovery = lazy(() =>
+  import('./components/PasswordRecovery/PasswordRecovery')
+);
+const PasswordReset = lazy(() =>
+  import('./components/PasswordReset/PasswordReset')
+);
 
 const CustomersManagement = lazy(() =>
   import('./components/CustomersManagement/CustomersManagement')
@@ -178,6 +184,18 @@ export const routes = [
     exact: true,
     layout: PublicLayout,
     component: Register
+  },
+  {
+    path: '/password-recovery',
+    exact: true,
+    layout: PublicLayout,
+    component: PasswordRecovery
+  },
+  {
+    path: '/password-reset/:code',
+    exact: true,
+    layout: PublicLayout,
+    component: PasswordReset
   },
   {
     path: '*',
