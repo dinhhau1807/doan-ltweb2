@@ -48,7 +48,9 @@ const CustomerAccount = () => {
         if (+text > 0) {
           const { term, createdAt } = record;
           return (
-            <span>{moment(createdAt).add(term).format(DATETIME_FORMAT)}</span>
+            <span>
+              {moment(createdAt).add(term, 'M').format(DATETIME_FORMAT)}
+            </span>
           );
         }
         return '';
