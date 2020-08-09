@@ -29,25 +29,6 @@ const upload = multer({
   fileFilter: multerFilter,
 });
 
-const findCustomer = asyncHandler(async (code) => {
-  const customer = await Customer.findOne({
-    attributes: {
-      exclude: ['password', 'accessFailedCount', 'passwordUpdatedAt'],
-    },
-    where: {
-      [Op.and]: [
-        { verifyCode: code },
-        {
-          status: {
-            [Op.ne]: STATUS.deleted,
-          },
-        },
-      ],
-    },
-  });
-  return customer;
-});
-
 exports.uploadIdentityImages = upload.fields([
   {
     name: 'frontImage',
