@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import { Row, Col, Typography, Spin, message, Button, Input, Form } from 'antd';
+import {
+  Row,
+  Typography,
+  Spin,
+  message,
+  Button,
+  Input,
+  Form,
+  Descriptions
+} from 'antd';
 import { getErrorMessage } from '../../utils/helpers';
 import { DATE_FORMAT } from '../../constants/GlobalConstants';
 import {
@@ -94,54 +103,33 @@ const IdentityDetails = ({ match }) => {
   };
 
   const { id, identityNumber, registrationDate } = identity;
+  const issuedOn = moment(registrationDate).format(DATE_FORMAT);
 
   return (
-    <div>
+    <div className="identity">
+      <h2 className="page-header">IDENTITY DETAILS</h2>
       <Spin spinning={loading}>
-        <Row gutter={16}>
-          <Col>
-            <Row>
-              <Paragraph>
-                <strong>ID: </strong>
-              </Paragraph>
-              <Paragraph>{id}</Paragraph>
-            </Row>
-          </Col>
-          <Col>
-            <Row>
-              <Paragraph>
-                <strong>No: </strong>
-              </Paragraph>
-              <Paragraph>{identityNumber}</Paragraph>
-            </Row>
-          </Col>
-          <Col>
-            <Row>
-              <Paragraph>
-                <strong>Issued on: </strong>
-              </Paragraph>
-              <Paragraph>
-                {moment(registrationDate).format(DATE_FORMAT)}
-              </Paragraph>
-            </Row>
-          </Col>
-        </Row>
-        <Row gutter={16}>
-          <Col>
+        <Descriptions
+          bordered
+          layout="vertical"
+          column={{ xxl: 3, xl: 3, lg: 3, md: 3, sm: 1, xs: 1 }}
+        >
+          <Descriptions.Item label="ID">{id}</Descriptions.Item>
+          <Descriptions.Item label="Identication number">
+            {identityNumber}
+          </Descriptions.Item>
+          <Descriptions.Item label="Issued on">{issuedOn}</Descriptions.Item>
+          <Descriptions.Item label="Front image">
             <img
-              style={{ objectFit: 'cover' }}
+              className="identity__photo"
               src={frontImageBase64}
               alt="front"
             />
-          </Col>
-          <Col>
-            <img
-              style={{ objectFit: 'cover' }}
-              src={backImageBase64}
-              alt="back"
-            />
-          </Col>
-        </Row>
+          </Descriptions.Item>
+          <Descriptions.Item label="Back image">
+            <img className="identity__photo" src={backImageBase64} alt="back" />
+          </Descriptions.Item>
+        </Descriptions>
         <Row>
           <Form style={{ margin: '10px 0' }} onFinish={onFinish}>
             <Form.Item
