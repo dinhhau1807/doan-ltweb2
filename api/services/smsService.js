@@ -20,7 +20,9 @@ class SmsService {
   }
 
   async sendResetPasswordCode(verifyCode) {
-    const template = `Your verify code is: ${verifyCode}.`;
+    const template =
+      `Your verify code is: ${verifyCode}.` +
+      `Or you can use this link: ${process.env.domain}/api/customers/resetPassword/${verifyCode} .Don't share it with anyone.`;
     await this.send(template);
   }
 
