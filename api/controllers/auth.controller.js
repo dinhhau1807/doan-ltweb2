@@ -29,6 +29,25 @@ const upload = multer({
   fileFilter: multerFilter,
 });
 
+const findCustomer = asyncHandler(async (code) => {
+  const customer = await Customer.findOne({
+    attributes: {
+      exclude: ['password', 'accessFailedCount', 'passwordUpdatedAt'],
+    },
+    where: {
+      [Op.and]: [
+        { verifyCode: code },
+        {
+          status: {
+            [Op.ne]: STATUS.deleted,
+          },
+        },
+      ],
+    },
+  });
+  return customer;
+});
+
 exports.uploadIdentityImages = upload.fields([
   {
     name: 'frontImage',
@@ -386,23 +405,21 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
 });
 
 exports.resetPassword = asyncHandler(async (req, res, next) => {
-  const { email, verifyCode, newPwd } = req.body;
+  const { code } = req.params;
+  const { newPwd } = req.body;
 
-  if (!email || !verifyCode) {
-    return next(new AppError('Please provide email and verifyCode!', 400));
+  if (!code) {
+    return next(new AppError('Invalid link!', 400));
   }
 
   const customer = await Customer.findOne({
     where: {
-      email,
-      verifyCode,
+      verifyCode: code,
     },
   });
 
   if (!customer) {
-    return next(
-      new AppError('Email/verifyCode is incorrect. Please try again!', 400)
-    );
+    return next(new AppError('Verify code is incorrect.', 400));
   }
 
   const regexPwd = /^(?=.*[\d])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*])[\w!@#$%^&*]{8,}$/gm;
