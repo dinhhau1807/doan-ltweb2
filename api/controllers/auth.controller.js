@@ -405,16 +405,15 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
 });
 
 exports.resetPassword = asyncHandler(async (req, res, next) => {
-  const { code } = req.params;
-  const { newPwd } = req.body;
+  const { verifyCode, newPwd } = req.body;
 
-  if (!code) {
-    return next(new AppError('Invalid link!', 400));
+  if (!verifyCode) {
+    return next(new AppError('Please provide email and verifyCode!', 400));
   }
 
   const customer = await Customer.findOne({
     where: {
-      verifyCode: code,
+      verifyCode,
     },
   });
 

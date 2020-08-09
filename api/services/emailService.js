@@ -25,7 +25,7 @@ class EmailService {
       from: this.from,
       to: this.to,
       subject,
-      text: template,
+      html: template,
     };
 
     // Create transport and send email
@@ -35,7 +35,7 @@ class EmailService {
   async sendResetPasswordCode(verifyCode) {
     const template =
       `Your verify code is: ${verifyCode}.` +
-      `Or you can use this link: ${process.env.domain}/api/customers/resetPassword/${verifyCode} .Don't share it with anyone.`;
+      `Or you can use this link: <a href='${process.env.CLIENT_DOMAIN}/password-reset/${verifyCode}' target='_blank'> CLICK HERE </a>. Don't share it with anyone.`;
     await this.send(template, 'Reset your password!');
   }
 
