@@ -52,3 +52,11 @@ export const updateProfile = (type, body) => async dispatch => {
     message.error(getErrorMessage(err));
   }
 };
+
+export const passwordRecovery = body => {
+  return fetchApi(`/customers/forgotPassword`, 'POST', body);
+};
+
+export const passwordReset = body => {
+  return fetchApi('/customers/resetPassword', 'POST', body);
+};

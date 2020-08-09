@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import { createCookie, getErrorMessage } from '../../utils/helpers';
 import { TOKEN_KEY } from '../../constants/GlobalConstants';
 import { connect } from 'react-redux';
@@ -71,7 +72,8 @@ const Login = ({ login, history }) => {
           </Form.Item>
 
           <Form.Item>
-            <a href="/register">Create new account</a>
+            <Link to="/password-recovery">Forgot your password</Link> or{' '}
+            <Link to="/register">create new account</Link>
           </Form.Item>
         </Form>
       </div>
