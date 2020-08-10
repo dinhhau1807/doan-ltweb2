@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Table, message, Dropdown } from 'antd';
+import { Table, message } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 
 // Components
@@ -86,22 +86,18 @@ const CustomersManagement = ({ history }) => {
         const [label, style] = statusLabel('person', text);
 
         return (
-          <Dropdown
-            overlay={
-              <EditStatusDropdown
-                statusList={Object.keys(ENTITY_STATUS)
-                  .filter(key => key !== text)
-                  .map(key => ({ key, label: ENTITY_STATUS[key].label }))}
-                item={record}
-                onChangeStatus={onChangeStatus}
-                disabled={loading}
-              />
-            }
+          <EditStatusDropdown
+            statusList={Object.keys(ENTITY_STATUS)
+              .filter(key => key !== text)
+              .map(key => ({ key, label: ENTITY_STATUS[key].label }))}
+            item={record}
+            onChangeStatus={onChangeStatus}
+            disabled={loading}
           >
             <span style={style}>
               {label} <DownOutlined />
             </span>
-          </Dropdown>
+          </EditStatusDropdown>
         );
       }
     }
