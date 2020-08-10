@@ -13,33 +13,46 @@ export const TOKEN_KEY = 'token';
 export const LOGIN_URL = '/login';
 
 export const STAFF_TABS = {
-  CUSTOMER: { to: '/', label: 'CUSTOMERS', icon: <UserOutlined /> },
+  CUSTOMER: {
+    to: '/a2hl-management',
+    label: 'Customers',
+    icon: <UserOutlined />
+  },
   IDENTITY: {
-    to: '/identities',
+    to: '/a2hl-management/identities',
     label: 'Identities',
     icon: <UserAddOutlined />
   },
   TRANSACTION: {
-    to: '/transaction',
+    to: '/a2hl-management/transaction',
     label: 'Transactions',
     icon: <FileOutlined />
   },
-  STAFF: { to: '/staffs', label: 'Staffs', icon: <ApartmentOutlined /> }
+  STAFF: {
+    to: '/a2hl-management/staffs',
+    label: 'Staffs',
+    icon: <ApartmentOutlined />
+  },
+  UTILS: {
+    to: '/a2hl-management/utils',
+    label: 'Utilities',
+    icon: <SettingOutlined />
+  }
 };
 
 export const CUSTOMER_TABS = {
   ACCOUNT: { to: '/', label: 'Account', icon: <DesktopOutlined /> },
   TRANSACTION: {
-    to: '/transaction',
+    to: '/transfer',
     label: 'Transfer',
     icon: <FileOutlined />
   },
   DEPOSIT: {
-    to: '/deposit-request',
+    to: '/deposit',
     label: 'Deposit',
     icon: <CreditCardOutlined />
   },
-  UTILS: { to: '/profile', label: 'Utilities', icon: <SettingOutlined /> }
+  UTILS: { to: '/utils', label: 'Utilities', icon: <SettingOutlined /> }
 };
 
 export const ENTITY_STATUS = {

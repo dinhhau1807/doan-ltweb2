@@ -39,14 +39,16 @@ const Header = ({ style, isStaffRoute, user, fetchUser, logout, history }) => {
   };
 
   const handleChangePassword = () => {
-    history.push(segment + 'password');
+    history.push(segment + 'utils/password');
   };
 
   const handleChangeProfile = () => {
-    history.push(segment + 'profile');
+    history.push(segment + 'utils/profile');
   };
 
   const { loading, data } = user;
+  const userName = data ? data.name : null;
+
   return (
     <header className="header" style={style}>
       <h1 className="header__left">
@@ -70,7 +72,7 @@ const Header = ({ style, isStaffRoute, user, fetchUser, logout, history }) => {
             <span style={{ cursor: 'pointer', fontSize: '18px' }}>
               <UserOutlined />
               <span style={{ fontSize: '16px', margin: '0 8px' }}>
-                {data ? data.name : null}
+                {userName}
               </span>
               <DownOutlined style={{ marginLeft: '4px' }} />
             </span>

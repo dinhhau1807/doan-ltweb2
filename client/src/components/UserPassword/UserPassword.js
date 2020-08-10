@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, message } from 'antd';
+import { merge } from 'lodash';
 
 // Components
 import ComponentHeader from '../ComponentHeader/ComponentHeader';
@@ -29,6 +30,17 @@ const validateMessages = {
 const UserPassword = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+
+  const isStaffRoute = window.location.href.includes('/a2hl-management');
+  const utilsTabs = merge({}, UTILS_TABS);
+
+  // make management page url
+  if (isStaffRoute) {
+    Object.keys(utilsTabs).forEach(key => {
+      utilsTabs[key].to = '/a2hl-management' + utilsTabs[key].to;
+    });
+  }
+
   const onFinish = async values => {
     try {
       setLoading(true);
@@ -54,8 +66,8 @@ const UserPassword = () => {
   return (
     <div className="password">
       <ComponentHeader
-        tabs={UTILS_TABS}
-        selectedTab={UTILS_TABS.PASSWORD.to}
+        tabs={utilsTabs}
+        selectedTab={utilsTabs.PASSWORD.to}
         title="Change password"
       />
       <div className="password__form-wrap">

@@ -63,56 +63,92 @@ export const routes = [
     component: CustomerAccount
   },
   {
-    path: '/password',
+    path: '/account',
     exact: true,
     isPrivate: true,
     layout: PrivateLayout,
-    component: UserPassword
+    component: CustomerAccount
   },
   {
-    path: '/history',
+    path: '/account/history',
     exact: true,
     isPrivate: true,
     layout: PrivateLayout,
     component: AccountTransactions
   },
   {
-    path: '/deposit-request',
+    path: '/deposit',
     exact: true,
     isPrivate: true,
     layout: PrivateLayout,
     component: OpenDepositAccount
   },
   {
-    path: '/deposit-withdraw',
+    path: '/deposit/request',
+    exact: true,
+    isPrivate: true,
+    layout: PrivateLayout,
+    component: OpenDepositAccount
+  },
+  {
+    path: '/deposit/withdraw',
     exact: true,
     isPrivate: true,
     layout: PrivateLayout,
     component: CloseDepositAccount
   },
   {
-    path: '/deposit-history',
+    path: '/deposit/history',
     exact: true,
     isPrivate: true,
     layout: PrivateLayout,
     component: DepositTransactions
   },
   {
-    path: '/transaction',
+    path: '/transfer',
     exact: true,
     isPrivate: true,
     layout: PrivateLayout,
     component: TransferInsideSystem
   },
   {
-    path: '/profile',
+    path: '/transfer/inside',
+    exact: true,
+    isPrivate: true,
+    layout: PrivateLayout,
+    component: TransferInsideSystem
+  },
+  {
+    path: '/utils',
     exact: true,
     isPrivate: true,
     layout: PrivateLayout,
     component: UserProfile
   },
   {
+    path: '/utils/profile',
+    exact: true,
+    isPrivate: true,
+    layout: PrivateLayout,
+    component: UserProfile
+  },
+  {
+    path: '/utils/password',
+    exact: true,
+    isPrivate: true,
+    layout: PrivateLayout,
+    component: UserPassword
+  },
+  {
     path: '/a2hl-management',
+    exact: true,
+    isPrivate: true,
+    isStaffRoute: true,
+    layout: PrivateLayout,
+    component: CustomersManagement
+  },
+  {
+    path: '/a2hl-management/customers',
     exact: true,
     isPrivate: true,
     isStaffRoute: true,
@@ -152,7 +188,7 @@ export const routes = [
     component: TransactionsManagement
   },
   {
-    path: '/a2hl-management/password',
+    path: '/a2hl-management/utils/password',
     exact: true,
     isPrivate: true,
     isStaffRoute: true,
@@ -160,7 +196,15 @@ export const routes = [
     component: UserPassword
   },
   {
-    path: '/a2hl-management/profile',
+    path: '/a2hl-management/utils',
+    exact: true,
+    isPrivate: true,
+    isStaffRoute: true,
+    layout: PrivateLayout,
+    component: UserProfile
+  },
+  {
+    path: '/a2hl-management/utils/profile',
     exact: true,
     isPrivate: true,
     isStaffRoute: true,

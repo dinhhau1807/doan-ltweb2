@@ -11,7 +11,7 @@ export const PrivateLayout = ({ isStaffRoute, children }) => {
 
   return (
     <Layout style={{ backgroundColor: '#fff' }}>
-      <Sidebar isStaffRoute={isStaffRoute} tabs={tabs} />
+      <Sidebar tabs={tabs} />
       <div style={{ width: '100%' }}>
         <Header style={{ background: '#fff' }} isStaffRoute={isStaffRoute} />
         <Content style={{ margin: '16px' }}>

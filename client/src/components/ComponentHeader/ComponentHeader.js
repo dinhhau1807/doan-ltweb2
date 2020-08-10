@@ -12,6 +12,10 @@ const propTypes = {
   title: PropTypes.string.isRequired
 };
 
+const defaultProps = {
+  selectedTab: ''
+};
+
 const ComponentHeader = ({ tabs, selectedTab, title }) => {
   return (
     <div className="component-header">
@@ -23,17 +27,19 @@ const ComponentHeader = ({ tabs, selectedTab, title }) => {
           mode="horizontal"
           style={{ textAlign: 'right' }}
         >
-          {Object.keys(tabs).map(key => (
-            <Menu.Item className="component-header__item" key={tabs[key].to}>
-              <Link to={tabs[key].to}>{tabs[key].label}</Link>
-            </Menu.Item>
-          ))}
+          {!!tabs &&
+            Object.keys(tabs).map(key => (
+              <Menu.Item className="component-header__item" key={tabs[key].to}>
+                <Link to={tabs[key].to}>{tabs[key].label}</Link>
+              </Menu.Item>
+            ))}
         </Menu>
       </div>
     </div>
   );
 };
 
+ComponentHeader.defaultProps = defaultProps;
 ComponentHeader.propTypes = propTypes;
 
 export default ComponentHeader;
