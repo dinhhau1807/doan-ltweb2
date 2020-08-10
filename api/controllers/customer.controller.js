@@ -2,13 +2,7 @@ const asyncHandler = require('express-async-handler');
 const { Op } = require('sequelize');
 const axios = require('axios');
 
-const {
-  Customer,
-  Transaction,
-  Account,
-  DepositTerm,
-  Bank,
-} = require('../models');
+const { Customer, Transaction, Account, DepositTerm } = require('../models');
 const AppError = require('../utils/appError');
 const passwordValidator = require('../utils/passwordValidator');
 const { STATUS, TRANS_STATUS } = require('../utils/enums/statusEnum');
