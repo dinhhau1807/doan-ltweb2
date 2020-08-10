@@ -1,5 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const { Op } = require('sequelize');
+const axios = require('axios');
 
 const { Customer, Transaction, Account, DepositTerm } = require('../models');
 const AppError = require('../utils/appError');
@@ -320,6 +321,211 @@ exports.internalTransferConfirm = asyncHandler(async (req, res, next) => {
 
   await accountSource.save();
   await accountDestination.save();
+  await transaction.save();
+
+  return res.status(200).json({
+    status: 'success',
+    message: 'Your transaction is succeed!',
+  });
+});
+
+exports.externalTransferRequest = asyncHandler(async (req, res, next) => {
+  const customer = req.user;
+  const {
+    idAccountSource,
+    idAccountDestination,
+    idBankDestination,
+    amount,
+    description,
+  } = req.body;
+
+  if (Number.isNaN(parseFloat(amount)) || !Number.isFinite(amount)) {
+    return next(new AppError('Amount must be a numeric value!', 400));
+  }
+
+  if (!idBankDestination) {
+    return next(new AppError('ID bank destination not valid!', 400));
+  }
+
+  if (!idAccountDestination) {
+    return next(new AppError('ID account destination not valid!', 400));
+  }
+
+  // Get banks from API center
+  let banks = [];
+
+  const options = {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${process.env.BANK_KEY}` },
+  };
+
+  try {
+    const result = await axios.get(
+      `${process.env.BANK_DOMAIN}/api/banks`,
+      options
+    );
+
+    if (result.data.status !== 'success') {
+      return next(new AppError(result.data.message, 500));
+    }
+
+    ({ banks } = result.data);
+  } catch (err) {
+    return next(new AppError(err.message, 500));
+  }
+
+  if (!banks.map((b) => b.id).includes(idBankDestination)) {
+    return next(new AppError('Bank is not valid!', 400));
+  }
+
+  // Check account source
+  const accountSource = await Account.findOne({
+    where: {
+      [Op.and]: [
+        { id: idAccountSource },
+        { customerId: customer.id },
+        { status: { [Op.notIn]: [STATUS.deleted] } },
+        { type: ACCOUNT_TYPE.payment },
+      ],
+    },
+  });
+  if (!accountSource) {
+    return next(new AppError('Your account not found!', 404));
+  }
+
+  if (accountSource.status === STATUS.blocked) {
+    return next(
+      new AppError(
+        'Your account is blocked! Please contact staff to unblock.',
+        403
+      )
+    );
+  }
+
+  if (accountSource.currentBalance < amount) {
+    return next(
+      new AppError(
+        'Your account does not have enough money to make this transaction!'
+      )
+    );
+  }
+
+  // Create new transaction
+  const otpCode = otpGenerator();
+  const otpCreatedDate = new Date();
+  const otpExpiredDate = new Date(otpCreatedDate.getTime() + 10 * 60000);
+
+  await Transaction.create({
+    accountSourceId: accountSource.id,
+    accountDestination: idAccountSource,
+    bankDestinationId: idBankDestination,
+    amount,
+    currencyUnit: accountSource.currentUnit,
+    description: description || '',
+    otpCode,
+    otpCreatedDate,
+    otpExpiredDate,
+  });
+
+  // Send otp code to user
+  const email = new EmailService(req.user);
+  await email.sendOTPCode(otpCode);
+
+  // Send otp code to user with SMS
+  if (process.env.SMS_ENABLE_OTP === 'true') {
+    const sms = new SmsService(req.user);
+    await sms.sendOTPCode(otpCode);
+  }
+
+  return res.status(200).json({
+    status: 'success',
+    message: 'OTP code was sent to your email/phone!',
+  });
+});
+
+exports.externalTransferConfirm = asyncHandler(async (req, res, next) => {
+  const customer = req.user;
+  const { otpCode } = req.body;
+
+  if (!otpCode) {
+    return next(new AppError('OTP code cannot be empty!'), 400);
+  }
+
+  // Get account ids
+  let accounts = await Account.findAll({
+    attributes: ['id'],
+    where: {
+      customerId: customer.id,
+    },
+  });
+  accounts = accounts.map((account) => account.id);
+
+  const transaction = await Transaction.findOne({
+    where: {
+      accountSourceId: { [Op.in]: accounts },
+      otpCode: `${otpCode}`,
+      status: TRANS_STATUS.pending,
+    },
+  });
+
+  if (!transaction) {
+    return next(new AppError('Transaction not found!'), 404);
+  }
+
+  // Check if OTP was expired
+  if (transaction.otpExpiredDate < new Date()) {
+    transaction.status = TRANS_STATUS.failed;
+    await transaction.save();
+    return next(new AppError('OTP was expired!'), 403);
+  }
+
+  // Get account source
+  const accountSource = await Account.findOne({
+    where: {
+      id: transaction.accountSourceId,
+      status: { [Op.notIn]: [STATUS.deleted, STATUS.blocked] },
+    },
+  });
+  if (!accountSource) {
+    return next(new AppError('Your account not found or blocked!', 404));
+  }
+
+  // Prepare for transfer
+  const options = {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${process.env.BANK_KEY}` },
+  };
+
+  const body = {
+    amount: transaction.amount,
+    currency: transaction.currencyUnit,
+    destinationBankId: transaction.bankDestinationId,
+    destinationAccount: transaction.accountDestination,
+    note: transaction.description,
+  };
+
+  try {
+    const transferResult = await axios.post(
+      `${process.env.BANK_DOMAIN}/api/transfers`,
+      body,
+      options
+    );
+
+    if (transferResult.data.status !== 'success') {
+      return next(new AppError(transferResult.data.message, 500));
+    }
+  } catch (err) {
+    return next(new AppError(err.message, 500));
+  }
+
+  // Calculation and update database
+  accountSource.currentBalance -= convert(transaction.amount)
+    .from(transaction.currencyUnit)
+    .to(accountSource.currentUnit);
+
+  transaction.status = TRANS_STATUS.succeed;
+
+  await accountSource.save();
   await transaction.save();
 
   return res.status(200).json({
