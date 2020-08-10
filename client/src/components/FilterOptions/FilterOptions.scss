@@ -1,5 +1,6 @@
 .filter {
   flex: 1 0 0;
+  padding: 0 16px;
 
   &__content {
     display: flex;
@@ -9,7 +10,6 @@
 
   &__default {
     flex: 1;
-    border: none;
     outline: none;
     box-shadow: none;
   }
