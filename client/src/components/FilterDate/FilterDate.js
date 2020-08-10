@@ -2,8 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { Form, DatePicker, Button } from 'antd';
+
+// Constants
 import { DATE_FORMAT } from '../../constants/GlobalConstants';
 
+// Styles
 import './FilterDate.scss';
 
 const layout = {

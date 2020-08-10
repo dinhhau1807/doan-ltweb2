@@ -1,26 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import {
-  Row,
-  Typography,
-  Spin,
-  message,
-  Button,
-  Input,
-  Form,
-  Descriptions
-} from 'antd';
-import { getErrorMessage } from '../../utils/helpers';
+import { Row, Spin, message, Button, Input, Form, Descriptions } from 'antd';
+
+//Actions
+import { getIdentity, approveIdentity } from '../../actions/StaffActions';
+
+// Constants
 import { DATE_FORMAT } from '../../constants/GlobalConstants';
-import {
-  getIdentity,
-  approveIdentity
-} from '../../actions/StaffIdentitiesActions';
 
+// Utils
+import { getErrorMessage } from '../../utils/helpers';
+
+// Styles
 import './IdentityDetails.scss';
-
-const { Paragraph } = Typography;
 
 const propTypes = {
   match: PropTypes.object

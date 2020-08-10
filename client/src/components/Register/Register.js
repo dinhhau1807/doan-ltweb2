@@ -1,11 +1,5 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { register } from '../../actions/UserActions';
-import { LOGIN_URL, DATE_FORMAT } from '../../constants/GlobalConstants';
-import { getBase64, getErrorMessage, b64toBlob } from '../../utils/helpers';
-
-import './Register.scss';
 import {
   Form,
   Input,
@@ -18,7 +12,21 @@ import {
   message
 } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+
+// Components
 import CallingCodeFormItem from '../CallingCodeFormItem/CallingCodeFormItem';
+
+// Actions
+import { register } from '../../actions/UserActions';
+
+// Constants
+import { LOGIN_URL, DATE_FORMAT } from '../../constants/GlobalConstants';
+
+// Utils
+import { getBase64, getErrorMessage, b64toBlob } from '../../utils/helpers';
+
+// Styles
+import './Register.scss';
 
 const layout = {
   labelCol: { span: 8 },
@@ -41,7 +49,7 @@ const propTypes = {
 
 const defaultProps = {};
 
-const Register = ({ register, history }) => {
+const Register = ({ history }) => {
   const [loading, setLoading] = useState(false);
   //upload state
   const [uploadState, setUploadState] = useState({
@@ -125,7 +133,7 @@ const Register = ({ register, history }) => {
 
       await register(formData);
       message.success('New account is created');
-      history.push('/login');
+      history.push(LOGIN_URL);
     } catch (err) {
       message.error(getErrorMessage(err), 10);
       setLoading(false);
@@ -330,10 +338,4 @@ const Register = ({ register, history }) => {
 Register.propTypes = propTypes;
 Register.defaultProps = defaultProps;
 
-const mapStateToProps = () => {
-  return {
-    register
-  };
-};
-
-export default connect(mapStateToProps)(Register);
+export default Register;

@@ -1,11 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import FilterOptions from '../FilterOptions/FilterOptions';
-import { FILTER_IDENTITIES } from '../../constants/ColumnFilter';
-import { getErrorMessage } from '../../utils/helpers';
 import { Table, message } from 'antd';
-import { getIdentities } from '../../actions/StaffIdentitiesActions';
 
+// Components
+import FilterOptions from '../FilterOptions/FilterOptions';
+
+// Actions
+import { getIdentities } from '../../actions/StaffActions';
+
+// Constants
+import { FILTER_IDENTITIES } from '../../constants/ColumnFilter';
+
+// Utils
+import { getErrorMessage } from '../../utils/helpers';
+
+// Styles
 import './IdentitiesManagement.scss';
 
 const propTypes = {

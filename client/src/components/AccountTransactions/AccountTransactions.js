@@ -1,11 +1,22 @@
 import React, { useState } from 'react';
 import moment from 'moment';
 import { message, Table } from 'antd';
-import FilterDate from '../FilterDate/FilterDate';
-import { getAccountTransactions } from '../../actions/CustomerActions';
-import { getErrorMessage, formatMoney, statusLabel } from '../../utils/helpers';
-import { DATETIME_FORMAT } from '../../constants/GlobalConstants';
 
+// Components
+import FilterDate from '../FilterDate/FilterDate';
+import ComponentHeader from '../ComponentHeader/ComponentHeader';
+
+// Actions
+import { getAccountTransactions } from '../../actions/CustomerActions';
+
+// Constants
+import { DATETIME_FORMAT } from '../../constants/GlobalConstants';
+import { ACCOUNT_TABS } from '../../constants/ComponentTabs';
+
+// Utils
+import { getErrorMessage, formatMoney, statusLabel } from '../../utils/helpers';
+
+// Styles
 import './AccountTransactions.scss';
 
 const AccountTransactions = () => {
@@ -99,10 +110,15 @@ const AccountTransactions = () => {
 
   return (
     <React.Fragment>
-      <h2 className="page-header">HISTORY TRANSACTIONS</h2>
+      <ComponentHeader
+        tabs={ACCOUNT_TABS}
+        selectedTab={ACCOUNT_TABS.HISTORY.to}
+        title="Account history"
+      />
       <FilterDate fetchData={fetchDataTable} paramsTable={paramsTable} />
       <div className="table">
         <Table
+          bordered
           size="middle"
           rowKey={record => record.id}
           dataSource={dataTable}

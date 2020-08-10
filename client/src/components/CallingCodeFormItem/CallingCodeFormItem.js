@@ -1,7 +1,10 @@
 import React from 'react';
 import { Form, Select } from 'antd';
+
+// Constants
 import { countriesCallingCode } from '../../constants/GlobalConstants';
 
+// Styles
 import './CallingCodeFormItem.scss';
 
 const CallingCodeFormItem = () => {

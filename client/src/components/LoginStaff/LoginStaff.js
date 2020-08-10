@@ -1,30 +1,35 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { createCookie, getErrorMessage } from '../../utils/helpers';
-import { TOKEN_KEY } from '../../constants/GlobalConstants';
 import { Form, Input, Button, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { connect } from 'react-redux';
+
+// Actions
 import { login } from '../../actions/UserActions';
 
+// Constants
+import { TOKEN_KEY } from '../../constants/GlobalConstants';
+
+// Utils
+import { createCookie, getErrorMessage } from '../../utils/helpers';
+
+// Styles
 import './LoginStaff.scss';
 
 const propTypes = {
-  login: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired
 };
 
 const defaultProps = {};
 
-const LoginStaff = ({ login, history }) => {
+const LoginStaff = ({ history }) => {
   const [loading, setLoading] = useState(false);
 
   const onFinish = async values => {
     try {
       setLoading(true);
-      const { email, password } = values;
+      const { username, password } = values;
       const { token } = await login('/staffs/login', {
-        username: email,
+        username,
         password
       });
       createCookie(TOKEN_KEY, token);
@@ -41,12 +46,12 @@ const LoginStaff = ({ login, history }) => {
         <h2 className="public-form__header">A2HL Management</h2>
         <Form name="form" className="form" onFinish={onFinish}>
           <Form.Item
-            name="email"
-            rules={[{ required: true, message: 'Email is required!' }]}
+            name="username"
+            rules={[{ required: true, message: 'Username is required!' }]}
           >
             <Input
               prefix={<UserOutlined className="site-form-item-icon" />}
-              placeholder="Email"
+              placeholder="Username"
             />
           </Form.Item>
           <Form.Item
@@ -79,10 +84,4 @@ const LoginStaff = ({ login, history }) => {
 LoginStaff.propTypes = propTypes;
 LoginStaff.defaultProps = defaultProps;
 
-const mapStateToProps = () => {
-  return {
-    login
-  };
-};
-
-export default connect(mapStateToProps)(LoginStaff);
+export default LoginStaff;

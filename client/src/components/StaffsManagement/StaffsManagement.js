@@ -2,19 +2,27 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Table, Dropdown, message, Row, Col } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
+
+// Components
 import FilterOptions from '../FilterOptions/FilterOptions';
-import { FILTER_STAFFS } from '../../constants/ColumnFilter';
-import { getErrorMessage, statusLabel } from '../../utils/helpers';
-import EditStatusDropdown from '../EditStatusDropdown/EditStatusDropdown';
 import AddStaffModal from '../AddStaffModal/AddStaffModal';
-import { connect } from 'react-redux';
+import EditStatusDropdown from '../EditStatusDropdown/EditStatusDropdown';
+
+// Actions
 import {
   getStaffs,
   changeStaffStatus,
   createStaff
-} from '../../actions/StaffsActions';
-import { ENTITY_STATUS } from '../../constants/GlobalConstants';
+} from '../../actions/AdminActions';
 
+// Constants
+import { ENTITY_STATUS } from '../../constants/GlobalConstants';
+import { FILTER_STAFFS } from '../../constants/ColumnFilter';
+
+// Utils
+import { getErrorMessage, statusLabel } from '../../utils/helpers';
+
+// Styles
 import './StaffsManagement.scss';
 
 const propTypes = {

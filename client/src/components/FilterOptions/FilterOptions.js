@@ -3,8 +3,11 @@ import PropTypes from 'prop-types';
 import { Input, Dropdown, Checkbox, Row, Col, DatePicker, Select } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { debounce, find } from 'lodash';
+
+// Constants
 import { DATE_FORMAT } from '../../constants/GlobalConstants';
 
+// Styles
 import './FilterOptions.scss';
 
 const { RangePicker } = DatePicker;

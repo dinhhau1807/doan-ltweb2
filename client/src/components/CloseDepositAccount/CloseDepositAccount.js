@@ -3,15 +3,26 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import { Form, Input, Button, Spin, Select, message } from 'antd';
 import { find } from 'lodash';
+
+// Components
+import OtpCodeForm from '../OtpCodeForm/OtpCodeForm';
+import ComponentHeader from '../ComponentHeader/ComponentHeader';
+
+// Actions
 import {
   getDepositAccounts,
   withdrawDepositRequest,
   withdrawDepositConfirm
 } from '../../actions/CustomerActions';
-import { getErrorMessage, formatMoney } from '../../utils/helpers';
-import { DATE_FORMAT, HOUR_FORMAT } from '../../constants/GlobalConstants';
-import OtpCodeForm from '../OtpCodeForm/OtpCodeForm';
 
+// Constants
+import { DATE_FORMAT, HOUR_FORMAT } from '../../constants/GlobalConstants';
+import { DEPOSIT_TABS } from '../../constants/ComponentTabs';
+
+// Utils
+import { getErrorMessage, formatMoney } from '../../utils/helpers';
+
+// Styles
 import './CloseDepositAccount.scss';
 
 const layout = {
@@ -144,60 +155,68 @@ const CloseDepositAccount = ({ history }) => {
   };
 
   return (
-    <div style={{ width: '550px' }}>
-      <h2 className="page-header">CLOSE TERM DEPOSIT ACCOUNT</h2>
-      <Spin spinning={loading}>
-        <Form
-          {...layout}
-          form={form}
-          name="form"
-          className="form"
-          onFinish={onFinish}
-          initialValues={{ accountNumber: '' }}
-        >
-          <Form.Item
-            label="Account number"
-            name="accountNumber"
-            rules={[{ required: true, message: 'Account number is required!' }]}
+    <div className="close-deposit">
+      <ComponentHeader
+        tabs={DEPOSIT_TABS}
+        selectedTab={DEPOSIT_TABS.WITHDRAW.to}
+        title="Close term deposit account"
+      />
+      <div className="close-deposit__form-wrap">
+        <Spin spinning={loading}>
+          <Form
+            {...layout}
+            form={form}
+            name="form"
+            className="form"
+            onFinish={onFinish}
+            initialValues={{ accountNumber: '' }}
           >
-            <Select onChange={onSelectChange} disabled={otpCodeFormVisible}>
-              {renderTerms()}
-            </Select>
-          </Form.Item>
-
-          <Form.Item label="Interest rate (%/year)" name="interestRate">
-            <Input disabled />
-          </Form.Item>
-
-          <Form.Item label="Maturity date" name="maturityDate">
-            <Input disabled />
-          </Form.Item>
-
-          <Form.Item label="Created date" name="createdDate">
-            <Input disabled />
-          </Form.Item>
-
-          <Form.Item label="Expected interest" name="expectedInterest">
-            <Input disabled />
-          </Form.Item>
-
-          <Form.Item label="Expected total amount" name="expectedTotalAmount">
-            <Input disabled />
-          </Form.Item>
-
-          {!otpCodeFormVisible && (
             <Form.Item
-              wrapperCol={{
-                lg: { offset: 8 }
-              }}
+              label="Account number"
+              name="accountNumber"
+              rules={[
+                { required: true, message: 'Account number is required!' }
+              ]}
             >
-              <Button type="primary" htmlType="submit" disabled={!account}>
-                Close
-              </Button>
+              <Select onChange={onSelectChange} disabled={otpCodeFormVisible}>
+                {renderTerms()}
+              </Select>
             </Form.Item>
-          )}
-        </Form>
-      </Spin>
+
+            <Form.Item label="Interest rate (%/year)" name="interestRate">
+              <Input disabled />
+            </Form.Item>
+
+            <Form.Item label="Maturity date" name="maturityDate">
+              <Input disabled />
+            </Form.Item>
+
+            <Form.Item label="Created date" name="createdDate">
+              <Input disabled />
+            </Form.Item>
+
+            <Form.Item label="Expected interest" name="expectedInterest">
+              <Input disabled />
+            </Form.Item>
+
+            <Form.Item label="Expected total amount" name="expectedTotalAmount">
+              <Input disabled />
+            </Form.Item>
+
+            {!otpCodeFormVisible && (
+              <Form.Item
+                wrapperCol={{
+                  lg: { offset: 8 }
+                }}
+              >
+                <Button type="primary" htmlType="submit" disabled={!account}>
+                  Close
+                </Button>
+              </Form.Item>
+            )}
+          </Form>
+        </Spin>
+      </div>
       <OtpCodeForm
         visible={otpCodeFormVisible}
         loading={loading}

@@ -6,8 +6,11 @@ import {
   EyeTwoTone,
   EyeInvisibleOutlined
 } from '@ant-design/icons';
+
+// Utils
 import { getErrorMessage } from '../../utils/helpers';
 
+// Styles
 import './AddStaffModal.scss';
 
 const layout = {

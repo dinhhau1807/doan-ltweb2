@@ -1,11 +1,22 @@
 import React, { useState } from 'react';
 import moment from 'moment';
 import { message, Table } from 'antd';
-import FilterDate from '../FilterDate/FilterDate';
-import { getDepositTransactions } from '../../actions/CustomerActions';
-import { getErrorMessage, formatMoney, statusLabel } from '../../utils/helpers';
-import { DATETIME_FORMAT } from '../../constants/GlobalConstants';
 
+// Components
+import FilterDate from '../FilterDate/FilterDate';
+import ComponentHeader from '../ComponentHeader/ComponentHeader';
+
+// Actions
+import { getDepositTransactions } from '../../actions/CustomerActions';
+
+// Constants
+import { DATETIME_FORMAT } from '../../constants/GlobalConstants';
+import { DEPOSIT_TABS } from '../../constants/ComponentTabs';
+
+// Utils
+import { getErrorMessage, formatMoney, statusLabel } from '../../utils/helpers';
+
+// Styles
 import './DepositTransactions.scss';
 
 const DepositTransactions = () => {
@@ -99,7 +110,11 @@ const DepositTransactions = () => {
 
   return (
     <div>
-      <h2 className="page-header">DEPOSIT TRANSACTIONS</h2>
+      <ComponentHeader
+        tabs={DEPOSIT_TABS}
+        selectedTab={DEPOSIT_TABS.HISTORY.to}
+        title="Deposit history"
+      />
       <FilterDate fetchData={fetchDataTable} paramsTable={paramsTable} />
       <div className="table">
         <Table

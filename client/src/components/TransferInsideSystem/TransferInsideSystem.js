@@ -1,14 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Input, Button, Spin, message } from 'antd';
+
+// Components
+import OtpCodeForm from '../OtpCodeForm/OtpCodeForm';
+import ComponentHeader from '../ComponentHeader/ComponentHeader';
+
+// Actions
 import { fetchAccount } from '../../actions/CustomerActions';
 import {
   internalTransferRequest,
   internalTransferConfirm
 } from '../../actions/TransferActions';
-import { getErrorMessage, formatMoney } from '../../utils/helpers';
-import OtpCodeForm from '../OtpCodeForm/OtpCodeForm';
 
+// Constants
+import { TRANSFER_TABS } from '../../constants/ComponentTabs';
+
+// Utils
+import { getErrorMessage, formatMoney } from '../../utils/helpers';
+
+// Styles
 import './TransferInsideSystem.scss';
 
 const layout = {
@@ -103,77 +114,85 @@ const TransferInsideSystem = ({ history }) => {
   };
 
   return (
-    <div style={{ maxWidth: '550px' }}>
-      <h2 className="page-header">TRANSFER INSIDE SYSTEM</h2>
-      <Spin spinning={loading}>
-        <Form
-          {...layout}
-          name="form"
-          className="form"
-          form={form}
-          onFinish={onFinish}
-        >
-          <Form.Item label="Account" name="account">
-            <Input disabled />
-          </Form.Item>
-
-          <Form.Item
-            label="To account number"
-            name="toAccount"
-            rules={[{ required: true, message: 'Account number is required!' }]}
+    <div className="transfer-inside">
+      <ComponentHeader
+        tabs={TRANSFER_TABS}
+        selectedTab={TRANSFER_TABS.INSIDE.to}
+        title="Transfer inside system"
+      />
+      <div className="transfer-inside__form-wrap">
+        <Spin spinning={loading}>
+          <Form
+            {...layout}
+            name="form"
+            className="form"
+            form={form}
+            onFinish={onFinish}
           >
-            <Input />
-          </Form.Item>
-
-          <Form.Item
-            label="Amount"
-            name="amount"
-            rules={[
-              { required: true, message: 'Amount is required!' },
-              () => ({
-                validator(rule, value) {
-                  if (+value > +account.currentBalance) {
-                    return Promise.reject(
-                      `The amount cannot be larger than the current balance`
-                    );
-                  }
-                  return Promise.resolve();
-                }
-              })
-            ]}
-          >
-            <Input disabled={otpCodeFormVisible} />
-          </Form.Item>
-
-          <Form.Item
-            label="Description"
-            name="description"
-            rules={[{ required: true, message: 'Description is required!' }]}
-          >
-            <Input.TextArea />
-          </Form.Item>
-
-          {!otpCodeFormVisible && (
-            <Form.Item
-              wrapperCol={{
-                lg: { offset: 8 }
-              }}
-            >
-              <Button type="primary" htmlType="submit" disabled={false}>
-                Transfer
-              </Button>
-              <Button
-                type="default"
-                htmlType="button"
-                style={{ marginLeft: '6px' }}
-                onClick={onReset}
-              >
-                Reset
-              </Button>
+            <Form.Item label="Account" name="account">
+              <Input disabled />
             </Form.Item>
-          )}
-        </Form>
-      </Spin>
+
+            <Form.Item
+              label="To account number"
+              name="toAccount"
+              rules={[
+                { required: true, message: 'Account number is required!' }
+              ]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item
+              label="Amount"
+              name="amount"
+              rules={[
+                { required: true, message: 'Amount is required!' },
+                () => ({
+                  validator(rule, value) {
+                    if (+value > +account.currentBalance) {
+                      return Promise.reject(
+                        `The amount cannot be larger than the current balance`
+                      );
+                    }
+                    return Promise.resolve();
+                  }
+                })
+              ]}
+            >
+              <Input disabled={otpCodeFormVisible} />
+            </Form.Item>
+
+            <Form.Item
+              label="Description"
+              name="description"
+              rules={[{ required: true, message: 'Description is required!' }]}
+            >
+              <Input.TextArea />
+            </Form.Item>
+
+            {!otpCodeFormVisible && (
+              <Form.Item
+                wrapperCol={{
+                  lg: { offset: 8 }
+                }}
+              >
+                <Button type="primary" htmlType="submit" disabled={false}>
+                  Transfer
+                </Button>
+                <Button
+                  type="default"
+                  htmlType="button"
+                  style={{ marginLeft: '6px' }}
+                  onClick={onReset}
+                >
+                  Reset
+                </Button>
+              </Form.Item>
+            )}
+          </Form>
+        </Spin>
+      </div>
       <OtpCodeForm
         visible={otpCodeFormVisible}
         loading={loading}
