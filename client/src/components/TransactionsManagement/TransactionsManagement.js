@@ -3,6 +3,7 @@ import { Table, message } from 'antd';
 
 // Components
 import FilterOptions from '../FilterOptions/FilterOptions';
+import ComponentHeader from '../ComponentHeader/ComponentHeader';
 
 // Actions
 import { getTransactions } from '../../actions/StaffActions';
@@ -128,7 +129,7 @@ const TransactionsManagement = () => {
 
   return (
     <div>
-      <h2 className="page-header">TRANSACTIONS INFORMATION</h2>
+      <ComponentHeader title="Transactions information" />
       <FilterOptions
         columnFilter={FILTER_TRANSACTIONS}
         fetchData={fetchDataTable}

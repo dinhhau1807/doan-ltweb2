@@ -4,6 +4,7 @@ import { Table, message } from 'antd';
 
 // Components
 import FilterOptions from '../FilterOptions/FilterOptions';
+import ComponentHeader from '../ComponentHeader/ComponentHeader';
 
 // Actions
 import { getIdentities } from '../../actions/StaffActions';
@@ -122,7 +123,7 @@ const IdentitiesManagement = ({ history }) => {
 
   return (
     <div>
-      <h2 className="page-header">IDENTITIES INFORMATION</h2>
+      <ComponentHeader title="Identities information" />
       <FilterOptions
         columnFilter={FILTER_IDENTITIES}
         fetchData={fetchDataTable}

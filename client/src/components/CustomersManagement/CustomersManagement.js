@@ -6,6 +6,7 @@ import { DownOutlined } from '@ant-design/icons';
 // Components
 import FilterOptions from '../FilterOptions/FilterOptions';
 import EditStatusDropdown from '../EditStatusDropdown/EditStatusDropdown';
+import ComponentHeader from '../ComponentHeader/ComponentHeader';
 
 // Actions
 import { getCustomers, changeCustomerStatus } from '../../actions/StaffActions';
@@ -177,7 +178,7 @@ const CustomersManagement = ({ history }) => {
 
   return (
     <div className="customers-management">
-      <h2 className="page-header">CUSTOMERS INFORMATION</h2>
+      <ComponentHeader title="Customers information" />
       <FilterOptions
         columnFilter={FILTER_CUSTOMERS}
         fetchData={fetchDataTable}
@@ -185,6 +186,7 @@ const CustomersManagement = ({ history }) => {
       />
       <div className="table">
         <Table
+          bordered
           size="middle"
           rowKey={record => record.id}
           dataSource={dataTable}

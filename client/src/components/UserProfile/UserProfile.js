@@ -1,7 +1,7 @@
 import React, { useMemo, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Input, Button, Row, Col, DatePicker, Spin } from 'antd';
-import { find } from 'lodash';
+import { find, merge } from 'lodash';
 import { connect } from 'react-redux';
 
 // Components
@@ -49,11 +49,17 @@ const defaultProps = {};
 const UserProfile = ({ loading, data, updateProfile }) => {
   const [form] = Form.useForm();
 
-  const route = window.location.href.includes('/a2hl-management')
-    ? 'staffs'
-    : 'customers';
-  const inputs =
-    route === 'staffs' ? STAFF_PROFILE_INPUTS : CUSTOMER_PROFILE_INPUTS;
+  const isStaffRoute = window.location.href.includes('/a2hl-management');
+  const route = isStaffRoute ? 'staffs' : 'customers';
+  const inputs = isStaffRoute ? STAFF_PROFILE_INPUTS : CUSTOMER_PROFILE_INPUTS;
+  const utilsTabs = merge({}, UTILS_TABS);
+
+  // make management page url
+  if (isStaffRoute) {
+    Object.keys(utilsTabs).forEach(key => {
+      utilsTabs[key].to = '/a2hl-management' + utilsTabs[key].to;
+    });
+  }
 
   const getPhoneNumber = (data, countriesCallingCode) => {
     if (data && data.phoneNumber) {
@@ -96,8 +102,8 @@ const UserProfile = ({ loading, data, updateProfile }) => {
   return (
     <div className="profile">
       <ComponentHeader
-        tabs={UTILS_TABS}
-        selectedTab={UTILS_TABS.PROFILE.to}
+        tabs={utilsTabs}
+        selectedTab={utilsTabs.PROFILE.to}
         title="Update profile"
       />
       <div className="profile__form-wrap">
