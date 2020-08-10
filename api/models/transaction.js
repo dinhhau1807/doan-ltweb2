@@ -12,9 +12,6 @@ module.exports = (sequelize, DataTypes) => {
       Transaction.belongsTo(models.Account, {
         foreignKey: 'accountSourceId',
       });
-      Transaction.belongsTo(models.Bank, {
-        foreignKey: 'bankDestinationId',
-      });
     }
   }
   Transaction.init(
@@ -28,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       bankDestinationId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: true,
       },
       amount: {

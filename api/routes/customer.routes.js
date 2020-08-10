@@ -36,6 +36,14 @@ router.post(
   '/internalTransferConfirm',
   customerController.internalTransferConfirm
 );
+router.post(
+  '/externalTransferRequest',
+  customerController.externalTransferRequest
+);
+router.post(
+  '/externalTransferConfirm',
+  customerController.externalTransferConfirm
+);
 
 router.get('/deposit', customerController.getAllDeposit);
 router.get('/deposit/:id', customerController.getDeposit);
