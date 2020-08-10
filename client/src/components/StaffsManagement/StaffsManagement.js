@@ -7,6 +7,7 @@ import { DownOutlined } from '@ant-design/icons';
 import FilterOptions from '../FilterOptions/FilterOptions';
 import AddStaffModal from '../AddStaffModal/AddStaffModal';
 import EditStatusDropdown from '../EditStatusDropdown/EditStatusDropdown';
+import ComponentHeader from '../ComponentHeader/ComponentHeader';
 
 // Actions
 import {
@@ -159,7 +160,7 @@ const StaffsManagement = ({ history }) => {
 
   return (
     <div className="staffs-management">
-      <h2 className="page-header">EMPLOYEES INFORMATION</h2>
+      <ComponentHeader title="Employees information" />
       <Row gutter={[8, 8]}>
         <Col xl={20} lg={20} md={20} sm={24} xs={24}>
           <FilterOptions
