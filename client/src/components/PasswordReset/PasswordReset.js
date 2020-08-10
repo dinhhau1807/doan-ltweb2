@@ -1,9 +1,17 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { getErrorMessage } from '../../utils/helpers';
-import { passwordReset } from '../../actions/UserActions';
 import { Form, Input, Button, message } from 'antd';
 
+// Actions
+import { passwordReset } from '../../actions/UserActions';
+
+// Constants
+import { LOGIN_URL } from '../../constants/GlobalConstants';
+
+// Utils
+import { getErrorMessage } from '../../utils/helpers';
+
+// Styles
 import './PasswordReset.scss';
 
 const propTypes = {
@@ -23,7 +31,7 @@ const PasswordRecovery = ({ match, history }) => {
         const body = { verifyCode: code, newPwd: values.password };
         await passwordReset(body);
         message.success('Reset your password successfully!');
-        history.push('/login');
+        history.push(LOGIN_URL);
       }
     } catch (err) {
       message.error(getErrorMessage(err));

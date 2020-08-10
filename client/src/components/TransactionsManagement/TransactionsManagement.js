@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import FilterOptions from '../FilterOptions/FilterOptions';
-import { FILTER_TRANSACTIONS } from '../../constants/ColumnFilter';
-import { getErrorMessage, statusLabel } from '../../utils/helpers';
 import { Table, message } from 'antd';
-import { connect } from 'react-redux';
-import { getTransactions } from '../../actions/StaffTransactionsActions';
 
+// Components
+import FilterOptions from '../FilterOptions/FilterOptions';
+
+// Actions
+import { getTransactions } from '../../actions/StaffActions';
+
+// Constants
+import { FILTER_TRANSACTIONS } from '../../constants/ColumnFilter';
+
+// Utils
+import { getErrorMessage, statusLabel } from '../../utils/helpers';
+
+// Styles
 import './TransactionsManagement.scss';
 
-const propTypes = {
-  getTransactions: PropTypes.func.isRequired
-};
-
-const defaultProps = {};
-
-const TransactionsManagement = ({ getTransactions }) => {
+const TransactionsManagement = () => {
   const [dataTable, setDataTable] = useState([]);
   const [paramsTable, setParamsTable] = useState({});
   const [pagination, setPagination] = useState({ page: 1, pageSize: 10 });
@@ -148,11 +149,4 @@ const TransactionsManagement = ({ getTransactions }) => {
   );
 };
 
-TransactionsManagement.propTypes = propTypes;
-TransactionsManagement.defaultProps = defaultProps;
-
-const mapStateToProps = () => {
-  return { getTransactions };
-};
-
-export default connect(mapStateToProps)(TransactionsManagement);
+export default TransactionsManagement;

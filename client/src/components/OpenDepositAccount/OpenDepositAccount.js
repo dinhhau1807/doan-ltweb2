@@ -1,24 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 import { Form, Input, Button, Spin, Select, message } from 'antd';
 import { connect } from 'react-redux';
 import { find, debounce } from 'lodash';
-import moment from 'moment';
-import { getUser } from '../../selectors/UserSelectors';
+
+// Components
+import OtpCodeForm from '../OtpCodeForm/OtpCodeForm';
+import ComponentHeader from '../ComponentHeader/ComponentHeader';
+
+// Actions
 import {
   fetchAccount,
   getDepositTerms,
   registerDepositRequest,
   registerDepositConfirm
 } from '../../actions/CustomerActions';
-import { formatMoney, getErrorMessage } from '../../utils/helpers';
-import { fetchAll } from '../../utils/api';
+
+// Constants
 import {
   MIN_DEPOSIT_AMOUNT,
   DATE_FORMAT
 } from '../../constants/GlobalConstants';
-import OtpCodeForm from '../OtpCodeForm/OtpCodeForm';
+import { DEPOSIT_TABS } from '../../constants/ComponentTabs';
 
+// Utils
+import { formatMoney, getErrorMessage } from '../../utils/helpers';
+import { fetchAll } from '../../utils/api';
+
+// Selectors
+import { getUser } from '../../selectors/UserSelectors';
+
+// Styles
 import './OpenDepositAccount.scss';
 
 const layout = {
@@ -187,103 +200,109 @@ const OpenDepositAccount = ({ data: user, history }) => {
   };
 
   return (
-    <div style={{ maxWidth: '550px' }}>
-      <h2 className="page-header">OPEN TERM DEPOSIT ACCOUNT</h2>
-      <Spin spinning={loading}>
-        <Form
-          {...layout}
-          form={form}
-          name="form"
-          className="form"
-          onFinish={onFinish}
-          initialValues={{ termDeposit: '' }}
-        >
-          <Form.Item label="Customer name" name="name">
-            <Input disabled />
-          </Form.Item>
-
-          <Form.Item label="Account" name="account">
-            <Input disabled />
-          </Form.Item>
-
-          <Form.Item
-            label="Amount"
-            name="amount"
-            rules={[
-              { required: true, message: 'Amount is required!' },
-              () => ({
-                validator(rule, value) {
-                  if (+value > +account.currentBalance) {
-                    return Promise.reject(
-                      `The amount cannot be larger than the current balance`
-                    );
-                  } else if (!value || +value >= MIN_DEPOSIT_AMOUNT) {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(
-                    `Minimum amount is ${formatMoney(MIN_DEPOSIT_AMOUNT)} VND`
-                  );
-                }
-              })
-            ]}
+    <div className="open-deposit">
+      <ComponentHeader
+        tabs={DEPOSIT_TABS}
+        selectedTab={DEPOSIT_TABS.REQUEST.to}
+        title="Open term deposit account"
+      />
+      <div className="open-deposit__form-wrap">
+        <Spin spinning={loading}>
+          <Form
+            {...layout}
+            form={form}
+            name="form"
+            className="form"
+            onFinish={onFinish}
+            initialValues={{ termDeposit: '' }}
           >
-            <Input
-              onChange={onAmountInputChange}
-              disabled={otpCodeFormVisible}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Term deposit"
-            name="termDeposit"
-            rules={[{ required: true, message: 'Term deposit is required!' }]}
-          >
-            <Select onChange={onSelectChange} disabled={otpCodeFormVisible}>
-              {renderTerms()}
-            </Select>
-          </Form.Item>
-
-          <Form.Item label="Interest rate (%/year)" name="interestRate">
-            <Input disabled />
-          </Form.Item>
-
-          <Form.Item label="Maturity date" name="maturityDate">
-            <Input disabled />
-          </Form.Item>
-
-          <Form.Item label="Expected interest" name="expectedInterest">
-            <Input disabled />
-          </Form.Item>
-
-          <Form.Item label="Expected total amount" name="expectedTotalAmount">
-            <Input disabled />
-          </Form.Item>
-
-          {!otpCodeFormVisible && (
-            <Form.Item
-              wrapperCol={{
-                lg: { offset: 8 }
-              }}
-            >
-              <Button
-                type="primary"
-                htmlType="submit"
-                disabled={!account || depositTerms.length === 0}
-              >
-                Open
-              </Button>
-              <Button
-                type="default"
-                htmlType="button"
-                style={{ marginLeft: '6px' }}
-                onClick={onReset}
-              >
-                Reset
-              </Button>
+            <Form.Item label="Customer name" name="name">
+              <Input disabled />
             </Form.Item>
-          )}
-        </Form>
-      </Spin>
+
+            <Form.Item label="Account" name="account">
+              <Input disabled />
+            </Form.Item>
+
+            <Form.Item
+              label="Amount"
+              name="amount"
+              rules={[
+                { required: true, message: 'Amount is required!' },
+                () => ({
+                  validator(rule, value) {
+                    if (+value > +account.currentBalance) {
+                      return Promise.reject(
+                        `The amount cannot be larger than the current balance`
+                      );
+                    } else if (!value || +value >= MIN_DEPOSIT_AMOUNT) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(
+                      `Minimum amount is ${formatMoney(MIN_DEPOSIT_AMOUNT)} VND`
+                    );
+                  }
+                })
+              ]}
+            >
+              <Input
+                onChange={onAmountInputChange}
+                disabled={otpCodeFormVisible}
+              />
+            </Form.Item>
+
+            <Form.Item
+              label="Term deposit"
+              name="termDeposit"
+              rules={[{ required: true, message: 'Term deposit is required!' }]}
+            >
+              <Select onChange={onSelectChange} disabled={otpCodeFormVisible}>
+                {renderTerms()}
+              </Select>
+            </Form.Item>
+
+            <Form.Item label="Interest rate (%/year)" name="interestRate">
+              <Input disabled />
+            </Form.Item>
+
+            <Form.Item label="Maturity date" name="maturityDate">
+              <Input disabled />
+            </Form.Item>
+
+            <Form.Item label="Expected interest" name="expectedInterest">
+              <Input disabled />
+            </Form.Item>
+
+            <Form.Item label="Expected total amount" name="expectedTotalAmount">
+              <Input disabled />
+            </Form.Item>
+
+            {!otpCodeFormVisible && (
+              <Form.Item
+                wrapperCol={{
+                  lg: { offset: 8 }
+                }}
+              >
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  disabled={!account || depositTerms.length === 0}
+                >
+                  Open
+                </Button>
+                <Button
+                  type="default"
+                  htmlType="button"
+                  style={{ marginLeft: '6px' }}
+                  onClick={onReset}
+                >
+                  Reset
+                </Button>
+              </Form.Item>
+            )}
+          </Form>
+        </Spin>
+      </div>
       <OtpCodeForm
         visible={otpCodeFormVisible}
         loading={loading}

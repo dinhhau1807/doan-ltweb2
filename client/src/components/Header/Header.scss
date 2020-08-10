@@ -5,11 +5,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 18px;
+  height: $nav-height;
+  background-color: $c-primary !important;
+  padding: 0 18px;
 
   &__left {
     font-size: 20px;
-    color: $c-primary;
+    color: #fff;
     margin: 0;
   }
 
@@ -17,6 +19,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    color: #fff;
   }
 
   @include mq(laptop) {

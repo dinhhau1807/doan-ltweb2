@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
-import { getErrorMessage } from '../../utils/helpers';
-import { passwordRecovery } from '../../actions/UserActions';
 import { Form, Input, Button, message } from 'antd';
 
+// Actions
+import { passwordRecovery } from '../../actions/UserActions';
+
+// Utils
+import { getErrorMessage } from '../../utils/helpers';
+
+// Styles
 import './PasswordRecovery.scss';
 
-const PasswordRecovery = match => {
+const PasswordRecovery = () => {
   const [loading, setLoading] = useState(false);
   const [buttonnEnabled, setButtonEnabled] = useState(true);
-  console.log(match);
+
   const onFinish = async values => {
     try {
       if (buttonnEnabled) {

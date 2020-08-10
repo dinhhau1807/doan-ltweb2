@@ -1,8 +1,19 @@
 import React, { useState } from 'react';
-import { Form, Input, Button, Row, Col, message } from 'antd';
-import { getErrorMessage } from '../../utils/helpers';
+import { Form, Input, Button, message } from 'antd';
+
+// Components
+import ComponentHeader from '../ComponentHeader/ComponentHeader';
+
+// Actions
 import { changePassword } from '../../actions/UserActions';
 
+// Constants
+import { UTILS_TABS } from '../../constants/ComponentTabs';
+
+// Utils
+import { getErrorMessage } from '../../utils/helpers';
+
+// Styles
 import './UserPassword.scss';
 
 const layout = {
@@ -41,55 +52,61 @@ const UserPassword = () => {
   };
 
   return (
-    <div style={{ maxWidth: '600px' }}>
-      <h2 className="page-header">CHANGE PASSWORD</h2>
-      <Form
-        {...layout}
-        name="form"
-        form={form}
-        onFinish={onFinish}
-        validateMessages={validateMessages}
-      >
-        <Form.Item
-          name="oldPassword"
-          label="Your old password"
-          rules={[{ required: true }]}
+    <div className="password">
+      <ComponentHeader
+        tabs={UTILS_TABS}
+        selectedTab={UTILS_TABS.PASSWORD.to}
+        title="Change password"
+      />
+      <div className="password__form-wrap">
+        <Form
+          {...layout}
+          name="form"
+          form={form}
+          onFinish={onFinish}
+          validateMessages={validateMessages}
         >
-          <Input.Password />
-        </Form.Item>
-        <Form.Item
-          name="newPassword"
-          label="Your new password"
-          rules={[{ required: true }]}
-        >
-          <Input.Password />
-        </Form.Item>
-        <Form.Item
-          name="confirmNewPassword"
-          label="New password confirmation"
-          dependencies={['newPassword']}
-          rules={[
-            { required: true },
-            ({ getFieldValue }) => ({
-              validator(rule, value) {
-                if (!value || getFieldValue('newPassword') === value) {
-                  return Promise.resolve();
+          <Form.Item
+            name="oldPassword"
+            label="Your old password"
+            rules={[{ required: true }]}
+          >
+            <Input.Password />
+          </Form.Item>
+          <Form.Item
+            name="newPassword"
+            label="Your new password"
+            rules={[{ required: true }]}
+          >
+            <Input.Password />
+          </Form.Item>
+          <Form.Item
+            name="confirmNewPassword"
+            label="New password confirmation"
+            dependencies={['newPassword']}
+            rules={[
+              { required: true },
+              ({ getFieldValue }) => ({
+                validator(rule, value) {
+                  if (!value || getFieldValue('newPassword') === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(
+                    'New password and password confirmation are not the same!'
+                  );
                 }
-                return Promise.reject(
-                  'New password and password confirmation are not the same!'
-                );
-              }
-            })
-          ]}
-        >
-          <Input.Password />
-        </Form.Item>
-        <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
-          <Button loading={loading} type="primary" htmlType="submit">
-            Update
-          </Button>
-        </Form.Item>
-      </Form>
+              })
+            ]}
+          >
+            <Input.Password />
+          </Form.Item>
+          <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
+            <Button loading={loading} type="primary" htmlType="submit">
+              Update
+            </Button>
+          </Form.Item>
+        </Form>
+      </div>
     </div>
   );
 };

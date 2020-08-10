@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Menu } from 'antd';
 
+// Styles
 import './EditStatusDropdown.scss';
 
 const propTypes = {

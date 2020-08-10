@@ -1,0 +1,45 @@
+@import '../../scss/config';
+@import '../../scss/mixins';
+
+.component-header {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 16px;
+  border-bottom: 1px solid #eee;
+
+  &__wrap {
+    display: inline-block;
+  }
+
+  &__menu {
+    border: 0;
+    border-left: 1px solid #eee;
+    background-color: #fafafa;
+
+    @include mq(laptop) {
+      border-top: 1px solid #eee;
+      border-right: 1px solid #eee;
+    }
+  }
+
+  &__item {
+    display: block;
+    text-align: center;
+    width: 180px !important;
+    padding: 0 !important;
+
+    & ~ & {
+      border-left: 1px solid #eee !important;
+    }
+
+    &.ant-menu-item-selected {
+      background-color: #fff;
+    }
+  }
+
+  @include mq(laptop) {
+    flex-direction: column;
+  }
+}

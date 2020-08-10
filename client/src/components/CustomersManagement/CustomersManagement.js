@@ -2,16 +2,22 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Table, message, Dropdown } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
-import FilterOptions from '../FilterOptions/FilterOptions';
-import { FILTER_CUSTOMERS } from '../../constants/ColumnFilter';
-import { getErrorMessage, statusLabel } from '../../utils/helpers';
-import EditStatusDropdown from '../EditStatusDropdown/EditStatusDropdown';
-import {
-  getCustomers,
-  changeCustomerStatus
-} from '../../actions/StaffCustomersActions';
-import { ENTITY_STATUS } from '../../constants/GlobalConstants';
 
+// Components
+import FilterOptions from '../FilterOptions/FilterOptions';
+import EditStatusDropdown from '../EditStatusDropdown/EditStatusDropdown';
+
+// Actions
+import { getCustomers, changeCustomerStatus } from '../../actions/StaffActions';
+
+// Constants
+import { ENTITY_STATUS } from '../../constants/GlobalConstants';
+import { FILTER_CUSTOMERS } from '../../constants/ColumnFilter';
+
+// Utils
+import { getErrorMessage, statusLabel } from '../../utils/helpers';
+
+// Styles
 import './CustomersManagement.scss';
 
 const propTypes = {

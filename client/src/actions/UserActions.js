@@ -11,6 +11,8 @@ import { getErrorMessage, eraseCookie } from '../utils/helpers';
 import { TOKEN_KEY } from '../constants/GlobalConstants';
 import { message } from 'antd';
 
+const apiSegment = '/customers';
+
 export const fetchUser = type => async dispatch => {
   try {
     dispatch({ type: FETCH_USER_REQUEST });
@@ -26,7 +28,7 @@ export const login = (url, body) => {
 };
 
 export const register = body => {
-  return fetchApi('/customers/register', 'POST', body);
+  return fetchApi(apiSegment + '/register', 'POST', body);
 };
 
 export const logout = () => {
@@ -54,9 +56,9 @@ export const updateProfile = (type, body) => async dispatch => {
 };
 
 export const passwordRecovery = body => {
-  return fetchApi(`/customers/forgotPassword`, 'POST', body);
+  return fetchApi(apiSegment + `/forgotPassword`, 'POST', body);
 };
 
 export const passwordReset = body => {
-  return fetchApi('/customers/resetPassword', 'POST', body);
+  return fetchApi(apiSegment + '/resetPassword', 'POST', body);
 };

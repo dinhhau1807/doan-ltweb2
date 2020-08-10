@@ -1,18 +1,31 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Form, Input, Button, Row, Col, DatePicker } from 'antd';
-import { DATE_FORMAT } from '../../constants/GlobalConstants';
+import { Form, Input, Button, Row, Col, DatePicker, Spin } from 'antd';
+import { find } from 'lodash';
 import { connect } from 'react-redux';
+
+// Components
+import CallingCodeFormItem from '../CallingCodeFormItem/CallingCodeFormItem';
+import ComponentHeader from '../ComponentHeader/ComponentHeader';
+
+// Actions
 import { updateProfile } from '../../actions/UserActions';
-import { getUser } from '../../selectors/UserSelectors';
+
+// Constants
+import {
+  DATE_FORMAT,
+  countriesCallingCode
+} from '../../constants/GlobalConstants';
 import {
   CUSTOMER_PROFILE_INPUTS,
   STAFF_PROFILE_INPUTS
 } from '../../constants/ColumnFilter';
-import CallingCodeFormItem from '../CallingCodeFormItem/CallingCodeFormItem';
-import { countriesCallingCode } from '../../constants/GlobalConstants';
-import { find } from 'lodash';
+import { UTILS_TABS } from '../../constants/ComponentTabs';
 
+// Selectors
+import { getUser } from '../../selectors/UserSelectors';
+
+// Styles
 import './UserProfile.scss';
 
 const layout = {
@@ -34,6 +47,8 @@ const propTypes = {
 const defaultProps = {};
 
 const UserProfile = ({ loading, data, updateProfile }) => {
+  const [form] = Form.useForm();
+
   const route = window.location.href.includes('/a2hl-management')
     ? 'staffs'
     : 'customers';
@@ -60,6 +75,16 @@ const UserProfile = ({ loading, data, updateProfile }) => {
     [data, countriesCallingCode]
   );
 
+  useEffect(() => {
+    if (data !== null) {
+      form.setFieldsValue({
+        ...data,
+        callingCode: phoneNumerMemoized[0],
+        phoneNumber: phoneNumerMemoized[1]
+      });
+    }
+  }, [data]);
+
   const onFinish = async values => {
     const { callingCode, phoneNumber } = values;
     updateProfile(route, {
@@ -68,83 +93,83 @@ const UserProfile = ({ loading, data, updateProfile }) => {
     });
   };
 
-  if (!data) {
-    return null;
-  }
-
   return (
-    <div style={{ maxWidth: '600px' }}>
-      <h2 className="page-header">Update information</h2>
-      <Form
-        {...layout}
-        name="form"
-        onFinish={onFinish}
-        validateMessages={validateMessages}
-        initialValues={{
-          ...data,
-          callingCode: phoneNumerMemoized[0],
-          phoneNumber: phoneNumerMemoized[1]
-        }}
-      >
-        {inputs.map(input => {
-          switch (input.type) {
-            case 'input':
-              return (
-                <Form.Item
-                  key={input.name}
-                  name={input.name}
-                  label={input.label}
-                  rules={[{ required: true }]}
-                >
-                  <Input />
-                </Form.Item>
-              );
-            case 'phonecallingcode':
-              return (
-                <Form.Item
-                  key={input.name}
-                  label="Phone"
-                  rules={[{ required: true }]}
-                  style={{ marginBottom: '0' }}
-                >
-                  <Row gutter={4}>
-                    <Col span={8}>
-                      <CallingCodeFormItem />
-                    </Col>
-                    <Col span={16}>
-                      <Form.Item
-                        name={input.name}
-                        rules={[
-                          { required: true, message: 'Phone is required' }
-                        ]}
-                      >
-                        <Input />
-                      </Form.Item>
-                    </Col>
-                  </Row>
-                </Form.Item>
-              );
-            case 'datepicker':
-              return (
-                <Form.Item
-                  key={input.name}
-                  name={input.name}
-                  label={input.label}
-                  rules={[{ required: true }]}
-                >
-                  <DatePicker format={DATE_FORMAT} />
-                </Form.Item>
-              );
-            default:
-              return null;
-          }
-        })}
-        <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
-          <Button loading={loading} type="primary" htmlType="submit">
-            Update
-          </Button>
-        </Form.Item>
-      </Form>
+    <div className="profile">
+      <ComponentHeader
+        tabs={UTILS_TABS}
+        selectedTab={UTILS_TABS.PROFILE.to}
+        title="Update profile"
+      />
+      <div className="profile__form-wrap">
+        <Spin spinning={loading}>
+          <Form
+            {...layout}
+            name="form"
+            form={form}
+            onFinish={onFinish}
+            validateMessages={validateMessages}
+          >
+            {inputs.map(input => {
+              switch (input.type) {
+                case 'input':
+                  return (
+                    <Form.Item
+                      key={input.name}
+                      name={input.name}
+                      label={input.label}
+                      rules={[{ required: true }]}
+                    >
+                      <Input />
+                    </Form.Item>
+                  );
+                case 'phonecallingcode':
+                  return (
+                    <Form.Item
+                      key={input.name}
+                      label="Phone"
+                      rules={[{ required: true }]}
+                      style={{ marginBottom: '0' }}
+                    >
+                      <Row gutter={4}>
+                        <Col span={8}>
+                          <CallingCodeFormItem />
+                        </Col>
+                        <Col span={16}>
+                          <Form.Item
+                            name={input.name}
+                            rules={[
+                              { required: true, message: 'Phone is required' }
+                            ]}
+                          >
+                            <Input />
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                    </Form.Item>
+                  );
+                case 'datepicker':
+                  return (
+                    <Form.Item
+                      key={input.name}
+                      name={input.name}
+                      label={input.label}
+                      rules={[{ required: true }]}
+                    >
+                      <DatePicker format={DATE_FORMAT} />
+                    </Form.Item>
+                  );
+                default:
+                  return null;
+              }
+            })}
+            <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
+              <Button loading={loading} type="primary" htmlType="submit">
+                Update
+              </Button>
+            </Form.Item>
+          </Form>
+        </Spin>
+      </div>
     </div>
   );
 };

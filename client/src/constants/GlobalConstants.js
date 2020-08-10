@@ -1,23 +1,45 @@
+import React from 'react';
+import {
+  UserOutlined,
+  UserAddOutlined,
+  FileOutlined,
+  ApartmentOutlined,
+  DesktopOutlined,
+  SettingOutlined,
+  CreditCardOutlined
+} from '@ant-design/icons';
+
 export const TOKEN_KEY = 'token';
 export const LOGIN_URL = '/login';
 
 export const STAFF_TABS = {
-  CUSTOMER: '/',
-  IDENTITY: '/identities',
-  TRANSACTION: '/transaction',
-  STAFF: '/staffs'
+  CUSTOMER: { to: '/', label: 'CUSTOMERS', icon: <UserOutlined /> },
+  IDENTITY: {
+    to: '/identities',
+    label: 'Identities',
+    icon: <UserAddOutlined />
+  },
+  TRANSACTION: {
+    to: '/transaction',
+    label: 'Transactions',
+    icon: <FileOutlined />
+  },
+  STAFF: { to: '/staffs', label: 'Staffs', icon: <ApartmentOutlined /> }
 };
 
 export const CUSTOMER_TABS = {
-  ACCOUNT: '/',
-  ACCOUNT_HISTORY: '/history',
-  TRANSACTION: '/transaction',
-  TRANSACTION_EXTERNAL: '/ext-transaction',
-  DEPOSIT_REQUEST: '/deposit-request',
-  DEPOSIT_WITHDRAW: '/deposit-withdraw',
-  DEPOSIT_TRANSACTION_HISTORY: '/deposit-history',
-  UTILS_UPDATE: '/profile',
-  UTILS_PASSWORD: '/password'
+  ACCOUNT: { to: '/', label: 'Account', icon: <DesktopOutlined /> },
+  TRANSACTION: {
+    to: '/transaction',
+    label: 'Transfer',
+    icon: <FileOutlined />
+  },
+  DEPOSIT: {
+    to: '/deposit-request',
+    label: 'Deposit',
+    icon: <CreditCardOutlined />
+  },
+  UTILS: { to: '/profile', label: 'Utilities', icon: <SettingOutlined /> }
 };
 
 export const ENTITY_STATUS = {

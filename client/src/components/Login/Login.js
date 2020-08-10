@@ -1,22 +1,28 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { createCookie, getErrorMessage } from '../../utils/helpers';
-import { TOKEN_KEY } from '../../constants/GlobalConstants';
-import { connect } from 'react-redux';
-import { login } from '../../actions/UserActions';
 import { Form, Input, Button, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
+
+// Actions
+import { login } from '../../actions/UserActions';
+
+// Constants
+import { TOKEN_KEY } from '../../constants/GlobalConstants';
+
+// Utils
+import { createCookie, getErrorMessage } from '../../utils/helpers';
+
+// Styles
 import './Login.scss';
 
 const propTypes = {
-  login: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired
 };
 
 const defaultProps = {};
 
-const Login = ({ login, history }) => {
+const Login = ({ history }) => {
   const [loading, setLoading] = useState(false);
 
   const onFinish = async values => {
@@ -84,10 +90,4 @@ const Login = ({ login, history }) => {
 Login.propTypes = propTypes;
 Login.defaultProps = defaultProps;
 
-const mapStateToProps = () => {
-  return {
-    login
-  };
-};
-
-export default connect(mapStateToProps)(Login);
+export default Login;

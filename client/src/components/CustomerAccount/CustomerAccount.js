@@ -1,14 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 import { message, Table } from 'antd';
+
+// Components
+import ComponentHeader from '../ComponentHeader/ComponentHeader';
+
+// Actions
 import {
   fetchAccount,
   getDepositAccounts
 } from '../../actions/CustomerActions';
-import { getErrorMessage, formatMoney, statusLabel } from '../../utils/helpers';
+
+// Constants
 import { DATETIME_FORMAT } from '../../constants/GlobalConstants';
+import { ACCOUNT_TABS } from '../../constants/ComponentTabs';
+
+// Utils
+import { getErrorMessage, formatMoney, statusLabel } from '../../utils/helpers';
 import { fetchAll } from '../../utils/api';
 
+// Styles
 import './CustomerAccount.scss';
 
 const CustomerAccount = () => {
@@ -86,9 +97,14 @@ const CustomerAccount = () => {
 
   return (
     <div>
-      <h2 className="page-header">ACCOUNT INFORMATION</h2>
+      <ComponentHeader
+        tabs={ACCOUNT_TABS}
+        selectedTab={ACCOUNT_TABS.INFORMATION.to}
+        title="Account information"
+      />
       <div className="table">
         <Table
+          bordered
           size="middle"
           rowKey={record => record.id}
           dataSource={account}

@@ -1,41 +1,43 @@
 import { fetchApi } from '../utils/api';
 
+const apiSegment = '/customers';
+
 export const fetchAccount = () => {
-  return fetchApi('/customers/account', 'GET');
+  return fetchApi(apiSegment + '/account', 'GET');
 };
 
 export const getAccountTransactions = (params = {}) => {
-  return fetchApi('/customers/transactionHistory', 'GET', null, params);
+  return fetchApi(apiSegment + '/transactionHistory', 'GET', null, params);
 };
 
 export const getDepositTerms = () => {
-  return fetchApi('/customers/depositTerms', 'GET');
+  return fetchApi(apiSegment + '/depositTerms', 'GET');
 };
 
 export const registerDepositRequest = body => {
-  return fetchApi('/customers/depositRegisterRequest', 'POST', body);
+  return fetchApi(apiSegment + '/depositRegisterRequest', 'POST', body);
 };
 
 export const registerDepositConfirm = body => {
-  return fetchApi('/customers/depositRegisterConfirm', 'POST', body);
+  return fetchApi(apiSegment + '/depositRegisterConfirm', 'POST', body);
 };
 
 export const getDepositAccounts = () => {
-  return fetchApi('/customers/deposit', 'GET');
+  return fetchApi(apiSegment + '/deposit', 'GET');
 };
 
 export const getDepositAccount = id => {
-  return fetchApi('/customers/deposit/' + id, 'GET');
+  return fetchApi(apiSegment + '/deposit/' + id, 'GET');
 };
 
 export const withdrawDepositRequest = body => {
-  return fetchApi('/customers/withdrawRequest', 'POST', body);
+  return fetchApi(apiSegment + '/withdrawRequest', 'POST', body);
 };
 
 export const withdrawDepositConfirm = body => {
-  return fetchApi('/customers/withdrawConfirm', 'POST', body);
+  return fetchApi(apiSegment + '/withdrawConfirm', 'POST', body);
 };
 
 export const getDepositTransactions = (params = {}) => {
-  return fetchApi('/customers/depositHistory', 'GET', null, params);
+  return fetchApi(apiSegment + '/depositHistory', 'GET', null, params);
 };
