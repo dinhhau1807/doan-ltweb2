@@ -452,6 +452,18 @@ exports.updateCustomerStatus = asyncHandler(async (req, res, next) => {
     return next(new AppError("Can't find this customer!", 404));
   }
 
+  const identity = await Identity.findOne({
+    where: { customerId: customer.id },
+  });
+  if (!identity) {
+    return next(new AppError("Can't find customer's identity!", 404));
+  }
+  if (identity.staffIdApproved === null) {
+    return next(
+      new AppError('Cannot active, this account is not approved!', 400)
+    );
+  }
+
   customer.status = newStatus;
   customer.accessFailedCount = 0;
   await customer.save();
