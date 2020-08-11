@@ -982,7 +982,7 @@ exports.withdrawalOfDepositRequest = asyncHandler(async (req, res, next) => {
   });
 
   if (
-    paymentAccount.status === STATUS.blocked &&
+    paymentAccount.status === STATUS.blocked ||
     paymentAccount.status === STATUS.inactive
   ) {
     return next(
@@ -1010,7 +1010,7 @@ exports.withdrawalOfDepositRequest = asyncHandler(async (req, res, next) => {
   }
 
   if (
-    savingAccount.status === STATUS.blocked &&
+    savingAccount.status === STATUS.blocked ||
     savingAccount.status === STATUS.inactive
   ) {
     return next(
@@ -1146,8 +1146,6 @@ exports.withdrawalOfDepositConfirm = asyncHandler(async (req, res, next) => {
   }
 
   // Calculation and update database
-  accountSource.currentBalance = 0;
-
   accountDestination.currentBalance =
     +accountDestination.currentBalance +
     convert(transaction.amount)
