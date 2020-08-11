@@ -199,21 +199,88 @@ exports.getCustomerAccounts = asyncHandler(async (req, res, next) => {
 
 exports.getCustomerTransactions = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
-
+  const { fromDate, toDate } = req.query;
+  let { page, limit, sortBy, sortType } = req.query;
+  const attributes = ['createdAt'];
+  const sortTypes = ['asc', 'desc'];
   const customer = await findCustomer(id);
+
   if (!customer) {
     return next(new AppError('Customer not found.', 404));
   }
 
-  const transactions = await Transaction.findAll({
+  if (!page || page <= 0) page = 1;
+  if (!limit || limit <= 0) limit = 10;
+
+  if (!sortType || (sortType && !sortTypes.includes(sortType)))
+    sortType = 'asc';
+  if (!sortBy || (sortBy && !attributes.includes(sortBy))) sortBy = 'createdAt';
+
+  const filterArr = [];
+  attributes.forEach((attr) => {
+    if (req.query[attr] && !fromDate && !toDate) {
+      const obj = {};
+      obj[attr] = {
+        [Op.and]: [
+          {
+            [Op.gte]: new Date(`${req.query[attr]}%`),
+          },
+          {
+            [Op.lte]: new Date(`${req.query[attr]}%`).setDate(
+              new Date(`${req.query[attr]}%`).getDate() + 1
+            ),
+          },
+        ],
+      };
+      filterArr.push(obj);
+    }
+    if (fromDate && toDate) {
+      const obj = {};
+      obj.createdAt = {
+        [Op.between]: [
+          new Date(`${fromDate}%`),
+          new Date(`${toDate}%`).setDate(new Date(`${toDate}%`).getDate() + 1),
+        ],
+      };
+      filterArr.push(obj);
+    }
+  });
+
+  const account = await Account.findOne({
     where: {
-      [Op.or]: { accountSourceId: id, accountDestination: id },
+      customerId: id,
+      type: ACCOUNT_TYPE.payment,
     },
+  });
+
+  if (!account) {
+    return next(new AppError('You did not have any account.', 400));
+  }
+
+  const transactions = await Transaction.findAndCountAll({
+    attributes: {
+      exclude: ['otpCode', 'otpCreatedDate', 'otpExpiredDate'],
+    },
+    where: {
+      [Op.and]: [
+        {
+          [Op.or]: {
+            accountSourceId: account.id,
+            accountDestination: account.id,
+          },
+        },
+        ...filterArr,
+      ],
+    },
+    order: [[sortBy, sortType]],
+    offset: (page - 1) * limit,
+    limit,
   });
 
   return res.status(200).json({
     status: 'success',
-    data: transactions,
+    totalItems: transactions.count,
+    items: transactions.rows,
   });
 });
 
