@@ -1,0 +1,19 @@
+@import '../../scss/config';
+
+.customer-details {
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__menu {
+    text-align: right;
+  }
+
+  &__title {
+    font-size: 18px;
+    color: $c-primary;
+    margin-left: 16px;
+  }
+}
