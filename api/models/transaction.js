@@ -28,6 +28,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true,
       },
+      bankDestinationName: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
       amount: {
         type: DataTypes.DECIMAL,
         allowNull: false,

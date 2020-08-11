@@ -68,6 +68,12 @@ export const FILTER_IDENTITIES = {
       placeholder: ''
     },
     {
+      label: 'Identity number',
+      type: 'input',
+      columnName: 'identityNumber',
+      placeholder: ''
+    },
+    {
       label: 'Issued on',
       type: 'datepicker',
       columnName: 'registrationDate',
