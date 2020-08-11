@@ -27,11 +27,13 @@ const LoginStaff = ({ history }) => {
   const onFinish = async values => {
     try {
       setLoading(true);
+
       const { username, password } = values;
       const { token } = await login('/staffs/login', {
         username,
         password
       });
+
       createCookie(TOKEN_KEY, token);
       history.push('/a2hl-management');
     } catch (err) {
@@ -54,6 +56,7 @@ const LoginStaff = ({ history }) => {
               placeholder="Username"
             />
           </Form.Item>
+
           <Form.Item
             name="password"
             rules={[{ required: true, message: 'Password is required!' }]}

@@ -104,6 +104,7 @@ const CustomerTransactions = ({ customerId }) => {
         customerId,
         customParams
       );
+
       const paper = { ...pagination };
       paper.total = totalItems;
       paper.current = customParams.page;
@@ -122,6 +123,7 @@ const CustomerTransactions = ({ customerId }) => {
     <div>
       <div className="table">
         <FilterDate fetchData={fetchDataTable} paramsTable={paramsTable} />
+
         <Table
           bordered
           size="middle"

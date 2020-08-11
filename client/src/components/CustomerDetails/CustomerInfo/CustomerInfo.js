@@ -89,17 +89,25 @@ const CustomerInfo = ({ details, accounts }) => {
       <div className="customer-info__info">
         <Descriptions bordered>
           <Descriptions.Item label="Customer ID">{id}</Descriptions.Item>
+
           <Descriptions.Item label="Fullname">{name}</Descriptions.Item>
+
           <Descriptions.Item label="Username">{username}</Descriptions.Item>
+
           <Descriptions.Item label="Date of Birth">
             {moment(dateOfBirth).format(DATE_FORMAT)}
           </Descriptions.Item>
+
           <Descriptions.Item label="Email">{email}</Descriptions.Item>
+
           <Descriptions.Item label="Phone">{phoneNumber}</Descriptions.Item>
+
           <Descriptions.Item label="Address">{address}</Descriptions.Item>
+
           <Descriptions.Item label="Created Date">
             {moment(createdAt).format(DATETIME_FORMAT)}
           </Descriptions.Item>
+
           <Descriptions.Item label="Status">
             <span style={style}>{label}</span>
           </Descriptions.Item>

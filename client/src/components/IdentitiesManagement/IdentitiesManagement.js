@@ -129,6 +129,7 @@ const IdentitiesManagement = ({ history }) => {
         fetchData={fetchDataTable}
         paramsTable={paramsTable}
       />
+
       <div className="table">
         <Table
           size="middle"

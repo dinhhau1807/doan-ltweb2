@@ -30,7 +30,9 @@ const PasswordRecovery = ({ match, history }) => {
         const code = match.params.code;
         const body = { verifyCode: code, newPwd: values.password };
         await passwordReset(body);
+
         message.success('Reset your password successfully!');
+
         history.push(LOGIN_URL);
       }
     } catch (err) {
@@ -43,6 +45,7 @@ const PasswordRecovery = ({ match, history }) => {
     <div className="public-form">
       <div className="public-form__wrap" style={{ width: '400px' }}>
         <h2 className="public-form__header">Password reset</h2>
+
         <Form name="form" className="form" onFinish={onFinish}>
           <Form.Item
             name="password"
@@ -50,6 +53,7 @@ const PasswordRecovery = ({ match, history }) => {
           >
             <Input.Password placeholder="Password" />
           </Form.Item>
+
           <Form.Item
             name="confirmPassword"
             dependencies={['password']}
@@ -72,6 +76,7 @@ const PasswordRecovery = ({ match, history }) => {
           >
             <Input.Password placeholder="Password confirmation" />
           </Form.Item>
+
           <Form.Item>
             <Button
               loading={loading}
