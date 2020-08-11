@@ -50,6 +50,11 @@ const CustomerTransactions = ({ customerId }) => {
       sorter: true
     },
     {
+      title: 'Bank Name',
+      dataIndex: 'bankDestinationName',
+      sorter: false
+    },
+    {
       title: 'Amount',
       dataIndex: 'amount',
       sorter: false,
