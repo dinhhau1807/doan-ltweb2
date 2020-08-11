@@ -3,7 +3,10 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import { Row, Spin, message, Button, Input, Form, Descriptions } from 'antd';
 
-//Actions
+// Components
+import ComponentHeader from '../ComponentHeader/ComponentHeader';
+
+// Actions
 import { getIdentity, approveIdentity } from '../../actions/StaffActions';
 
 // Constants
@@ -100,51 +103,58 @@ const IdentityDetails = ({ match }) => {
 
   return (
     <div className="identity">
-      <h2 className="page-header">IDENTITY DETAILS</h2>
-      <Spin spinning={loading}>
-        <Descriptions
-          bordered
-          layout="vertical"
-          column={{ xxl: 3, xl: 3, lg: 3, md: 3, sm: 1, xs: 1 }}
-        >
-          <Descriptions.Item label="ID">{id}</Descriptions.Item>
-          <Descriptions.Item label="Identication number">
-            {identityNumber}
-          </Descriptions.Item>
-          <Descriptions.Item label="Issued on">{issuedOn}</Descriptions.Item>
-          <Descriptions.Item label="Front image">
-            <img
-              className="identity__photo"
-              src={frontImageBase64}
-              alt="front"
-            />
-          </Descriptions.Item>
-          <Descriptions.Item label="Back image">
-            <img className="identity__photo" src={backImageBase64} alt="back" />
-          </Descriptions.Item>
-        </Descriptions>
-        <Row>
-          <Form style={{ margin: '10px 0' }} onFinish={onFinish}>
-            <Form.Item
-              name="amount"
-              label="Amount"
-              rules={[{ required: true, message: 'Amount is required' }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item>
-              <Button
-                disabled={approved}
-                loading={loading}
-                htmlType="submit"
-                type="primary"
+      <ComponentHeader title="Identity details" />
+
+      <div style={{ margin: '16px' }}>
+        <Spin spinning={loading}>
+          <Descriptions
+            bordered
+            layout="vertical"
+            column={{ xxl: 3, xl: 3, lg: 3, md: 3, sm: 1, xs: 1 }}
+          >
+            <Descriptions.Item label="ID">{id}</Descriptions.Item>
+            <Descriptions.Item label="Identication number">
+              {identityNumber}
+            </Descriptions.Item>
+            <Descriptions.Item label="Issued on">{issuedOn}</Descriptions.Item>
+            <Descriptions.Item label="Front image">
+              <img
+                className="identity__photo"
+                src={frontImageBase64}
+                alt="front"
+              />
+            </Descriptions.Item>
+            <Descriptions.Item label="Back image">
+              <img
+                className="identity__photo"
+                src={backImageBase64}
+                alt="back"
+              />
+            </Descriptions.Item>
+          </Descriptions>
+          <Row>
+            <Form style={{ margin: '10px 0' }} onFinish={onFinish}>
+              <Form.Item
+                name="amount"
+                label="Amount"
+                rules={[{ required: true, message: 'Amount is required' }]}
               >
-                {approved ? 'Approved' : 'Approve'}
-              </Button>
-            </Form.Item>
-          </Form>
-        </Row>
-      </Spin>
+                <Input />
+              </Form.Item>
+              <Form.Item>
+                <Button
+                  disabled={approved}
+                  loading={loading}
+                  htmlType="submit"
+                  type="primary"
+                >
+                  {approved ? 'Approved' : 'Approve'}
+                </Button>
+              </Form.Item>
+            </Form>
+          </Row>
+        </Spin>
+      </div>
     </div>
   );
 };
