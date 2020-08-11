@@ -20,24 +20,26 @@ const OtpCodeForm = ({ visible, loading, submitOTP }) => {
   };
 
   return (
-    <Form
-      name="formOTP"
-      style={{ margin: '10px 0' }}
-      className="form"
-      onFinish={onFinish}
-    >
-      <Form.Item
-        label="OTP Code"
-        name="code"
-        rules={[{ required: true, message: 'OTP Code is required' }]}
+    <div className="otp-code-form">
+      <Form
+        name="formOTP"
+        style={{ margin: '10px 0' }}
+        className="form"
+        onFinish={onFinish}
       >
-        <Input />
-      </Form.Item>
+        <Form.Item
+          label="OTP Code"
+          name="code"
+          rules={[{ required: true, message: 'OTP Code is required' }]}
+        >
+          <Input />
+        </Form.Item>
 
-      <Button type="primary" htmlType="submit" loading={loading}>
-        Accept
-      </Button>
-    </Form>
+        <Button type="primary" htmlType="submit" loading={loading}>
+          Accept
+        </Button>
+      </Form>
+    </div>
   );
 };
 
