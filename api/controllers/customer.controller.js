@@ -363,7 +363,6 @@ exports.externalTransferRequest = asyncHandler(async (req, res, next) => {
     idAccountSource,
     idAccountDestination,
     idBankDestination,
-    nameBankDestination,
     amount,
     description,
   } = req.body;
@@ -374,9 +373,6 @@ exports.externalTransferRequest = asyncHandler(async (req, res, next) => {
 
   if (!idBankDestination) {
     return next(new AppError('ID bank destination not valid!', 400));
-  }
-  if (!nameBankDestination) {
-    return next(new AppError('Name bank destination not valid!', 400));
   }
   if (!idAccountDestination) {
     return next(new AppError('ID account destination not valid!', 400));
@@ -408,6 +404,8 @@ exports.externalTransferRequest = asyncHandler(async (req, res, next) => {
   if (!banks.map((b) => b.id).includes(idBankDestination)) {
     return next(new AppError('Bank is not valid!', 400));
   }
+
+  const bank = banks.find((b) => b.id === idBankDestination);
 
   // Check account source
   const accountSource = await Account.findOne({
@@ -450,7 +448,7 @@ exports.externalTransferRequest = asyncHandler(async (req, res, next) => {
     accountSourceId: accountSource.id,
     accountDestination: idAccountSource,
     bankDestinationId: idBankDestination,
-    bankDestinationName: nameBankDestination,
+    bankDestinationName: bank.name,
     amount,
     currencyUnit: accountSource.currentUnit,
     description: description || '',
