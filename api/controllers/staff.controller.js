@@ -458,7 +458,7 @@ exports.updateCustomerStatus = asyncHandler(async (req, res, next) => {
   if (!identity) {
     return next(new AppError("Can't find customer's identity!", 404));
   }
-  if (identity.staffIdApproved === null) {
+  if (identity.staffIdApproved === null && newStatus === STATUS.active) {
     return next(
       new AppError('Cannot active, this account is not approved!', 400)
     );
