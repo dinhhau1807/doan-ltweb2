@@ -7,6 +7,7 @@
   box-sizing: border-box;
 }
 
+/* Tags */
 label,
 input,
 textarea {
@@ -22,6 +23,7 @@ body {
   color: $c-text !important;
 }
 
+/* Defined global classes */
 .main-public,
 .main {
   position: relative;
@@ -92,28 +94,6 @@ body {
   }
 }
 
-.table {
-  margin: 16px 16px 0 16px;
-
-  &__id {
-    color: $c-primary;
-
-    &:hover {
-      cursor: pointer;
-      text-decoration: underline;
-    }
-  }
-
-  .ant-table-thead .ant-table-cell {
-    background-color: $c-primary !important;
-    color: #fff;
-  }
-
-  .ant-table-row:nth-child(even) {
-    background-color: #fafafa;
-  }
-}
-
 .page-header {
   color: $c-primary;
   text-transform: uppercase;
@@ -136,6 +116,29 @@ body {
   justify-content: center;
 }
 
+.table {
+  margin: 16px 16px 0 16px;
+
+  &__id {
+    color: $c-primary;
+
+    &:hover {
+      cursor: pointer;
+      text-decoration: underline;
+    }
+  }
+
+  .ant-table-thead .ant-table-cell {
+    background-color: $c-primary !important;
+    color: #fff;
+  }
+
+  .ant-table-row:nth-child(even) {
+    background-color: #fafafa;
+  }
+}
+
+/* Antd */
 .ant-menu-item {
   display: block;
   height: 70px !important;
