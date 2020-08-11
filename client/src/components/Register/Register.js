@@ -132,6 +132,7 @@ const Register = ({ history }) => {
       }
 
       await register(formData);
+
       message.success('New account is created');
       history.push(LOGIN_URL);
     } catch (err) {
@@ -147,6 +148,7 @@ const Register = ({ history }) => {
       <div className="ant-upload-text">Upload</div>
     </div>
   );
+
   return (
     <div className="public-form">
       <div className="public-form__wrap">
@@ -167,6 +169,7 @@ const Register = ({ history }) => {
               >
                 <Input />
               </Form.Item>
+
               <Form.Item
                 name="email"
                 label="Email"
@@ -174,6 +177,7 @@ const Register = ({ history }) => {
               >
                 <Input />
               </Form.Item>
+
               <Form.Item
                 name="password"
                 label="Password"
@@ -181,6 +185,7 @@ const Register = ({ history }) => {
               >
                 <Input.Password />
               </Form.Item>
+
               <Form.Item
                 name="confirmPassword"
                 label="Confirm password"
@@ -201,6 +206,7 @@ const Register = ({ history }) => {
               >
                 <Input.Password />
               </Form.Item>
+
               <Form.Item
                 name="name"
                 label="Fullname"
@@ -208,6 +214,7 @@ const Register = ({ history }) => {
               >
                 <Input />
               </Form.Item>
+
               <Form.Item
                 name="DoB"
                 label="Birthday"
@@ -219,6 +226,7 @@ const Register = ({ history }) => {
                   placeholder=""
                 />
               </Form.Item>
+
               <Form.Item
                 label="Phone"
                 rules={[{ required: true }]}
@@ -238,6 +246,7 @@ const Register = ({ history }) => {
                   </Col>
                 </Row>
               </Form.Item>
+
               <Form.Item
                 name="address"
                 label="Address"
@@ -246,6 +255,7 @@ const Register = ({ history }) => {
                 <Input.TextArea />
               </Form.Item>
             </Col>
+
             <Col xl={12} lg={12} md={24} sm={24} xs={24}>
               <Form.Item
                 name="identityNumber"
@@ -254,6 +264,7 @@ const Register = ({ history }) => {
               >
                 <Input />
               </Form.Item>
+
               <Form.Item
                 name="registrationDate"
                 label="Issued on"
@@ -265,6 +276,7 @@ const Register = ({ history }) => {
                   placeholder=""
                 />
               </Form.Item>
+
               <Form.Item
                 name="photos"
                 label="Identification Card photo"
@@ -301,6 +313,7 @@ const Register = ({ history }) => {
                   >
                     {fileList.length === 2 ? null : uploadButton}
                   </Upload>
+
                   <Modal
                     visible={previewVisible}
                     title={previewTitle}
@@ -317,12 +330,14 @@ const Register = ({ history }) => {
               </Form.Item>
             </Col>
           </Row>
+
           <Row align="middle" justify="center">
             <Col span={24}>
               <Form.Item wrapperCol={{ offset: 10 }}>
                 <Button loading={loading} type="primary" htmlType="submit">
                   Register
                 </Button>
+
                 <a href={LOGIN_URL} style={{ marginLeft: '10px' }}>
                   Back
                 </a>

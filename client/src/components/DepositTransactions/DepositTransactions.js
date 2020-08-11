@@ -115,7 +115,9 @@ const DepositTransactions = () => {
         selectedTab={DEPOSIT_TABS.HISTORY.to}
         title="Deposit history"
       />
+
       <FilterDate fetchData={fetchDataTable} paramsTable={paramsTable} />
+
       <div className="table">
         <Table
           size="middle"

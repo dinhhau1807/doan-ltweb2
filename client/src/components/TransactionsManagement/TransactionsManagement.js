@@ -130,11 +130,13 @@ const TransactionsManagement = () => {
   return (
     <div>
       <ComponentHeader title="Transactions information" />
+
       <FilterOptions
         columnFilter={FILTER_TRANSACTIONS}
         fetchData={fetchDataTable}
         paramsTable={paramsTable}
       />
+
       <div className="table">
         <Table
           size="middle"

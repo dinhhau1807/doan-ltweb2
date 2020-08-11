@@ -64,15 +64,19 @@ const UserProfile = ({ loading, data, updateProfile }) => {
   const getPhoneNumber = (data, countriesCallingCode) => {
     if (data && data.phoneNumber) {
       const { phoneNumber } = data;
+
       const country = find(countriesCallingCode, function (item) {
         return phoneNumber.includes(item.callingCode);
       });
+
       let code = '';
       if (country) {
         code = phoneNumber.replace(country.callingCode, '');
       }
+
       return [country.callingCode, code];
     }
+
     return ['+84', ''];
   };
 
@@ -93,6 +97,7 @@ const UserProfile = ({ loading, data, updateProfile }) => {
 
   const onFinish = async values => {
     const { callingCode, phoneNumber } = values;
+
     updateProfile(route, {
       ...values,
       phoneNumber: callingCode + phoneNumber
@@ -106,6 +111,7 @@ const UserProfile = ({ loading, data, updateProfile }) => {
         selectedTab={utilsTabs.PROFILE.to}
         title="Update profile"
       />
+
       <div className="profile__form-wrap">
         <Spin spinning={loading}>
           <Form
@@ -140,6 +146,7 @@ const UserProfile = ({ loading, data, updateProfile }) => {
                         <Col span={8}>
                           <CallingCodeFormItem />
                         </Col>
+
                         <Col span={16}>
                           <Form.Item
                             name={input.name}
@@ -168,6 +175,7 @@ const UserProfile = ({ loading, data, updateProfile }) => {
                   return null;
               }
             })}
+
             <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
               <Button loading={loading} type="primary" htmlType="submit">
                 Update

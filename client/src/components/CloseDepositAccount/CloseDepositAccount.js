@@ -45,11 +45,14 @@ const CloseDepositAccount = ({ history }) => {
     const fetchData = async () => {
       try {
         setLoading(true);
+
         const { items } = await getDepositAccounts();
+
         setAccounts(items);
       } catch (err) {
         message.error(getErrorMessage(err));
       }
+
       setLoading(false);
     };
 
@@ -59,8 +62,8 @@ const CloseDepositAccount = ({ history }) => {
   useEffect(() => {
     if (account) {
       const { interestRate, term, currentBalance, createdAt } = account;
-      const amount = +currentBalance;
 
+      const amount = +currentBalance;
       const maturityDate = moment().add(term, 'M').format(DATE_FORMAT);
       const expectedInterest = Math.ceil(
         amount * term * 30 * (+interestRate / 36000)
@@ -110,7 +113,9 @@ const CloseDepositAccount = ({ history }) => {
 
   const onSelectChange = value => {
     const id = value ? +value : null;
+
     setAccount(null);
+
     if (id) {
       const acc = find(accounts, function (item) {
         return item.id === id;
@@ -132,6 +137,7 @@ const CloseDepositAccount = ({ history }) => {
     } catch (err) {
       message.error(getErrorMessage(err));
     }
+
     setLoading(false);
   };
 
@@ -161,6 +167,7 @@ const CloseDepositAccount = ({ history }) => {
         selectedTab={DEPOSIT_TABS.WITHDRAW.to}
         title="Close term deposit account"
       />
+
       <div className="close-deposit__form-wrap">
         <Spin spinning={loading}>
           <Form
@@ -217,6 +224,7 @@ const CloseDepositAccount = ({ history }) => {
           </Form>
         </Spin>
       </div>
+
       <OtpCodeForm
         visible={otpCodeFormVisible}
         loading={loading}

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Menu, Dropdown, Spin } from 'antd';
 import { UserOutlined, DownOutlined } from '@ant-design/icons';
@@ -38,32 +38,25 @@ const Header = ({ style, isStaffRoute, user, fetchUser, logout, history }) => {
     history.push(segment + 'login');
   };
 
-  const handleChangePassword = () => {
-    history.push(segment + 'utils/password');
-  };
-
-  const handleChangeProfile = () => {
-    history.push(segment + 'utils/profile');
-  };
-
   const { loading, data } = user;
   const userName = data ? data.name : null;
+  const headerTitle = isStaffRoute
+    ? 'A2HL Management'
+    : 'A2HL Internet Banking';
 
   return (
     <header className="header" style={style}>
-      <h1 className="header__left">
-        {isStaffRoute ? 'A2HL Management' : 'A2HL Internet Banking'}
-      </h1>
+      <h1 className="header__left">{headerTitle}</h1>
       <div className="header__right">
         <Spin spinning={loading}>
           <Dropdown
             overlay={
               <Menu>
-                <Menu.Item onClick={handleChangeProfile}>
-                  Update Profile
+                <Menu.Item>
+                  <Link to={segment + 'utils/profile'}>Update Profile</Link>
                 </Menu.Item>
-                <Menu.Item onClick={handleChangePassword}>
-                  Change password
+                <Menu.Item>
+                  <Link to={segment + 'utils/password'}>Change password</Link>
                 </Menu.Item>
                 <Menu.Item onClick={handleLogout}>Logout</Menu.Item>
               </Menu>
@@ -71,9 +64,11 @@ const Header = ({ style, isStaffRoute, user, fetchUser, logout, history }) => {
           >
             <span style={{ cursor: 'pointer', fontSize: '18px' }}>
               <UserOutlined />
+
               <span style={{ fontSize: '16px', margin: '0 8px' }}>
                 {userName}
               </span>
+
               <DownOutlined style={{ marginLeft: '4px' }} />
             </span>
           </Dropdown>

@@ -55,7 +55,6 @@ const AddStaffModal = ({ createStaff, fetchData, paramsTable, width }) => {
 
       const { username, name, password } = values;
       const body = { username, password, name };
-
       await createStaff(body);
 
       //reset modal
@@ -76,6 +75,7 @@ const AddStaffModal = ({ createStaff, fetchData, paramsTable, width }) => {
       <Button style={{ width: '100%' }} type="primary" onClick={showModal}>
         <PlusOutlined /> Create
       </Button>
+
       <Modal
         title="Create new account"
         visible={visible}
@@ -109,9 +109,11 @@ const AddStaffModal = ({ createStaff, fetchData, paramsTable, width }) => {
           >
             <Input />
           </Form.Item>
+
           <Form.Item name="name" label="Fullname" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
+
           <Form.Item
             name="password"
             label="Password"

@@ -28,11 +28,13 @@ const Login = ({ history }) => {
   const onFinish = async values => {
     try {
       setLoading(true);
+
       const { username, password } = values;
       const { token } = await login('/customers/login', {
         username,
         password
       });
+
       createCookie(TOKEN_KEY, token);
       history.push('/');
     } catch (err) {
@@ -55,6 +57,7 @@ const Login = ({ history }) => {
               placeholder="Username"
             />
           </Form.Item>
+
           <Form.Item
             name="password"
             rules={[{ required: true, message: 'Password is required!' }]}
