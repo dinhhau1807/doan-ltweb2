@@ -9,6 +9,18 @@ export const changeCustomerStatus = body => {
   return fetchApi('/staffs/customers/status', 'POST', body);
 };
 
+export const getCustomerDetails = id => {
+  return fetchApi('/staffs/customers/' + id, 'GET');
+};
+
+export const getCustomerAccounts = id => {
+  return fetchApi(`/staffs/customers/${id}/accounts`, 'GET');
+};
+
+export const getCustomerTransactions = (id, params) => {
+  return fetchApi(`/staffs/customers/${id}/transactions`, 'GET', null, params);
+};
+
 // identities
 export const getIdentities = (params = {}) => {
   return fetchApi('/staffs/identities', 'GET', null, params);

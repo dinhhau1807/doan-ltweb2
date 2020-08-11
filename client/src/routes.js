@@ -41,6 +41,9 @@ const PasswordReset = lazy(() =>
 const CustomersManagement = lazy(() =>
   import('./components/CustomersManagement/CustomersManagement')
 );
+const CustomerDetails = lazy(() =>
+  import('./components/CustomerDetails/CustomerDetails')
+);
 const StaffsManagement = lazy(() =>
   import('./components/StaffsManagement/StaffsManagement')
 );
@@ -154,6 +157,14 @@ export const routes = [
     isStaffRoute: true,
     layout: PrivateLayout,
     component: CustomersManagement
+  },
+  {
+    path: '/a2hl-management/customers/:id',
+    exact: true,
+    isPrivate: true,
+    isStaffRoute: true,
+    layout: PrivateLayout,
+    component: CustomerDetails
   },
   {
     path: '/a2hl-management/staffs',
