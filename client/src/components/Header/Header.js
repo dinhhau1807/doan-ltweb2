@@ -5,6 +5,9 @@ import { connect } from 'react-redux';
 import { Menu, Dropdown, Spin } from 'antd';
 import { UserOutlined, DownOutlined } from '@ant-design/icons';
 
+// HOCs
+import withAuthenticated from '../../HOCs/withAuthenticated';
+
 // Actions
 import { fetchUser, logout } from '../../actions/UserActions';
 
@@ -20,12 +23,19 @@ const propTypes = {
   user: PropTypes.object,
   fetchUser: PropTypes.func.isRequired,
   logout: PropTypes.func.isRequired,
-  history: PropTypes.object
+  history: PropTypes.object,
+  segment: PropTypes.string
 };
 
-const Header = ({ style, isStaffRoute, user, fetchUser, logout, history }) => {
-  const segment = isStaffRoute ? '/a2hl-management/' : '/';
-
+const Header = ({
+  style,
+  isStaffRoute,
+  user,
+  fetchUser,
+  logout,
+  history,
+  segment
+}) => {
   useEffect(() => {
     if (!user.data) {
       const type = isStaffRoute ? 'staffs' : 'customers';
@@ -87,5 +97,5 @@ const mapStateToProps = state => {
 };
 
 export default withRouter(
-  connect(mapStateToProps, { fetchUser, logout })(Header)
+  connect(mapStateToProps, { fetchUser, logout })(withAuthenticated(Header))
 );
