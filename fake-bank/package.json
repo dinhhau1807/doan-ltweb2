@@ -1,0 +1,27 @@
+{
+  "name": "a2hl-fake-bank",
+  "private": true,
+  "version": "1.0.0",
+  "description": "This is central bank for external transfer",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "author": "Hau Nguyen",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-async-handler": "^1.1.4",
+    "jsonwebtoken": "^8.5.1",
+    "morgan": "^1.10.0",
+    "pg": "^8.3.0",
+    "pg-hstore": "^2.3.3",
+    "sequelize": "^6.3.4"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
