@@ -17,6 +17,9 @@ module.exports = {
       bankDestinationId: {
         type: Sequelize.STRING,
       },
+      bankDestinationName: {
+        type: Sequelize.STRING,
+      },
       amount: {
         type: Sequelize.DECIMAL,
       },

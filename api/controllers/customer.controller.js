@@ -363,6 +363,7 @@ exports.externalTransferRequest = asyncHandler(async (req, res, next) => {
     idAccountSource,
     idAccountDestination,
     idBankDestination,
+    nameBankDestination,
     amount,
     description,
   } = req.body;
@@ -374,7 +375,9 @@ exports.externalTransferRequest = asyncHandler(async (req, res, next) => {
   if (!idBankDestination) {
     return next(new AppError('ID bank destination not valid!', 400));
   }
-
+  if (!nameBankDestination) {
+    return next(new AppError('Name bank destination not valid!', 400));
+  }
   if (!idAccountDestination) {
     return next(new AppError('ID account destination not valid!', 400));
   }
@@ -447,6 +450,7 @@ exports.externalTransferRequest = asyncHandler(async (req, res, next) => {
     accountSourceId: accountSource.id,
     accountDestination: idAccountSource,
     bankDestinationId: idBankDestination,
+    bankDestinationName: nameBankDestination,
     amount,
     currencyUnit: accountSource.currentUnit,
     description: description || '',
