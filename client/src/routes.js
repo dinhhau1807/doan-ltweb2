@@ -25,6 +25,9 @@ const DepositTransactions = lazy(() =>
 const TransferInsideSystem = lazy(() =>
   import('./components/TransferInsideSystem/TransferInsideSystem')
 );
+const TransferOutsideSystem = lazy(() =>
+  import('./components/TransferOutsideSystem/TransferOutsideSystem')
+);
 
 const NotFound = lazy(() => import('./components/NotFound/NotFound'));
 
@@ -120,6 +123,13 @@ export const routes = [
     isPrivate: true,
     layout: PrivateLayout,
     component: TransferInsideSystem
+  },
+  {
+    path: '/transfer/outside',
+    exact: true,
+    isPrivate: true,
+    layout: PrivateLayout,
+    component: TransferOutsideSystem
   },
   {
     path: '/utils',
