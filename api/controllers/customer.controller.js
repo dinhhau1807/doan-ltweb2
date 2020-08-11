@@ -329,6 +329,34 @@ exports.internalTransferConfirm = asyncHandler(async (req, res, next) => {
   });
 });
 
+exports.getBanks = asyncHandler(async (req, res, next) => {
+  const options = {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${process.env.BANK_KEY}` },
+  };
+
+  let banks = [];
+  try {
+    const result = await axios.get(
+      `${process.env.BANK_DOMAIN}/api/banks`,
+      options
+    );
+
+    if (result.data.status !== 'success') {
+      return next(new AppError(result.data.message, 500));
+    }
+
+    ({ banks } = result.data);
+  } catch (err) {
+    return next(new AppError(err.message, 500));
+  }
+
+  return res.status(200).json({
+    status: 'success',
+    data: banks,
+  });
+});
+
 exports.externalTransferRequest = asyncHandler(async (req, res, next) => {
   const customer = req.user;
   const {
