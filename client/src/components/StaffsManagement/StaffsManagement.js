@@ -46,12 +46,7 @@ const StaffsManagement = ({ history }) => {
     {
       title: 'ID',
       dataIndex: 'id',
-      sorter: false,
-      render: (text, record) => (
-        <span className="table__id" onClick={handleViewCustomerDetails(record)}>
-          {text}
-        </span>
-      )
+      sorter: false
     },
     {
       title: 'Fullname',
@@ -87,10 +82,6 @@ const StaffsManagement = ({ history }) => {
       }
     }
   ];
-
-  const handleViewCustomerDetails = staff => () => {
-    history.push('a2hl-management/staffs/' + staff.id);
-  };
 
   const onChangeStatus = async (id, status) => {
     const body = { idStaff: +id, status };
