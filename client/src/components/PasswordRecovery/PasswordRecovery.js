@@ -35,6 +35,7 @@ const PasswordRecovery = () => {
     <div className="public-form">
       <div className="public-form__wrap" style={{ width: '400px' }}>
         <h2 className="public-form__header">Password recovery</h2>
+
         <Form name="form" className="form" onFinish={onFinish}>
           <Form.Item
             name="email"
@@ -42,6 +43,7 @@ const PasswordRecovery = () => {
           >
             <Input type="email" placeholder="Input your email" />
           </Form.Item>
+
           <Form.Item>
             <Button
               disabled={!buttonnEnabled}

@@ -53,9 +53,9 @@ const OpenDepositAccount = ({ data: user, history }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
-
       try {
+        setLoading(true);
+
         const [{ data: accountData }, { data: termsData }] = await fetchAll([
           fetchAccount(),
           getDepositTerms()
@@ -66,6 +66,7 @@ const OpenDepositAccount = ({ data: user, history }) => {
               accountData.currentBalance
             )} ${accountData.currentUnit}`
           : 'No account';
+
         form.setFieldsValue({
           account
         });
@@ -303,6 +304,7 @@ const OpenDepositAccount = ({ data: user, history }) => {
           </Form>
         </Spin>
       </div>
+
       <OtpCodeForm
         visible={otpCodeFormVisible}
         loading={loading}

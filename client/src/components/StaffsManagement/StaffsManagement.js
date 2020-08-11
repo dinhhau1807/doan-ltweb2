@@ -157,6 +157,7 @@ const StaffsManagement = ({ history }) => {
   return (
     <div className="staffs-management">
       <ComponentHeader title="Employees information" />
+
       <Row gutter={[8, 8]}>
         <Col xl={20} lg={20} md={20} sm={24} xs={24}>
           <FilterOptions
@@ -165,6 +166,7 @@ const StaffsManagement = ({ history }) => {
             paramsTable={paramsTable}
           />
         </Col>
+
         <Col xl={4} lg={4} md={4} sm={24} xs={24}>
           <AddStaffModal
             width="100%"
@@ -174,6 +176,7 @@ const StaffsManagement = ({ history }) => {
           />
         </Col>
       </Row>
+
       <div className="table">
         <Table
           size="middle"

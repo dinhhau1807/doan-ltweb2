@@ -32,6 +32,7 @@ const FilterDate = ({ fetchData, paramsTable }) => {
     const fromDate = values.fromDate.format(DATE_FORMAT);
     const toDate = values.toDate.format(DATE_FORMAT);
     const params = { ...paramsTable, page: 1, fromDate, toDate };
+
     fetchData(params);
   };
 
@@ -51,6 +52,7 @@ const FilterDate = ({ fetchData, paramsTable }) => {
         >
           <DatePicker format={DATE_FORMAT} style={{ width: '100%' }} />
         </Form.Item>
+
         <Form.Item
           label="To Date"
           name="toDate"
@@ -58,6 +60,7 @@ const FilterDate = ({ fetchData, paramsTable }) => {
         >
           <DatePicker format={DATE_FORMAT} style={{ width: '100%' }} />
         </Form.Item>
+
         <Form.Item
           wrapperCol={{
             lg: { offset: 6 }

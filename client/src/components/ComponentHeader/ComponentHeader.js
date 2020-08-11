@@ -20,6 +20,7 @@ const ComponentHeader = ({ tabs, selectedTab, title }) => {
   return (
     <div className="component-header">
       <h2 className="page-header">{title}</h2>
+
       <div className="component-header__wrap">
         <Menu
           className="component-header__menu"

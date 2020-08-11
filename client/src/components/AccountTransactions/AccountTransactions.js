@@ -115,7 +115,9 @@ const AccountTransactions = () => {
         selectedTab={ACCOUNT_TABS.HISTORY.to}
         title="Account history"
       />
+
       <FilterDate fetchData={fetchDataTable} paramsTable={paramsTable} />
+
       <div className="table">
         <Table
           bordered

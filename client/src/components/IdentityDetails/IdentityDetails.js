@@ -33,15 +33,17 @@ const IdentityDetails = ({ match }) => {
 
   //fetch identity
   useEffect(() => {
-    setLoading(true);
     const fetchIdentity = async id => {
       try {
+        setLoading(true);
+
         const { data } = await getIdentity(id);
 
         setIdentity(data);
       } catch (err) {
         message.error(getErrorMessage(err));
       }
+
       setLoading(false);
     };
 
@@ -113,10 +115,13 @@ const IdentityDetails = ({ match }) => {
             column={{ xxl: 3, xl: 3, lg: 3, md: 3, sm: 1, xs: 1 }}
           >
             <Descriptions.Item label="ID">{id}</Descriptions.Item>
+
             <Descriptions.Item label="Identication number">
               {identityNumber}
             </Descriptions.Item>
+
             <Descriptions.Item label="Issued on">{issuedOn}</Descriptions.Item>
+
             <Descriptions.Item label="Front image">
               <img
                 className="identity__photo"
@@ -124,6 +129,7 @@ const IdentityDetails = ({ match }) => {
                 alt="front"
               />
             </Descriptions.Item>
+
             <Descriptions.Item label="Back image">
               <img
                 className="identity__photo"
@@ -141,6 +147,7 @@ const IdentityDetails = ({ match }) => {
               >
                 <Input />
               </Form.Item>
+
               <Form.Item>
                 <Button
                   disabled={approved}

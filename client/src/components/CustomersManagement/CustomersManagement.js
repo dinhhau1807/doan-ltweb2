@@ -104,10 +104,10 @@ const CustomersManagement = ({ history }) => {
   ];
 
   const onChangeStatus = async (id, status) => {
-    const body = { idCustomer: +id, status };
     try {
       setLoading(true);
 
+      const body = { idCustomer: +id, status };
       await changeCustomerStatus(body);
 
       fetchDataTable(paramsTable);
@@ -175,11 +175,13 @@ const CustomersManagement = ({ history }) => {
   return (
     <div className="customers-management">
       <ComponentHeader title="Customers information" />
+
       <FilterOptions
         columnFilter={FILTER_CUSTOMERS}
         fetchData={fetchDataTable}
         paramsTable={paramsTable}
       />
+
       <div className="table">
         <Table
           bordered

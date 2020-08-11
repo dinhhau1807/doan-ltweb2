@@ -14,6 +14,7 @@ const StaffSidebar = ({ tabs, match }) => {
       <div className="sidebar-logo">
         <img src={logo} alt="logo" />
       </div>
+
       <Menu defaultSelectedKeys={[match.path]} mode="inline">
         {Object.keys(tabs).map(tab => {
           const key =

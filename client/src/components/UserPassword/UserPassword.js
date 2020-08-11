@@ -60,6 +60,7 @@ const UserPassword = () => {
     } catch (err) {
       message.error(getErrorMessage(err));
     }
+
     setLoading(false);
   };
 
@@ -70,6 +71,7 @@ const UserPassword = () => {
         selectedTab={utilsTabs.PASSWORD.to}
         title="Change password"
       />
+
       <div className="password__form-wrap">
         <Form
           {...layout}
@@ -85,6 +87,7 @@ const UserPassword = () => {
           >
             <Input.Password />
           </Form.Item>
+
           <Form.Item
             name="newPassword"
             label="Your new password"
@@ -92,6 +95,7 @@ const UserPassword = () => {
           >
             <Input.Password />
           </Form.Item>
+
           <Form.Item
             name="confirmNewPassword"
             label="New password confirmation"
@@ -112,6 +116,7 @@ const UserPassword = () => {
           >
             <Input.Password />
           </Form.Item>
+
           <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
             <Button loading={loading} type="primary" htmlType="submit">
               Update

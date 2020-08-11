@@ -81,14 +81,17 @@ const CustomerAccount = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
+
         const [
           { data: dataAccount },
           { items: dataDeposits }
         ] = await fetchAll([fetchAccount(), getDepositAccounts()]);
+
         setAccount([dataAccount, ...dataDeposits]);
       } catch (err) {
         message.error(getErrorMessage(err));
       }
+
       setLoading(false);
     };
 
@@ -102,6 +105,7 @@ const CustomerAccount = () => {
         selectedTab={ACCOUNT_TABS.INFORMATION.to}
         title="Account information"
       />
+
       <div className="table">
         <Table
           bordered

@@ -40,6 +40,7 @@ const FilterOptions = ({ columnFilter, paramsTable, fetchData }) => {
   const onCheckboxChange = e => {
     const { value, checked } = e.target;
     const selectedList = [...optionsSelected];
+
     if (checked) {
       //add checked option
       for (let i = 0; i < columnFilter.options.length; i++) {
@@ -63,11 +64,13 @@ const FilterOptions = ({ columnFilter, paramsTable, fetchData }) => {
 
   const onInputChange = e => {
     const { name, value } = e.target;
+
     emitChangeDebounced(name, value);
   };
 
   const onDatePickerChange = (date, dateString, columnName) => {
     const dateSearch = date ? date.format(DATE_FORMAT) : undefined;
+
     emitChangeDebounced(columnName, dateSearch);
   };
 
@@ -120,6 +123,7 @@ const FilterOptions = ({ columnFilter, paramsTable, fetchData }) => {
         }
       }
     }
+
     fetchData(filterParams);
   }
 
@@ -132,6 +136,7 @@ const FilterOptions = ({ columnFilter, paramsTable, fetchData }) => {
           placeholder={columnFilter.default.placeholder}
           onChange={onInputChange}
         />
+
         <Dropdown
           style={{ background: '#fff' }}
           onVisibleChange={onVisibleDropdownChange}
@@ -161,6 +166,7 @@ const FilterOptions = ({ columnFilter, paramsTable, fetchData }) => {
           </span>
         </Dropdown>
       </div>
+
       {optionsSelected.length > 0 && (
         <div className="filter__options">
           <Row gutter={16}>
@@ -173,6 +179,7 @@ const FilterOptions = ({ columnFilter, paramsTable, fetchData }) => {
                         <label htmlFor={option.columnName}>
                           {option.label}
                         </label>
+
                         <Input
                           id={option.columnName}
                           name={option.columnName}
@@ -189,6 +196,7 @@ const FilterOptions = ({ columnFilter, paramsTable, fetchData }) => {
                         <label htmlFor={option.columnName}>
                           {option.label}
                         </label>
+
                         <DatePicker
                           style={{ display: 'block' }}
                           format={DATE_FORMAT}
@@ -213,6 +221,7 @@ const FilterOptions = ({ columnFilter, paramsTable, fetchData }) => {
                         <label htmlFor={option.columnName}>
                           {option.label}
                         </label>
+
                         <Select
                           style={{ display: 'block' }}
                           id={option.columnName}
@@ -238,6 +247,7 @@ const FilterOptions = ({ columnFilter, paramsTable, fetchData }) => {
                         <label htmlFor={option.columnName}>
                           {option.label}
                         </label>
+
                         <RangePicker
                           style={{ width: '100%' }}
                           id={option.columnName}

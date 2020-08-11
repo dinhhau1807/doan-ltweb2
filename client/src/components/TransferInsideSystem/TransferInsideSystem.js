@@ -120,6 +120,7 @@ const TransferInsideSystem = ({ history }) => {
         selectedTab={TRANSFER_TABS.INSIDE.to}
         title="Transfer inside system"
       />
+
       <div className="transfer-inside__form-wrap">
         <Spin spinning={loading}>
           <Form
@@ -193,6 +194,7 @@ const TransferInsideSystem = ({ history }) => {
           </Form>
         </Spin>
       </div>
+
       <OtpCodeForm
         visible={otpCodeFormVisible}
         loading={loading}
