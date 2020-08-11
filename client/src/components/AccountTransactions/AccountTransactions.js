@@ -43,6 +43,11 @@ const AccountTransactions = () => {
       sorter: true
     },
     {
+      title: 'Bank Name',
+      dataIndex: 'bankDestinationName',
+      sorter: false
+    },
+    {
       title: 'Amount',
       dataIndex: 'amount',
       sorter: false,
