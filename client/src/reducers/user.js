@@ -1,6 +1,7 @@
 import {
   FETCH_USER_REQUEST,
   FETCH_USER_SUCCESS,
+  FETCH_USER_ERROR,
   USER_LOGOUT,
   UPDATE_USER_REQUEST,
   UPDATE_USER_SUCCESS,
@@ -9,7 +10,7 @@ import {
 import moment from 'moment';
 
 const initialState = {
-  loading: false,
+  loading: true,
   data: null
 };
 
@@ -40,6 +41,7 @@ export default function (state = initialState, { type, payload }) {
         loading: false,
         data: { ...state.data, ...payload.userUpdated }
       };
+    case FETCH_USER_ERROR:
     case UPDATE_USER_ERROR:
       return {
         ...state,

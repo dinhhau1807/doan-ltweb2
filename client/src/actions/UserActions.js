@@ -1,6 +1,7 @@
 import {
   FETCH_USER_REQUEST,
   FETCH_USER_SUCCESS,
+  FETCH_USER_ERROR,
   USER_LOGOUT,
   UPDATE_USER_REQUEST,
   UPDATE_USER_SUCCESS,
@@ -19,6 +20,7 @@ export const fetchUser = type => async dispatch => {
     const { data } = await fetchApi(`/${type}/me`, 'GET');
     dispatch({ type: FETCH_USER_SUCCESS, payload: { user: data } });
   } catch (err) {
+    dispatch({ type: FETCH_USER_ERROR });
     message.error(getErrorMessage(err));
   }
 };
