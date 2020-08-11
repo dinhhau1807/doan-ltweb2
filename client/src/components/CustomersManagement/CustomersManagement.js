@@ -41,12 +41,7 @@ const CustomersManagement = ({ history }) => {
     {
       title: 'Customer ID',
       dataIndex: 'id',
-      sorter: false,
-      render: (text, record) => (
-        <span className="table__id" onClick={handleViewCustomerDetails(record)}>
-          {text}
-        </span>
-      )
+      sorter: false
     },
     {
       title: 'Fullname',
@@ -100,6 +95,15 @@ const CustomersManagement = ({ history }) => {
           </EditStatusDropdown>
         );
       }
+    },
+    {
+      title: 'Action',
+      dataIndex: '',
+      render: (text, record) => (
+        <span className="table__id" onClick={handleViewCustomerDetails(record)}>
+          View
+        </span>
+      )
     }
   ];
 
@@ -134,10 +138,6 @@ const CustomersManagement = ({ history }) => {
     });
   };
 
-  const handleViewCustomerDetails = customer => () => {
-    history.push('a2hl-management/customers/' + customer.id);
-  };
-
   const fetchDataTable = async (params = {}) => {
     const { page, pageSize } = pagination;
     const customParams = {
@@ -170,6 +170,10 @@ const CustomersManagement = ({ history }) => {
     } catch (err) {
       message.error(getErrorMessage(err));
     }
+  };
+
+  const handleViewCustomerDetails = customer => () => {
+    history.push('a2hl-management/customers/' + customer.id);
   };
 
   return (

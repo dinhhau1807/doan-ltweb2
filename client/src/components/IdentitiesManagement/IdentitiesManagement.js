@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Table, message } from 'antd';
+import moment from 'moment';
 
 // Components
 import FilterOptions from '../FilterOptions/FilterOptions';
@@ -11,6 +12,7 @@ import { getIdentities } from '../../actions/StaffActions';
 
 // Constants
 import { FILTER_IDENTITIES } from '../../constants/ColumnFilter';
+import { DATETIME_FORMAT } from '../../constants/GlobalConstants';
 
 // Utils
 import { getErrorMessage } from '../../utils/helpers';
@@ -38,12 +40,7 @@ const IdentitiesManagement = ({ history }) => {
     {
       title: 'Identity ID',
       dataIndex: 'id',
-      sorter: false,
-      render: (text, record) => (
-        <span className="table__id" onClick={handleViewIdentityDetails(record)}>
-          {text}
-        </span>
-      )
+      sorter: false
     },
     {
       title: 'Customer ID',
@@ -58,12 +55,28 @@ const IdentitiesManagement = ({ history }) => {
     {
       title: 'Issued on',
       dataIndex: 'registrationDate',
-      sorter: true
+      sorter: true,
+      render: text => <span>{moment(text).format(DATETIME_FORMAT)}</span>
+    },
+    {
+      title: 'Created Date',
+      dataIndex: 'createdAt',
+      sorter: true,
+      render: text => <span>{moment(text).format(DATETIME_FORMAT)}</span>
     },
     {
       title: 'Staff ID Approved',
       dataIndex: 'staffIdApproved',
       sorter: false
+    },
+    {
+      title: 'Action',
+      dataIndex: '',
+      render: (text, record) => (
+        <span className="table__id" onClick={handleViewIdentityDetails(record)}>
+          View
+        </span>
+      )
     }
   ];
 
