@@ -1293,12 +1293,50 @@ exports.withdrawalOfDepositConfirm = asyncHandler(async (req, res, next) => {
     return next(new AppError('Your account not found or blocked!', 404));
   }
 
+  const getUserDestination = await Customer.findOne({
+    where: {
+      id: accountDestination.customerId,
+    },
+  });
+
+  if (!getUserDestination) {
+    return next(new AppError('Your account not found or blocked!', 404));
+  }
+
+  const amountIn = ['+', fixBalance(transaction.amount)].join('');
+
+  // Send otp code to user
+  const email = new EmailService(req.user);
+
   // Calculation and update database
   accountDestination.currentBalance =
     +accountDestination.currentBalance +
     convert(transaction.amount)
       .from(transaction.currencyUnit)
       .to(accountDestination.currentUnit);
+
+  await email.balanceChangesInternal(
+    accountDestination.id,
+    transaction.id,
+    amountIn,
+    fixDate(transaction.createdAt),
+    fixBalance(accountDestination.currentBalance),
+    transaction.description,
+    getUserDestination.email
+  );
+
+  if (process.env.SMS_ENABLE_OTP === 'true') {
+    const sms = new SmsService(req.user);
+    await sms.balanceChangesInternal(
+      accountDestination.id,
+      transaction.id,
+      amountIn,
+      fixDate(transaction.createdAt),
+      fixBalance(accountDestination.currentBalance),
+      transaction.description,
+      getUserDestination.phoneNumber
+    );
+  }
 
   transaction.status = TRANS_STATUS.succeed;
   accountSource.status = STATUS.blocked;
