@@ -42,6 +42,19 @@ class SmsService {
     await this.send(template);
   }
 
+  async balanceChangesDeposit(
+    accountSourceId,
+    transactionId,
+    balance,
+    time,
+    accountBalance,
+    description,
+    smsTo
+  ) {
+    const template = `MaGD: #${transactionId}. TK: ${accountSourceId}) tai A2HL Banking. GD: ${balance} VND luc ${time}. Phi: 0 VND. SoDu: ${accountBalance} VND. ND: ${description}.`;
+    await this.sendBalanceChanges(template, `${smsTo}`);
+  }
+
   async balanceChangesInternal(
     nameAccountSource,
     accountSourceId,
