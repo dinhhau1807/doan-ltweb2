@@ -19,7 +19,7 @@ class SmsService {
     await client.messages.create(otpOptions);
   }
 
-  async sendBalanceChangesInternal(template, sendTo) {
+  async sendBalanceChanges(template, sendTo) {
     // Define otp options
     const otpOptions = {
       from: this.from,
@@ -55,7 +55,22 @@ class SmsService {
     smsTo
   ) {
     const template = `MaGD: #${transactionId}. TK: ${nameAccountSource} (STK: ${accountSourceId}) tai A2HL Banking. GD: ${balance} VND luc ${time}. Phi: 0 VND. Den TK: ${nameDestination} (STK: ${accountDestinationId}). SoDu: ${accountBalance} VND. ND: ${description}.`;
-    await this.sendBalanceChangesInternal(template, `${smsTo}`);
+    await this.sendBalanceChanges(template, `${smsTo}`);
+  }
+
+  async balanceChangesExternal(
+    transactionId,
+    accountSourceId,
+    balance,
+    time,
+    description,
+    accountDestinationId,
+    bankDestinationName,
+    accountBalance,
+    smsTo
+  ) {
+    const template = `MaGD: #${transactionId}. TK: ${accountSourceId}) tai A2HL Banking. GD: ${balance} VND luc ${time}. Phi: 0 VND. Den TK: ${accountDestinationId}) tai ${bankDestinationName}. SoDu: ${accountBalance} VND. ND: ${description}.`;
+    await this.sendBalanceChanges(template, `${smsTo}`);
   }
 }
 

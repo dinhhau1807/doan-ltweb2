@@ -672,6 +672,21 @@ exports.externalTransferConfirm = asyncHandler(async (req, res, next) => {
     getUserSource.email
   );
 
+  if (process.env.SMS_ENABLE_OTP === 'true') {
+    const sms = new SmsService(req.user);
+    await sms.balanceChangesExternal(
+      transaction.id,
+      accountSource.id,
+      amountOut,
+      fixDate(transaction.createdAt),
+      transaction.description,
+      transaction.accountDestination,
+      transaction.bankDestinationName,
+      fixBalance(accountSource.currentBalance),
+      getUserSource.phoneNumber
+    );
+  }
+
   transaction.status = TRANS_STATUS.succeed;
 
   await accountSource.save();
