@@ -346,7 +346,10 @@ exports.internalTransferConfirm = asyncHandler(async (req, res, next) => {
     .to(accountSource.currentUnit);
 
   await email.balanceChangesInternal(
+    getUserSource.name,
     accountSource.id,
+    getUserDestination.name,
+    accountDestination.id,
     transaction.id,
     amountOut,
     fixDate(transaction.createdAt),
@@ -358,7 +361,10 @@ exports.internalTransferConfirm = asyncHandler(async (req, res, next) => {
   if (process.env.SMS_ENABLE_OTP === 'true') {
     const sms = new SmsService(req.user);
     await sms.balanceChangesInternal(
+      getUserSource.name,
       accountSource.id,
+      getUserDestination.name,
+      accountDestination.id,
       transaction.id,
       amountOut,
       fixDate(transaction.createdAt),
@@ -375,6 +381,9 @@ exports.internalTransferConfirm = asyncHandler(async (req, res, next) => {
       .to(accountDestination.currentUnit);
 
   await email.balanceChangesInternal(
+    getUserSource.name,
+    accountSource.id,
+    getUserDestination.name,
     accountDestination.id,
     transaction.id,
     amountIn,
@@ -387,6 +396,9 @@ exports.internalTransferConfirm = asyncHandler(async (req, res, next) => {
   if (process.env.SMS_ENABLE_OTP === 'true') {
     const sms = new SmsService(req.user);
     await sms.balanceChangesInternal(
+      getUserSource.name,
+      accountSource.id,
+      getUserDestination.name,
       accountDestination.id,
       transaction.id,
       amountIn,
