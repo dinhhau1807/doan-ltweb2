@@ -43,7 +43,10 @@ class SmsService {
   }
 
   async balanceChangesInternal(
-    accountId,
+    nameAccountSource,
+    accountSourceId,
+    nameDestination,
+    accountDestinationId,
     transactionId,
     balance,
     time,
@@ -51,7 +54,7 @@ class SmsService {
     description,
     smsTo
   ) {
-    const template = `MaGD: #${transactionId}. TK: ${accountId} tai A2HL Banking. GD: ${balance} VND luc ${time}. Phi: 0 VND. SoDu: ${accountBalance} VND. ND: ${description}.`;
+    const template = `MaGD: #${transactionId}. TK: ${nameAccountSource} (STK: ${accountSourceId}) tai A2HL Banking. GD: ${balance} VND luc ${time}. Phi: 0 VND. Den TK: ${nameDestination} (STK: ${accountDestinationId}). SoDu: ${accountBalance} VND. ND: ${description}.`;
     await this.sendBalanceChangesInternal(template, `${smsTo}`);
   }
 }
