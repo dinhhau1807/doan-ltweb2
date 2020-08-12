@@ -628,10 +628,37 @@ exports.externalTransferConfirm = asyncHandler(async (req, res, next) => {
     return next(new AppError(err.message, 500));
   }
 
+  const getUserSource = await Customer.findOne({
+    where: {
+      id: accountSource.customerId,
+    },
+  });
+
+  if (!getUserSource) {
+    return next(new AppError('Your account not found or blocked!', 404));
+  }
+
+  const amountOut = ['-', fixBalance(transaction.amount)].join('');
+
+  // Send otp code to user
+  const email = new EmailService(req.user);
+
   // Calculation and update database
   accountSource.currentBalance -= convert(transaction.amount)
     .from(transaction.currencyUnit)
     .to(accountSource.currentUnit);
+
+  await email.balanceChangesExternal(
+    transaction.id,
+    accountSource.id,
+    amountOut,
+    fixDate(transaction.createdAt),
+    transaction.description,
+    transaction.accountDestination,
+    transaction.bankDestinationName,
+    fixBalance(accountSource.currentBalance),
+    getUserSource.email
+  );
 
   transaction.status = TRANS_STATUS.succeed;
 

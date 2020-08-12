@@ -32,7 +32,7 @@ class EmailService {
     await this.newTransport().sendMail(mailOptions);
   }
 
-  async sendBalanceChangesInternal(template, subject, sendTo) {
+  async sendBalanceChanges(template, subject, sendTo) {
     // Define mail options
     const mailOptions = {
       from: this.from,
@@ -58,7 +58,10 @@ class EmailService {
   }
 
   async balanceChangesInternal(
-    accountId,
+    nameAccountSource,
+    accountSourceId,
+    nameDestination,
+    accountDestinationId,
     transactionId,
     balance,
     time,
@@ -69,12 +72,41 @@ class EmailService {
     const template = `
 		<h3>A2HL Banking Billing</h3>
 		<p>Invoice ID: <strong>#${transactionId}</strong></p>
-		<p>Account numbers: <strong>${accountId}</strong></p>
+		<p>Account numbers: <strong>${nameAccountSource}(${accountSourceId})</strong></p>
 		<p>Deal: <strong>${balance}</strong> VND at <strong>${time}</strong></p>
 		<p>Fees: <strong>0</strong> VND.</p>
-		<p>Account balance: <strong>${accountBalance}</strong> VND.</p>								 
-		<p>Description: <strong>${description}</strong>.</p>`;
-    await this.sendBalanceChangesInternal(
+		<p>To Account numbers: <strong>${nameDestination}(${accountDestinationId})</strong></p>
+		<p>Description: <strong>${description}</strong>.</p>
+		<p>Account balance: <strong>${accountBalance}</strong> VND.</p>`;
+    await this.sendBalanceChanges(
+      template,
+      `Invoice #${transactionId}`,
+      `${mailTo}`
+    );
+  }
+
+  async balanceChangesExternal(
+    transactionId,
+    accountSourceId,
+    balance,
+    time,
+    description,
+    accountDestinationId,
+    bankDestinationName,
+    accountBalance,
+    mailTo
+  ) {
+    const template = `
+		<h3>A2HL Banking Billing</h3>
+		<p>Invoice ID: <strong>#${transactionId}</strong></p>
+		<p>Account numbers: <strong>${accountSourceId}</strong></p>
+		<p>Deal: <strong>${balance}</strong> VND at <strong>${time}</strong></p>
+		<p>Fees: <strong>0</strong> VND</p>
+		<p>Description: <strong>${description}</strong></p>
+		<p>To account numbers: ${accountDestinationId} at <strong>${bankDestinationName}</strong></p>
+		<p>Account balance: <strong>${accountBalance}</strong> VND</p>`;
+
+    await this.sendBalanceChanges(
       template,
       `Invoice #${transactionId}`,
       `${mailTo}`
