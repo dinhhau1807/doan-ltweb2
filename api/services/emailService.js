@@ -57,6 +57,30 @@ class EmailService {
     await this.send(template, 'Verify OTP Code!');
   }
 
+  async balanceChangesDeposit(
+    accountSourceId,
+    transactionId,
+    balance,
+    time,
+    accountBalance,
+    description,
+    mailTo
+  ) {
+    const template = `
+		<h3>A2HL Banking Billing</h3>
+		<p>Invoice ID: <strong>#${transactionId}</strong></p>
+		<p>Account numbers: <strong>${accountSourceId}</strong></p>
+		<p>Deal: <strong>${balance}</strong> VND at <strong>${time}</strong></p>
+		<p>Fees: <strong>0</strong> VND.</p>
+		<p>Description: <strong>${description}</strong>.</p>
+		<p>Account balance: <strong>${accountBalance}</strong> VND.</p>`;
+    await this.sendBalanceChanges(
+      template,
+      `Invoice #${transactionId}`,
+      `${mailTo}`
+    );
+  }
+
   async balanceChangesInternal(
     nameAccountSource,
     accountSourceId,
