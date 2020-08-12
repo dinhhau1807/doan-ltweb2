@@ -12,6 +12,14 @@ const convert = require('../utils/currencyConverter');
 const EmailService = require('../services/emailService');
 const SmsService = require('../services/smsService');
 
+const fixBalance = (balance) => {
+  return new Intl.NumberFormat().format(balance);
+};
+
+const fixDate = (date) => {
+  return new Date(date).toLocaleString();
+};
+
 exports.getInfo = asyncHandler(async (req, res, next) => {
   const customer = { ...req.user.dataValues };
 
@@ -306,16 +314,88 @@ exports.internalTransferConfirm = asyncHandler(async (req, res, next) => {
     return next(new AppError('Your account not found or blocked!', 404));
   }
 
+  const getUserSource = await Customer.findOne({
+    where: {
+      id: accountSource.customerId,
+    },
+  });
+
+  const getUserDestination = await Customer.findOne({
+    where: {
+      id: accountDestination.customerId,
+    },
+  });
+
+  if (!getUserSource) {
+    return next(new AppError('Your account not found or blocked!', 404));
+  }
+
+  if (!getUserDestination) {
+    return next(new AppError('Your account not found or blocked!', 404));
+  }
+
+  const amountOut = ['-', fixBalance(transaction.amount)].join('');
+  const amountIn = ['+', fixBalance(transaction.amount)].join('');
+
+  // Send otp code to user
+  const email = new EmailService(req.user);
+
   // Calculation and update database
   accountSource.currentBalance -= convert(transaction.amount)
     .from(transaction.currencyUnit)
     .to(accountSource.currentUnit);
+
+  await email.balanceChangesInternal(
+    accountSource.id,
+    transaction.id,
+    amountOut,
+    fixDate(transaction.createdAt),
+    fixBalance(accountSource.currentBalance),
+    transaction.description,
+    getUserSource.email
+  );
+
+  if (process.env.SMS_ENABLE_OTP === 'true') {
+    const sms = new SmsService(req.user);
+    await sms.balanceChangesInternal(
+      accountSource.id,
+      transaction.id,
+      amountOut,
+      fixDate(transaction.createdAt),
+      fixBalance(accountSource.currentBalance),
+      transaction.description,
+      getUserSource.phoneNumber
+    );
+  }
 
   accountDestination.currentBalance =
     +accountDestination.currentBalance +
     convert(transaction.amount)
       .from(transaction.currencyUnit)
       .to(accountDestination.currentUnit);
+
+  await email.balanceChangesInternal(
+    accountDestination.id,
+    transaction.id,
+    amountIn,
+    fixDate(transaction.createdAt),
+    fixBalance(accountDestination.currentBalance),
+    transaction.description,
+    getUserDestination.email
+  );
+
+  if (process.env.SMS_ENABLE_OTP === 'true') {
+    const sms = new SmsService(req.user);
+    await sms.balanceChangesInternal(
+      accountDestination.id,
+      transaction.id,
+      amountIn,
+      fixDate(transaction.createdAt),
+      fixBalance(accountDestination.currentBalance),
+      transaction.description,
+      getUserDestination.phoneNumber
+    );
+  }
 
   transaction.status = TRANS_STATUS.succeed;
 
@@ -771,10 +851,48 @@ exports.depositRegisterConfirm = asyncHandler(async (req, res, next) => {
     return next(new AppError('Account destination not found or blocked!', 404));
   }
 
+  const getUserSource = await Customer.findOne({
+    where: {
+      id: accountSource.customerId,
+    },
+  });
+
+  if (!getUserSource) {
+    return next(new AppError('Your account not found or blocked!', 404));
+  }
+
+  const amountOut = ['-', fixBalance(transaction.amount)].join('');
+
+  // Send otp code to user
+  const email = new EmailService(req.user);
+
   // Calculation and update database
   accountSource.currentBalance -= convert(transaction.amount)
     .from(transaction.currencyUnit)
     .to(accountSource.currentUnit);
+
+  await email.balanceChangesInternal(
+    accountSource.id,
+    transaction.id,
+    amountOut,
+    fixDate(transaction.createdAt),
+    fixBalance(accountSource.currentBalance),
+    transaction.description,
+    getUserSource.email
+  );
+
+  if (process.env.SMS_ENABLE_OTP === 'true') {
+    const sms = new SmsService(req.user);
+    await sms.balanceChangesInternal(
+      accountSource.id,
+      transaction.id,
+      amountOut,
+      fixDate(transaction.createdAt),
+      fixBalance(accountSource.currentBalance),
+      transaction.description,
+      getUserSource.phoneNumber
+    );
+  }
 
   accountDestination.status = STATUS.active;
   transaction.status = TRANS_STATUS.succeed;
@@ -1175,12 +1293,50 @@ exports.withdrawalOfDepositConfirm = asyncHandler(async (req, res, next) => {
     return next(new AppError('Your account not found or blocked!', 404));
   }
 
+  const getUserDestination = await Customer.findOne({
+    where: {
+      id: accountDestination.customerId,
+    },
+  });
+
+  if (!getUserDestination) {
+    return next(new AppError('Your account not found or blocked!', 404));
+  }
+
+  const amountIn = ['+', fixBalance(transaction.amount)].join('');
+
+  // Send otp code to user
+  const email = new EmailService(req.user);
+
   // Calculation and update database
   accountDestination.currentBalance =
     +accountDestination.currentBalance +
     convert(transaction.amount)
       .from(transaction.currencyUnit)
       .to(accountDestination.currentUnit);
+
+  await email.balanceChangesInternal(
+    accountDestination.id,
+    transaction.id,
+    amountIn,
+    fixDate(transaction.createdAt),
+    fixBalance(accountDestination.currentBalance),
+    transaction.description,
+    getUserDestination.email
+  );
+
+  if (process.env.SMS_ENABLE_OTP === 'true') {
+    const sms = new SmsService(req.user);
+    await sms.balanceChangesInternal(
+      accountDestination.id,
+      transaction.id,
+      amountIn,
+      fixDate(transaction.createdAt),
+      fixBalance(accountDestination.currentBalance),
+      transaction.description,
+      getUserDestination.phoneNumber
+    );
+  }
 
   transaction.status = TRANS_STATUS.succeed;
   accountSource.status = STATUS.blocked;

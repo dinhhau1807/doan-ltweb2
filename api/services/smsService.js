@@ -19,6 +19,17 @@ class SmsService {
     await client.messages.create(otpOptions);
   }
 
+  async sendBalanceChangesInternal(template, sendTo) {
+    // Define otp options
+    const otpOptions = {
+      from: this.from,
+      to: sendTo,
+      body: template,
+    };
+
+    await client.messages.create(otpOptions);
+  }
+
   async sendResetPasswordCode(verifyCode) {
     const template =
       `Your verify code is: ${verifyCode}.` +
@@ -29,6 +40,19 @@ class SmsService {
   async sendOTPCode(otpCode) {
     const template = `Your OTP code is: ${otpCode}.`;
     await this.send(template);
+  }
+
+  async balanceChangesInternal(
+    accountId,
+    transactionId,
+    balance,
+    time,
+    accountBalance,
+    description,
+    smsTo
+  ) {
+    const template = `MaGD: #${transactionId}. TK: ${accountId} tai A2HL Banking. GD: ${balance} VND luc ${time}. Phi: 0 VND. SoDu: ${accountBalance} VND. ND: ${description}.`;
+    await this.sendBalanceChangesInternal(template, `${smsTo}`);
   }
 }
 
