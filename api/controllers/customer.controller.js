@@ -925,7 +925,7 @@ exports.depositRegisterConfirm = asyncHandler(async (req, res, next) => {
     .from(transaction.currencyUnit)
     .to(accountSource.currentUnit);
 
-  await email.balanceChangesInternal(
+  await email.balanceChangesDeposit(
     accountSource.id,
     transaction.id,
     amountOut,
@@ -937,7 +937,7 @@ exports.depositRegisterConfirm = asyncHandler(async (req, res, next) => {
 
   if (process.env.SMS_ENABLE_OTP === 'true') {
     const sms = new SmsService(req.user);
-    await sms.balanceChangesInternal(
+    await sms.balanceChangesDeposit(
       accountSource.id,
       transaction.id,
       amountOut,
