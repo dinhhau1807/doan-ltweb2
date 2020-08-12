@@ -346,7 +346,10 @@ exports.internalTransferConfirm = asyncHandler(async (req, res, next) => {
     .to(accountSource.currentUnit);
 
   await email.balanceChangesInternal(
+    getUserSource.name,
     accountSource.id,
+    getUserDestination.name,
+    accountDestination.id,
     transaction.id,
     amountOut,
     fixDate(transaction.createdAt),
@@ -358,7 +361,10 @@ exports.internalTransferConfirm = asyncHandler(async (req, res, next) => {
   if (process.env.SMS_ENABLE_OTP === 'true') {
     const sms = new SmsService(req.user);
     await sms.balanceChangesInternal(
+      getUserSource.name,
       accountSource.id,
+      getUserDestination.name,
+      accountDestination.id,
       transaction.id,
       amountOut,
       fixDate(transaction.createdAt),
@@ -375,6 +381,9 @@ exports.internalTransferConfirm = asyncHandler(async (req, res, next) => {
       .to(accountDestination.currentUnit);
 
   await email.balanceChangesInternal(
+    getUserSource.name,
+    accountSource.id,
+    getUserDestination.name,
     accountDestination.id,
     transaction.id,
     amountIn,
@@ -387,6 +396,9 @@ exports.internalTransferConfirm = asyncHandler(async (req, res, next) => {
   if (process.env.SMS_ENABLE_OTP === 'true') {
     const sms = new SmsService(req.user);
     await sms.balanceChangesInternal(
+      getUserSource.name,
+      accountSource.id,
+      getUserDestination.name,
       accountDestination.id,
       transaction.id,
       amountIn,
@@ -628,10 +640,52 @@ exports.externalTransferConfirm = asyncHandler(async (req, res, next) => {
     return next(new AppError(err.message, 500));
   }
 
+  const getUserSource = await Customer.findOne({
+    where: {
+      id: accountSource.customerId,
+    },
+  });
+
+  if (!getUserSource) {
+    return next(new AppError('Your account not found or blocked!', 404));
+  }
+
+  const amountOut = ['-', fixBalance(transaction.amount)].join('');
+
+  // Send otp code to user
+  const email = new EmailService(req.user);
+
   // Calculation and update database
   accountSource.currentBalance -= convert(transaction.amount)
     .from(transaction.currencyUnit)
     .to(accountSource.currentUnit);
+
+  await email.balanceChangesExternal(
+    transaction.id,
+    accountSource.id,
+    amountOut,
+    fixDate(transaction.createdAt),
+    transaction.description,
+    transaction.accountDestination,
+    transaction.bankDestinationName,
+    fixBalance(accountSource.currentBalance),
+    getUserSource.email
+  );
+
+  if (process.env.SMS_ENABLE_OTP === 'true') {
+    const sms = new SmsService(req.user);
+    await sms.balanceChangesExternal(
+      transaction.id,
+      accountSource.id,
+      amountOut,
+      fixDate(transaction.createdAt),
+      transaction.description,
+      transaction.accountDestination,
+      transaction.bankDestinationName,
+      fixBalance(accountSource.currentBalance),
+      getUserSource.phoneNumber
+    );
+  }
 
   transaction.status = TRANS_STATUS.succeed;
 
