@@ -32,7 +32,7 @@ class EmailService {
     await this.newTransport().sendMail(mailOptions);
   }
 
-  async sendBalanceChange(template, subject, sendTo) {
+  async sendBalanceChangesInternal(template, subject, sendTo) {
     // Define mail options
     const mailOptions = {
       from: this.from,
@@ -57,7 +57,7 @@ class EmailService {
     await this.send(template, 'Verify OTP Code!');
   }
 
-  async balanceChanges(
+  async balanceChangesInternal(
     accountId,
     transactionId,
     balance,
@@ -74,7 +74,7 @@ class EmailService {
 		<p>Fees: <strong>0</strong> VND.</p>
 		<p>Account balance: <strong>${accountBalance}</strong> VND.</p>								 
 		<p>Description: <strong>${description}</strong>.</p>`;
-    await this.sendBalanceChange(
+    await this.sendBalanceChangesInternal(
       template,
       `Invoice #${transactionId}`,
       `${mailTo}`

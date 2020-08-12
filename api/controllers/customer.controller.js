@@ -340,18 +340,12 @@ exports.internalTransferConfirm = asyncHandler(async (req, res, next) => {
   // Send otp code to user
   const email = new EmailService(req.user);
 
-  // Send otp code to user with SMS
-  if (process.env.SMS_ENABLE_OTP === 'true') {
-    const sms = new SmsService(req.user);
-    await sms.sendOTPCode(otpCode);
-  }
-
   // Calculation and update database
   accountSource.currentBalance -= convert(transaction.amount)
     .from(transaction.currencyUnit)
     .to(accountSource.currentUnit);
 
-  await email.balanceChanges(
+  await email.balanceChangesInternal(
     accountSource.id,
     transaction.id,
     amountOut,
@@ -367,7 +361,7 @@ exports.internalTransferConfirm = asyncHandler(async (req, res, next) => {
       .from(transaction.currencyUnit)
       .to(accountDestination.currentUnit);
 
-  await email.balanceChanges(
+  await email.balanceChangesInternal(
     accountDestination.id,
     transaction.id,
     amountIn,
