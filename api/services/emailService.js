@@ -32,6 +32,19 @@ class EmailService {
     await this.newTransport().sendMail(mailOptions);
   }
 
+  async sendBalanceChange(template, subject, sendTo) {
+    // Define mail options
+    const mailOptions = {
+      from: this.from,
+      to: sendTo,
+      subject,
+      html: template,
+    };
+
+    // Create transport and send email
+    await this.newTransport().sendMail(mailOptions);
+  }
+
   async sendResetPasswordCode(verifyCode) {
     const template =
       `Your verify code is: ${verifyCode}.` +
@@ -42,6 +55,30 @@ class EmailService {
   async sendOTPCode(otpCode) {
     const template = `Your OTP code is: ${otpCode}.`;
     await this.send(template, 'Verify OTP Code!');
+  }
+
+  async balanceChanges(
+    accountId,
+    transactionId,
+    balance,
+    time,
+    accountBalance,
+    description,
+    mailTo
+  ) {
+    const template = `
+		<h3>A2HL Banking Billing</h3>
+		<p>Invoice ID: <strong>#${transactionId}</strong></p>
+		<p>Account numbers: <strong>${accountId}</strong></p>
+		<p>Deal: <strong>${balance}</strong> VND at <strong>${time}</strong></p>
+		<p>Fees: <strong>0</strong> VND.</p>
+		<p>Account balance: <strong>${accountBalance}</strong> VND.</p>								 
+		<p>Description: <strong>${description}</strong>.</p>`;
+    await this.sendBalanceChange(
+      template,
+      `Invoice #${transactionId}`,
+      `${mailTo}`
+    );
   }
 }
 
