@@ -12,6 +12,8 @@ const convert = require('../utils/currencyConverter');
 const EmailService = require('../services/emailService');
 const SmsService = require('../services/smsService');
 
+const conversionLimit = 100000000;
+
 const fixBalance = (balance) => {
   return new Intl.NumberFormat().format(balance);
 };
@@ -224,6 +226,35 @@ exports.internalTransferRequest = asyncHandler(async (req, res, next) => {
     );
   }
 
+  // Check amount
+  if (amount <= 0) {
+    return next(new AppError('Amount must be greater than 0!', 400));
+  }
+  const transactionsToday = await Transaction.findAll({
+    where: {
+      [Op.and]: [
+        { accountSourceId: accountSource.id },
+        { createdAt: { [Op.gt]: new Date(new Date().setHours(0, 0, 1, 0)) } },
+        { status: TRANS_STATUS.succeed },
+        { bankDestinationId: null },
+      ],
+    },
+  });
+  const sumToday = transactionsToday.reduce(
+    (acc, transaction) => acc + +transaction.amount,
+    0
+  );
+  if (amount > conversionLimit - sumToday) {
+    return next(
+      new AppError(
+        `You have reached the transfer limit for today, can only transfer ${
+          conversionLimit - sumToday
+        }!`,
+        400
+      )
+    );
+  }
+
   // Create new transaction
   const otpCode = otpGenerator();
   const otpCreatedDate = new Date();
@@ -312,6 +343,40 @@ exports.internalTransferConfirm = asyncHandler(async (req, res, next) => {
   });
   if (!accountSource) {
     return next(new AppError('Your account not found or blocked!', 404));
+  }
+
+  // Check amount
+  if (+transaction.amount > +accountSource.currentBalance) {
+    return next(
+      new AppError(
+        'Your account does not have enough money to make this transaction!',
+        400
+      )
+    );
+  }
+  const transactionsToday = await Transaction.findAll({
+    where: {
+      [Op.and]: [
+        { accountSourceId: accountSource.id },
+        { createdAt: { [Op.gt]: new Date(new Date().setHours(0, 0, 1, 0)) } },
+        { status: TRANS_STATUS.succeed },
+        { bankDestinationId: null },
+      ],
+    },
+  });
+  const sumToday = transactionsToday.reduce(
+    (acc, trans) => acc + +trans.amount,
+    0
+  );
+  if (+transaction.amount > conversionLimit - sumToday) {
+    return next(
+      new AppError(
+        `You have reached the transfer limit for today, can only transfer ${
+          conversionLimit - sumToday
+        }!`,
+        400
+      )
+    );
   }
 
   const getUserSource = await Customer.findOne({
@@ -531,6 +596,35 @@ exports.externalTransferRequest = asyncHandler(async (req, res, next) => {
     );
   }
 
+  // Check amount
+  if (amount <= 0) {
+    return next(new AppError('Amount must be greater than 0!', 400));
+  }
+  const transactionsToday = await Transaction.findAll({
+    where: {
+      [Op.and]: [
+        { accountSourceId: accountSource.id },
+        { createdAt: { [Op.gt]: new Date(new Date().setHours(0, 0, 1, 0)) } },
+        { status: TRANS_STATUS.succeed },
+        { bankDestinationId: { [Op.ne]: null } },
+      ],
+    },
+  });
+  const sumToday = transactionsToday.reduce(
+    (acc, transaction) => acc + +transaction.amount,
+    0
+  );
+  if (amount > conversionLimit - sumToday) {
+    return next(
+      new AppError(
+        `You have reached the transfer limit for today, can only transfer ${
+          conversionLimit - sumToday
+        }!`,
+        400
+      )
+    );
+  }
+
   // Create new transaction
   const otpCode = otpGenerator();
   const otpCreatedDate = new Date();
@@ -610,6 +704,40 @@ exports.externalTransferConfirm = asyncHandler(async (req, res, next) => {
   });
   if (!accountSource) {
     return next(new AppError('Your account not found or blocked!', 404));
+  }
+
+  // Check amount
+  if (+transaction.amount > +accountSource.currentBalance) {
+    return next(
+      new AppError(
+        'Your account does not have enough money to make this transaction!',
+        400
+      )
+    );
+  }
+  const transactionsToday = await Transaction.findAll({
+    where: {
+      [Op.and]: [
+        { accountSourceId: accountSource.id },
+        { createdAt: { [Op.gt]: new Date(new Date().setHours(0, 0, 1, 0)) } },
+        { status: TRANS_STATUS.succeed },
+        { bankDestinationId: { [Op.ne]: null } },
+      ],
+    },
+  });
+  const sumToday = transactionsToday.reduce(
+    (acc, trans) => acc + +trans.amount,
+    0
+  );
+  if (+transaction.amount > conversionLimit - sumToday) {
+    return next(
+      new AppError(
+        `You have reached the transfer limit for today, can only transfer ${
+          conversionLimit - sumToday
+        }!`,
+        400
+      )
+    );
   }
 
   // Prepare for transfer
