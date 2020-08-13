@@ -15,6 +15,8 @@ const {
   Transaction,
 } = require('../models');
 
+const LogService = require('../services/logService');
+
 const findCustomer = asyncHandler(async (id) => {
   const customer = await Customer.findOne({
     attributes: {
@@ -378,10 +380,12 @@ exports.approveCustomer = asyncHandler(async (req, res, next) => {
   const { idCustomer, amount } = req.body;
 
   const customer = await Identity.findOne({
-    where: { customerId: idCustomer },
+    where: {
+      [Op.and]: [{ customerId: idCustomer }, { staffIdApproved: null }],
+    },
   });
   if (!customer) {
-    return next(new AppError('Customer not found.', 404));
+    return next(new AppError('Customer not found or activated.', 404));
   }
 
   if (!idCustomer) {
@@ -420,6 +424,19 @@ exports.approveCustomer = asyncHandler(async (req, res, next) => {
     term: 0,
   });
 
+  try {
+    await LogService.saveLog(
+      staff.id,
+      `${staff.name}(${staff.id}) approved customer ${customerApproved.name}(${customerApproved.id})`,
+      JSON.stringify({
+        customerId: idCustomer,
+        amount,
+      })
+    );
+  } catch (err) {
+    return next(err);
+  }
+
   return res.status(200).json({
     status: 'success',
     message: 'Customer has been approved.',
@@ -427,6 +444,7 @@ exports.approveCustomer = asyncHandler(async (req, res, next) => {
 });
 
 exports.updateCustomerStatus = asyncHandler(async (req, res, next) => {
+  const staff = req.user;
   const { idCustomer, status } = req.body;
 
   const newStatus = STATUS[status];
@@ -464,9 +482,25 @@ exports.updateCustomerStatus = asyncHandler(async (req, res, next) => {
     );
   }
 
+  const oldStatus = customer.status;
   customer.status = newStatus;
   customer.accessFailedCount = 0;
   await customer.save();
+
+  if (oldStatus !== newStatus)
+    try {
+      await LogService.saveLog(
+        staff.id,
+        `${staff.name}(${staff.id}) changed customer ${customer.name}(${customer.id}) status`,
+        JSON.stringify({
+          customerId: idCustomer,
+          oldStatus,
+          newStatus,
+        })
+      );
+    } catch (err) {
+      return next(err);
+    }
 
   return res.status(200).json({
     status: 'success',
@@ -556,6 +590,7 @@ exports.getAllTransactions = asyncHandler(async (req, res, next) => {
 });
 
 exports.updateAccountStatus = asyncHandler(async (req, res, next) => {
+  const staff = req.user;
   const { idAccount, status } = req.body;
 
   const newStatus = STATUS[status];
@@ -578,8 +613,26 @@ exports.updateAccountStatus = asyncHandler(async (req, res, next) => {
     return next(new AppError("Can't find this account!", 404));
   }
 
+  const oldStatus = account.status;
   account.status = newStatus;
   await account.save();
+
+  if (oldStatus !== newStatus)
+    try {
+      await LogService.saveLog(
+        staff.id,
+        `${staff.name}(${staff.id}) changed account ${account.id} status`,
+        JSON.stringify({
+          customerId: account.customerId,
+          accountId: account.id,
+          accountType: account.type,
+          oldStatus,
+          newStatus,
+        })
+      );
+    } catch (err) {
+      return next(err);
+    }
 
   return res.status(200).json({
     status: 'success',

@@ -7,3 +7,4 @@ sequelize model:create --name Account --attributes customerId:integer,type:strin
 sequelize model:create --name DepositTerm --attributes period:integer,interestRate:decimal
 sequelize model:create --name Bank --attributes name:string
 sequelize model:create --name Transaction --attributes accountSourceId:integer,accountDestination:integer,bankDestinationId:integer,amount:decimal,currencyUnit:string,description:string,status:string,otpCode:string,otpCreatedDate:date,otpExpiredDate:date
+sequelize model:create --name Log --attributes staffId:integer,data:json
