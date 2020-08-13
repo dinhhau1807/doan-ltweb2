@@ -20,4 +20,6 @@ router
 router.post('/staffs/status', adminController.updateStaffStatus);
 router.get('/staffs/:id', adminController.getStaff);
 
+router.get('/logs', adminController.getLogs);
+
 module.exports = router;
