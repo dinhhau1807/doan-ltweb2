@@ -168,6 +168,17 @@ export const FILTER_TRANSACTIONS = {
   ]
 };
 
+export const FILTER_LOGS = {
+  // default column
+  default: {
+    columnName: 'staffId',
+    placeholder: 'Input Staff Id'
+  },
+
+  // optional columns
+  options: []
+};
+
 export const CUSTOMER_PROFILE_INPUTS = [
   {
     name: 'name',

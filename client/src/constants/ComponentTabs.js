@@ -16,5 +16,6 @@ export const DEPOSIT_TABS = {
 
 export const UTILS_TABS = {
   PROFILE: { to: '/utils/profile', label: 'Profile' },
-  PASSWORD: { to: '/utils/password', label: 'Password' }
+  PASSWORD: { to: '/utils/password', label: 'Password' },
+  LOGS: { to: '/utils/logs', label: 'Logs' }
 };
