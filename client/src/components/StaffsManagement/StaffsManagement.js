@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Table, Dropdown, message, Row, Col } from 'antd';
+import { Table, message, Row, Col } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
+import { merge } from 'lodash';
 
 // Components
 import FilterOptions from '../FilterOptions/FilterOptions';
@@ -19,6 +20,7 @@ import {
 // Constants
 import { ENTITY_STATUS } from '../../constants/GlobalConstants';
 import { FILTER_STAFFS } from '../../constants/ColumnFilter';
+import { STAFFS_TABS } from '../../constants/ComponentTabs';
 
 // Utils
 import { getErrorMessage, statusLabel } from '../../utils/helpers';
@@ -42,6 +44,16 @@ const StaffsManagement = ({ history }) => {
     fetchDataTable();
   }, []);
 
+  const isStaffRoute = window.location.href.includes('/a2hl-management');
+  const staffsTabs = merge({}, STAFFS_TABS);
+
+  // make management page url
+  if (isStaffRoute) {
+    Object.keys(staffsTabs).forEach(key => {
+      staffsTabs[key].to = '/a2hl-management' + staffsTabs[key].to;
+    });
+  }
+
   const tableColumns = [
     {
       title: 'ID',
@@ -62,6 +74,7 @@ const StaffsManagement = ({ history }) => {
       title: 'Status',
       dataIndex: 'status',
       sorter: false,
+      // eslint-disable-next-line react/display-name
       render: (text, record) => {
         const [label, style] = statusLabel('person', text);
 
@@ -147,7 +160,11 @@ const StaffsManagement = ({ history }) => {
 
   return (
     <div className="staffs-management">
-      <ComponentHeader title="Employees information" />
+      <ComponentHeader
+        tabs={staffsTabs}
+        selectedTab={staffsTabs.STAFFS.to}
+        title="Employees information"
+      />
 
       <Row gutter={[8, 8]}>
         <Col xl={20} lg={20} md={20} sm={24} xs={24}>

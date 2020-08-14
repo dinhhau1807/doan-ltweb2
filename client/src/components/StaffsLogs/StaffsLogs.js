@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { Table, Modal, message } from 'antd';
 import { merge } from 'lodash';
 
@@ -11,27 +10,18 @@ import ComponentHeader from '../ComponentHeader/ComponentHeader';
 import { getLogs } from '../../actions/AdminActions';
 
 // Constants
-import { UTILS_TABS } from '../../constants/ComponentTabs';
+import { STAFFS_TABS } from '../../constants/ComponentTabs';
 import { FILTER_LOGS } from '../../constants/ColumnFilter';
 
 // Utils
 import { getErrorMessage } from '../../utils/helpers';
 
 // Styles
-import './UserLogs.scss';
-
-// const layout = {
-//   labelCol: { span: 8 },
-//   wrapperCol: { span: 16 }
-// };
-
-// const validateMessages = {
-//   required: '${label} is required!'
-// };
+import './StaffsLogs.scss';
 
 const defaultProps = {};
 
-const UserLogs = () => {
+const StaffsLogs = () => {
   const [dataTable, setDataTable] = useState([]);
   const [paramsTable, setParamsTable] = useState({});
   const [pagination, setPagination] = useState({ page: 1, pageSize: 50 });
@@ -44,12 +34,12 @@ const UserLogs = () => {
   }, []);
 
   const isStaffRoute = window.location.href.includes('/a2hl-management');
-  const utilsTabs = merge({}, UTILS_TABS);
+  const staffsTabs = merge({}, STAFFS_TABS);
 
   // make management page url
   if (isStaffRoute) {
-    Object.keys(utilsTabs).forEach(key => {
-      utilsTabs[key].to = '/a2hl-management' + utilsTabs[key].to;
+    Object.keys(staffsTabs).forEach(key => {
+      staffsTabs[key].to = '/a2hl-management' + staffsTabs[key].to;
     });
   }
 
@@ -77,6 +67,7 @@ const UserLogs = () => {
     {
       title: 'Action',
       dataIndex: '',
+      // eslint-disable-next-line react/display-name
       render: record => (
         <span
           className="table__id"
@@ -144,9 +135,9 @@ const UserLogs = () => {
   return (
     <div className="password">
       <ComponentHeader
-        tabs={utilsTabs}
-        selectedTab={utilsTabs.LOGS.to}
-        title="View Logs"
+        tabs={staffsTabs}
+        selectedTab={staffsTabs.LOGS.to}
+        title="Logs Information"
       />
 
       <FilterOptions
@@ -185,6 +176,6 @@ const UserLogs = () => {
   );
 };
 
-UserLogs.defaultProps = defaultProps;
+StaffsLogs.defaultProps = defaultProps;
 
-export default UserLogs;
+export default StaffsLogs;
