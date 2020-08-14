@@ -11,6 +11,6 @@ module.exports = class LogService {
   }
 
   static async getLogs(options) {
-    return await Log.findAll(options);
+    return await Log.findAndCountAll(options);
   }
 };

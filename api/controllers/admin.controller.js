@@ -171,6 +171,7 @@ exports.getLogs = asyncHandler(async (req, res, next) => {
   });
   return res.status(200).json({
     status: 'success',
-    data: logs,
+    totalItems: logs.count,
+    items: logs.rows,
   });
 });
