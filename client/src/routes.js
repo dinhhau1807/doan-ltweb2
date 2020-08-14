@@ -5,6 +5,7 @@ const UserPassword = lazy(() =>
   import('./components/UserPassword/UserPassword')
 );
 const UserProfile = lazy(() => import('./components/UserProfile/UserProfile'));
+const UserLogs = lazy(() => import('./components/UserLogs/UserLogs'));
 
 const CustomerAccount = lazy(() =>
   import('./components/CustomerAccount/CustomerAccount')
@@ -209,14 +210,6 @@ export const routes = [
     component: TransactionsManagement
   },
   {
-    path: '/a2hl-management/utils/password',
-    exact: true,
-    isPrivate: true,
-    isStaffRoute: true,
-    layout: PrivateLayout,
-    component: UserPassword
-  },
-  {
     path: '/a2hl-management/utils',
     exact: true,
     isPrivate: true,
@@ -231,6 +224,22 @@ export const routes = [
     isStaffRoute: true,
     layout: PrivateLayout,
     component: UserProfile
+  },
+  {
+    path: '/a2hl-management/utils/password',
+    exact: true,
+    isPrivate: true,
+    isStaffRoute: true,
+    layout: PrivateLayout,
+    component: UserPassword
+  },
+  {
+    path: '/a2hl-management/utils/logs',
+    exact: true,
+    isPrivate: true,
+    isStaffRoute: true,
+    layout: PrivateLayout,
+    component: UserLogs
   },
   {
     path: '/a2hl-management/login',
