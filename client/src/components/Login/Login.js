@@ -1,30 +1,40 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { createCookie, getErrorMessage } from '../../utils/helpers';
-import { TOKEN_KEY } from '../../constants/GlobalConstants';
-
+import { Link } from 'react-router-dom';
 import { Form, Input, Button, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
+
+// Actions
+import { login } from '../../actions/UserActions';
+
+// Constants
+import { TOKEN_KEY } from '../../constants/GlobalConstants';
+
+// Utils
+import { createCookie, getErrorMessage } from '../../utils/helpers';
+
+// Styles
 import './Login.scss';
 
 const propTypes = {
-  login: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired
 };
 
 const defaultProps = {};
 
-const Login = ({ login, history }) => {
+const Login = ({ history }) => {
   const [loading, setLoading] = useState(false);
 
   const onFinish = async values => {
     try {
       setLoading(true);
-      const { email, password } = values;
+
+      const { username, password } = values;
       const { token } = await login('/customers/login', {
-        username: email,
+        username,
         password
       });
+
       createCookie(TOKEN_KEY, token);
       history.push('/');
     } catch (err) {
@@ -39,24 +49,23 @@ const Login = ({ login, history }) => {
         <h2 className="public-form__header">A2HL Internet Banking</h2>
         <Form name="form" className="form" onFinish={onFinish}>
           <Form.Item
-            name="email"
-            rules={[{ required: true, message: 'Email không được bỏ trống!' }]}
+            name="username"
+            rules={[{ required: true, message: 'Username is required!' }]}
           >
             <Input
               prefix={<UserOutlined className="site-form-item-icon" />}
-              placeholder="Email"
+              placeholder="Username"
             />
           </Form.Item>
+
           <Form.Item
             name="password"
-            rules={[
-              { required: true, message: 'Mật khẩu không được bỏ trống!' }
-            ]}
+            rules={[{ required: true, message: 'Password is required!' }]}
           >
             <Input
               prefix={<LockOutlined className="site-form-item-icon" />}
               type="password"
-              placeholder="Mật khẩu"
+              placeholder="Password"
             />
           </Form.Item>
 
@@ -67,15 +76,13 @@ const Login = ({ login, history }) => {
               type="primary"
               htmlType="submit"
             >
-              Đăng nhập
+              Login
             </Button>
           </Form.Item>
 
           <Form.Item>
-            <a href="/">Quên mật khẩu</a>{' '}
-            <span>
-              hoặc <a href="/register">đăng kí tại đây!</a>
-            </span>
+            <Link to="/password-recovery">Forgot your password</Link> or{' '}
+            <Link to="/register">create new account</Link>
           </Form.Item>
         </Form>
       </div>

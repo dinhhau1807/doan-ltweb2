@@ -15,10 +15,16 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       bankDestinationId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
+      },
+      bankDestinationName: {
+        type: Sequelize.STRING,
       },
       amount: {
         type: Sequelize.DECIMAL,
+      },
+      currencyUnit: {
+        type: Sequelize.STRING,
       },
       description: {
         type: Sequelize.STRING,

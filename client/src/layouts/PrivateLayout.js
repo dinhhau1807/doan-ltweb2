@@ -1,27 +1,25 @@
 import React, { Suspense } from 'react';
 import { Spin, Layout } from 'antd';
-import CustomerSidebar from '../components/CustomerSidebar/CustomerSidebar';
-import StaffSidebar from '../components/StaffSidebar/StaffSidebar';
+import Sidebar from '../components/Sidebar/Sidebar';
 import Header from '../components/Header/Header';
+import { STAFF_TABS, CUSTOMER_TABS } from '../constants/GlobalConstants';
 
-const { Content, Footer } = Layout;
+const { Content } = Layout;
 
 export const PrivateLayout = ({ isStaffRoute, children }) => {
+  const tabs = isStaffRoute ? STAFF_TABS : CUSTOMER_TABS;
+
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      {isStaffRoute ? <StaffSidebar /> : <CustomerSidebar />}
-      <Layout>
-        <Header
-          style={{ padding: 0, background: '#fff' }}
-          isStaffRoute={isStaffRoute}
-        />
+    <Layout style={{ backgroundColor: '#fff' }}>
+      <Sidebar tabs={tabs} />
+      <div style={{ width: '100%' }}>
+        <Header style={{ background: '#fff' }} isStaffRoute={isStaffRoute} />
         <Content style={{ margin: '16px' }}>
           <Suspense fallback={<Spin className="spinning"></Spin>}>
             <div className="main">{children}</div>
           </Suspense>
         </Content>
-        <Footer style={{ textAlign: 'center' }}>A2HL Internet Banking</Footer>
-      </Layout>
+      </div>
     </Layout>
   );
 };

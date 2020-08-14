@@ -1,6 +1,6 @@
 const express = require('express');
 
-const ROLE = require('../utils/roleEnum');
+const ROLE = require('../utils/enums/roleEnum');
 const authController = require('../controllers/auth.controller');
 const adminController = require('../controllers/admin.controller');
 
@@ -17,7 +17,9 @@ router
   .get(adminController.getAllStaffs)
   .post(adminController.createStaff);
 
-router.get('/staffs/:id', adminController.getStaff);
 router.post('/staffs/status', adminController.updateStaffStatus);
+router.get('/staffs/:id', adminController.getStaff);
+
+router.get('/logs', adminController.getLogs);
 
 module.exports = router;

@@ -1,13 +1,27 @@
-import { FETCH_USER_REQUEST, FETCH_USER_SUCCESS } from '../constants/actions';
+import {
+  FETCH_USER_REQUEST,
+  FETCH_USER_SUCCESS,
+  FETCH_USER_ERROR,
+  USER_LOGOUT,
+  UPDATE_USER_REQUEST,
+  UPDATE_USER_SUCCESS,
+  UPDATE_USER_ERROR
+} from '../constants/actions';
 import { fetchApi } from '../utils/api';
+import { getErrorMessage, eraseCookie } from '../utils/helpers';
+import { TOKEN_KEY } from '../constants/GlobalConstants';
+import { message } from 'antd';
 
-export const fetchUser = () => async dispatch => {
+const apiSegment = '/customers';
+
+export const fetchUser = type => async dispatch => {
   try {
     dispatch({ type: FETCH_USER_REQUEST });
-    const data = await fetchApi('/');
+    const { data } = await fetchApi(`/${type}/me`, 'GET');
     dispatch({ type: FETCH_USER_SUCCESS, payload: { user: data } });
   } catch (err) {
-    console.error(err);
+    dispatch({ type: FETCH_USER_ERROR });
+    message.error(getErrorMessage(err));
   }
 };
 
@@ -16,5 +30,37 @@ export const login = (url, body) => {
 };
 
 export const register = body => {
-  return fetchApi('/customers/register', 'POST', body);
+  return fetchApi(apiSegment + '/register', 'POST', body);
+};
+
+export const logout = () => {
+  eraseCookie(TOKEN_KEY);
+  return { type: USER_LOGOUT };
+};
+
+export const changePassword = (type, body) => {
+  return fetchApi(`/${type}/updatePassword`, 'PUT', body);
+};
+
+export const updateProfile = (type, body) => async dispatch => {
+  try {
+    dispatch({ type: UPDATE_USER_REQUEST });
+
+    await fetchApi(`/${type}/me`, 'PUT', body);
+
+    message.success('Update information successful');
+
+    dispatch({ type: UPDATE_USER_SUCCESS, payload: { userUpdated: body } });
+  } catch (err) {
+    dispatch({ type: UPDATE_USER_ERROR });
+    message.error(getErrorMessage(err));
+  }
+};
+
+export const passwordRecovery = body => {
+  return fetchApi(apiSegment + `/forgotPassword`, 'POST', body);
+};
+
+export const passwordReset = body => {
+  return fetchApi(apiSegment + '/resetPassword', 'POST', body);
 };

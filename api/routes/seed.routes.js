@@ -1,7 +1,14 @@
 const express = require('express');
 const asyncHandler = require('express-async-handler');
+const { Op } = require('sequelize');
 
-const { Customer, Account, Transaction } = require('../models');
+const {
+  Customer,
+  Account,
+  Transaction,
+  Staff,
+  Identity,
+} = require('../models');
 
 const router = express.Router();
 
@@ -52,6 +59,7 @@ router.post(
       accountDestination,
       bankDestinationId,
       amount,
+      currencyUnit,
       description,
       status,
       otpCode,
@@ -64,6 +72,7 @@ router.post(
       accountDestination,
       bankDestinationId,
       amount,
+      currencyUnit,
       description,
       status,
       otpCode,
@@ -72,7 +81,32 @@ router.post(
     });
 
     res.status(200).json({
-      data: { id: transaction.id, accountSourceId },
+      data: { id: transaction.id, accountSourceId, accountDestination },
+    });
+  })
+);
+
+router.post(
+  '/approve',
+  asyncHandler(async (req, res, next) => {
+    const customers = await Customer.findAll();
+    customers.forEach(async (customer) => {
+      customer.status = 'active';
+      await customer.save();
+    });
+
+    const staffs = await Staff.findAll({ username: { [Op.ne]: 'admin' } });
+    const staffIds = staffs.map((staff) => staff.id);
+
+    const identities = await Identity.findAll();
+    identities.forEach(async (identity) => {
+      const staffRandom = staffIds[Math.floor(Math.random() * staffIds.length)];
+      identity.staffIdApproved = staffRandom;
+      await identity.save();
+    });
+
+    return res.status(200).json({
+      status: 'success',
     });
   })
 );

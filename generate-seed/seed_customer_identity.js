@@ -2,7 +2,7 @@ require('dotenv').config({ path: './.env' });
 const axios = require('axios');
 const FormData = require('form-data');
 const fs = require('fs');
-const dateRandom = require('./dateRd');
+const { dateRandom } = require('./utils');
 
 const count = 50;
 for (let i = 0; i < count; i++) {
@@ -15,7 +15,7 @@ for (let i = 0; i < count; i++) {
   data.append('password', '1234@Demo');
   data.append('name', `demo${i + 1}`);
   data.append('dateOfBirth', dateOfBirth.format('YYYY/MM/DD'));
-  data.append('phoneNumber', `${0909123456 + i}`);
+  data.append('phoneNumber', `+84${909123456 + i}`);
   data.append('address', `${1234 + i}`);
   data.append('identityNumber', `${123456789 + i}`);
   data.append('registrationDate', registrationDate.format('YYYY/MM/DD'));

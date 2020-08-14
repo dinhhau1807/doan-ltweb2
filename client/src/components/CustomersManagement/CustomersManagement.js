@@ -1,29 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Table, message, Dropdown } from 'antd';
+import { Table, message } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
-import FilterOptions from '../FilterOptions/FilterOptions';
-import { FILTER_CUSTOMERS } from '../../constants/ColumnFilter';
-import { getErrorMessage } from '../../utils/helpers';
-import EditStatusDropdown from '../EditStatusDropdown/EditStatusDropdown';
 
+// Components
+import FilterOptions from '../FilterOptions/FilterOptions';
+import EditStatusDropdown from '../EditStatusDropdown/EditStatusDropdown';
+import ComponentHeader from '../ComponentHeader/ComponentHeader';
+
+// Actions
+import { getCustomers, changeCustomerStatus } from '../../actions/StaffActions';
+
+// Constants
+import { ENTITY_STATUS } from '../../constants/GlobalConstants';
+import { FILTER_CUSTOMERS } from '../../constants/ColumnFilter';
+
+// Utils
+import { getErrorMessage, statusLabel } from '../../utils/helpers';
+
+// Styles
 import './CustomersManagement.scss';
 
 const propTypes = {
-  getCustomers: PropTypes.func.isRequired,
-  changeCustomerStatus: PropTypes.func.isRequired,
-  history: PropTypes.object,
-  customerStatus: PropTypes.object
+  history: PropTypes.object
 };
 
 const defaultProps = {};
 
-const CustomersManagement = ({
-  getCustomers,
-  changeCustomerStatus,
-  history,
-  customerStatus
-}) => {
+const CustomersManagement = ({ history }) => {
   const [dataTable, setDataTable] = useState([]);
   const [paramsTable, setParamsTable] = useState({});
   const [pagination, setPagination] = useState({ page: 1, pageSize: 10 });
@@ -35,17 +39,12 @@ const CustomersManagement = ({
 
   const tableColumns = [
     {
-      title: 'Mã KH',
+      title: 'Customer ID',
       dataIndex: 'id',
-      sorter: false,
-      render: (text, record) => (
-        <span className="table__id" onClick={handleViewCustomerDetails(record)}>
-          {text}
-        </span>
-      )
+      sorter: false
     },
     {
-      title: 'Họ tên',
+      title: 'Fullname',
       dataIndex: 'name',
       sorter: true
     },
@@ -60,60 +59,59 @@ const CustomersManagement = ({
       sorter: true
     },
     {
-      title: 'Ngày sinh',
+      title: 'Birthday',
       dataIndex: 'dateOfBirth',
       sorter: false
     },
     {
-      title: 'Điện thoại',
+      title: 'Phone',
       dataIndex: 'phoneNumber',
       sorter: true
     },
     {
-      title: 'Địa chỉ',
+      title: 'Address',
       dataIndex: 'address',
       sorter: true
     },
     {
-      title: 'Tình trạng',
+      title: 'Status',
       dataIndex: 'status',
       sorter: false,
       render: (text, record) => {
-        const style = { fontWeight: '700', cursor: 'pointer' };
-        const status = customerStatus[text];
-        let label = 'Other';
-        if (status) {
-          label = status.label;
-          style.color = status.color;
-        }
+        const [label, style] = statusLabel('person', text);
 
         return (
-          <Dropdown
-            overlay={
-              <EditStatusDropdown
-                statusList={Object.keys(customerStatus)
-                  .filter(key => key !== text)
-                  .map(key => ({ key, label: customerStatus[key].label }))}
-                item={record}
-                onChangeStatus={onChangeStatus}
-                disabled={loading}
-              />
-            }
+          <EditStatusDropdown
+            statusList={Object.keys(ENTITY_STATUS)
+              .filter(key => key !== text)
+              .map(key => ({ key, label: ENTITY_STATUS[key].label }))}
+            item={record}
+            onChangeStatus={onChangeStatus}
+            disabled={loading}
           >
             <span style={style}>
               {label} <DownOutlined />
             </span>
-          </Dropdown>
+          </EditStatusDropdown>
         );
       }
+    },
+    {
+      title: 'Action',
+      dataIndex: '',
+      render: (text, record) => (
+        <span className="table__id" onClick={handleViewCustomerDetails(record)}>
+          View
+        </span>
+      )
     }
   ];
 
   const onChangeStatus = async (id, status) => {
-    const body = { idCustomer: +id, status };
     try {
       setLoading(true);
 
+      const body = { idCustomer: +id, status };
       await changeCustomerStatus(body);
 
       fetchDataTable(paramsTable);
@@ -140,10 +138,6 @@ const CustomersManagement = ({
     });
   };
 
-  const handleViewCustomerDetails = customer => () => {
-    history.push('a2hl-management/customers/' + customer.id);
-  };
-
   const fetchDataTable = async (params = {}) => {
     const { page, pageSize } = pagination;
     const customParams = {
@@ -167,6 +161,7 @@ const CustomersManagement = ({
       const paper = { ...pagination };
       paper.total = totalItems;
       paper.current = customParams.page;
+      paper.pageSize = customParams.pageSize;
 
       setLoading(false);
       setPagination(paper);
@@ -177,16 +172,23 @@ const CustomersManagement = ({
     }
   };
 
+  const handleViewCustomerDetails = customer => () => {
+    history.push('a2hl-management/customers/' + customer.id);
+  };
+
   return (
     <div className="customers-management">
-      <h2 className="page-header">THÔNG TIN KHÁCH HÀNG</h2>
+      <ComponentHeader title="Customers information" />
+
       <FilterOptions
         columnFilter={FILTER_CUSTOMERS}
         fetchData={fetchDataTable}
         paramsTable={paramsTable}
       />
+
       <div className="table">
         <Table
+          bordered
           size="middle"
           rowKey={record => record.id}
           dataSource={dataTable}

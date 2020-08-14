@@ -1,11 +1,13 @@
 const asyncHandler = require('express-async-handler');
 const { Op } = require('sequelize');
 
-const ROLE = require('../utils/roleEnum');
-const { STATUS } = require('../utils/statusEnum');
-const { Staff, Role } = require('../models');
+const ROLE = require('../utils/enums/roleEnum');
+const { STATUS } = require('../utils/enums/statusEnum');
 const passwordValidator = require('../utils/passwordValidator');
 const AppError = require('../utils/appError');
+const { Staff, Role } = require('../models');
+
+const LogService = require('../services/logService');
 
 const excludeAdmin = {
   model: Role,
@@ -18,7 +20,7 @@ const findStaff = asyncHandler(async (id) => {
   const staff = await Staff.findOne({
     include: excludeAdmin,
     attributes: {
-      exclude: ['password', 'roleId'],
+      exclude: ['password', 'roleId', 'passwordUpdatedAt'],
     },
     where: {
       [Op.and]: [
@@ -59,7 +61,7 @@ exports.getAllStaffs = asyncHandler(async (req, res, next) => {
   const staffs = await Staff.findAndCountAll({
     include: excludeAdmin,
     attributes: {
-      exclude: ['password', 'roleId'],
+      exclude: ['password', 'roleId', 'passwordUpdatedAt'],
     },
     where: {
       [Op.and]: [
@@ -102,6 +104,7 @@ exports.createStaff = asyncHandler(async (req, res, next) => {
   const newStaff = { ...staff.dataValues };
   delete newStaff.roleId;
   delete newStaff.password;
+  delete newStaff.passwordUpdatedAt;
 
   return res.status(201).json({
     status: 'success',
@@ -133,7 +136,7 @@ exports.updateStaffStatus = asyncHandler(async (req, res, next) => {
   const staff = await Staff.findOne({
     include: excludeAdmin,
     attributes: {
-      exclude: ['password', 'roleId'],
+      exclude: ['password', 'roleId', 'passwordUpdatedAt'],
     },
     where: { id: idStaff },
   });
@@ -142,10 +145,33 @@ exports.updateStaffStatus = asyncHandler(async (req, res, next) => {
   }
 
   staff.status = newStatus;
-  staff.save();
+  await staff.save();
 
   return res.status(200).json({
     status: 'success',
     data: staff,
+  });
+});
+
+exports.getLogs = asyncHandler(async (req, res, next) => {
+  let { page, limit } = req.query;
+  const { staffId } = req.query;
+
+  if (!page || page <= 0) page = 1;
+  if (!limit || limit <= 0) limit = 50;
+
+  let filterStaff = null;
+  if (staffId) filterStaff = { staffId };
+
+  const logs = await LogService.getLogs({
+    where: filterStaff,
+    order: [['updatedAt', 'DESC']],
+    offset: (page - 1) * limit,
+    limit,
+  });
+  return res.status(200).json({
+    status: 'success',
+    totalItems: logs.count,
+    items: logs.rows,
   });
 });

@@ -1,35 +1,101 @@
-import React from 'react';
-import { Layout, Menu, Dropdown } from 'antd';
+import React, { useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { withRouter, Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { Menu, Dropdown, Spin } from 'antd';
 import { UserOutlined, DownOutlined } from '@ant-design/icons';
+
+// HOCs
+import withAuthenticated from '../../HOCs/withAuthenticated';
+
+// Actions
+import { fetchUser, logout } from '../../actions/UserActions';
+
+// Selectors
+import { getUser } from '../../selectors/UserSelectors';
+
+// Styles
 import './Header.scss';
 
-const { Header } = Layout;
-
-const menu = isStaffRoute => {
-  return (
-    <Menu>
-      {!isStaffRoute && <Menu.Item>Cập nhật thông tin</Menu.Item>}
-      <Menu.Item>Đăng xuất</Menu.Item>
-    </Menu>
-  );
+const propTypes = {
+  style: PropTypes.object,
+  isStaffRoute: PropTypes.bool,
+  user: PropTypes.object,
+  fetchUser: PropTypes.func.isRequired,
+  logout: PropTypes.func.isRequired,
+  history: PropTypes.object,
+  segment: PropTypes.string
 };
 
-const HeaderComponent = ({ style, isStaffRoute }) => {
+const Header = ({
+  style,
+  isStaffRoute,
+  user,
+  fetchUser,
+  logout,
+  history,
+  segment
+}) => {
+  useEffect(() => {
+    if (!user.data) {
+      const type = isStaffRoute ? 'staffs' : 'customers';
+      fetchUser(type);
+    }
+  }, [isStaffRoute]);
+
+  const handleLogout = () => {
+    logout();
+    history.push(segment + 'login');
+  };
+
+  const { loading, data } = user;
+  const userName = data ? data.name : null;
+  const headerTitle = isStaffRoute
+    ? 'A2HL Management'
+    : 'A2HL Internet Banking';
+
   return (
-    <Header className="header" style={style}>
-      <h1 className="header__left">
-        {isStaffRoute ? 'A2HL Management' : 'A2HL Internet Banking'}
-      </h1>
+    <header className="header" style={style}>
+      <h1 className="header__left">{headerTitle}</h1>
       <div className="header__right">
-        <Dropdown overlay={menu(isStaffRoute)}>
-          <span style={{ cursor: 'pointer', fontSize: '18px' }}>
-            <UserOutlined />
-            <DownOutlined style={{ marginLeft: '4px' }} />
-          </span>
-        </Dropdown>
+        <Spin spinning={loading}>
+          <Dropdown
+            overlay={
+              <Menu>
+                <Menu.Item>
+                  <Link to={segment + 'utils/profile'}>Update Profile</Link>
+                </Menu.Item>
+                <Menu.Item>
+                  <Link to={segment + 'utils/password'}>Change password</Link>
+                </Menu.Item>
+                <Menu.Item onClick={handleLogout}>Logout</Menu.Item>
+              </Menu>
+            }
+          >
+            <span style={{ cursor: 'pointer', fontSize: '18px' }}>
+              <UserOutlined />
+
+              <span style={{ fontSize: '16px', margin: '0 8px' }}>
+                {userName}
+              </span>
+
+              <DownOutlined style={{ marginLeft: '4px' }} />
+            </span>
+          </Dropdown>
+        </Spin>
       </div>
-    </Header>
+    </header>
   );
 };
 
-export default HeaderComponent;
+Header.propTypes = propTypes;
+
+const mapStateToProps = state => {
+  return {
+    user: getUser(state)
+  };
+};
+
+export default withRouter(
+  connect(mapStateToProps, { fetchUser, logout })(withAuthenticated(Header))
+);

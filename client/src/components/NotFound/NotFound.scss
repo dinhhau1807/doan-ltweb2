@@ -1,0 +1,18 @@
+@import '../../scss/config';
+
+.not-found {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  &__heading {
+    color: $c-primary;
+  }
+
+  &__content {
+    font-size: 40px;
+  }
+}

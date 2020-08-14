@@ -1,10 +1,10 @@
 
-# Customer
-sequelize model:create --name Customer --attributes username:string,email:string,password:string,name:string,dateOfBirth:date,phone:string,address:string,verifyCode:string,status:string
+sequelize model:create --name Customer --attributes username:string,email:string,password:string,passwordUpdatedAt:date,name:string,dateOfBirth:date,phone:string,address:string,verifyCode:string,status:string
+sequelize model:create --name Identity --attributes customerId:integer,identityNumber:string,frontImage:blob,backImage:blob,staffIdApproved:integer
 sequelize model:create --name Staff --attributes username:string,password:string,roleId:integer,status:string
 sequelize model:create --name Role --attributes roleDescription:string
-sequelize model:create --name Identity --attributes customerId:integer,identityNumber:string,frontImage:blob,backImage:blob,staffIdApproved:integer
 sequelize model:create --name Account --attributes customerId:integer,type:string,currentBalance:decimal,currentUnit:string,status:string,interestRate:decimal,term:date
 sequelize model:create --name DepositTerm --attributes period:integer,interestRate:decimal
 sequelize model:create --name Bank --attributes name:string
-sequelize model:create --name Transaction --attributes accountSourceId:integer,accountDestination:integer,bankDestinationId:integer,amount:decimal,description:string,status:string,otpCode:string,otpCreatedDate:date,otpExpiredDate:date
+sequelize model:create --name Transaction --attributes accountSourceId:integer,accountDestination:integer,bankDestinationId:integer,amount:decimal,currencyUnit:string,description:string,status:string,otpCode:string,otpCreatedDate:date,otpExpiredDate:date
+sequelize model:create --name Log --attributes staffId:integer,data:json

@@ -1,12 +1,28 @@
 @import '../../scss/config';
+@import '../../scss/mixins';
 
 .header {
   display: flex;
   justify-content: space-between;
-  padding: 0 20px 0 16px !important;
+  align-items: center;
+  height: $nav-height;
+  background-color: $c-primary !important;
+  padding: 0 18px;
 
   &__left {
     font-size: 20px;
-    color: $c-primary;
+    color: #fff;
+    margin: 0;
+  }
+
+  &__right {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+  }
+
+  @include mq(laptop) {
+    flex-direction: column;
   }
 }

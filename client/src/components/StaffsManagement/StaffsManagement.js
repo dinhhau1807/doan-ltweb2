@@ -2,31 +2,37 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Table, Dropdown, message, Row, Col } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
-import FilterOptions from '../FilterOptions/FilterOptions';
-import { FILTER_STAFFS } from '../../constants/ColumnFilter';
-import { getErrorMessage } from '../../utils/helpers';
-import EditStatusDropdown from '../EditStatusDropdown/EditStatusDropdown';
-import AddStaffModal from '../AddStaffModal/AddStaffModal';
 
+// Components
+import FilterOptions from '../FilterOptions/FilterOptions';
+import AddStaffModal from '../AddStaffModal/AddStaffModal';
+import EditStatusDropdown from '../EditStatusDropdown/EditStatusDropdown';
+import ComponentHeader from '../ComponentHeader/ComponentHeader';
+
+// Actions
+import {
+  getStaffs,
+  changeStaffStatus,
+  createStaff
+} from '../../actions/AdminActions';
+
+// Constants
+import { ENTITY_STATUS } from '../../constants/GlobalConstants';
+import { FILTER_STAFFS } from '../../constants/ColumnFilter';
+
+// Utils
+import { getErrorMessage, statusLabel } from '../../utils/helpers';
+
+// Styles
 import './StaffsManagement.scss';
 
 const propTypes = {
-  getStaffs: PropTypes.func.isRequired,
-  changeStaffStatus: PropTypes.func.isRequired,
-  history: PropTypes.object,
-  staffStatus: PropTypes.object,
-  createStaff: PropTypes.func.isRequired
+  history: PropTypes.object
 };
 
 const defaultProps = {};
 
-const StaffsManagement = ({
-  getStaffs,
-  changeStaffStatus,
-  history,
-  staffStatus,
-  createStaff
-}) => {
+const StaffsManagement = ({ history }) => {
   const [dataTable, setDataTable] = useState([]);
   const [paramsTable, setParamsTable] = useState({});
   const [pagination, setPagination] = useState({ page: 1, pageSize: 10 });
@@ -38,17 +44,12 @@ const StaffsManagement = ({
 
   const tableColumns = [
     {
-      title: 'Mã NV',
+      title: 'ID',
       dataIndex: 'id',
-      sorter: false,
-      render: (text, record) => (
-        <span className="table__id" onClick={handleViewCustomerDetails(record)}>
-          {text}
-        </span>
-      )
+      sorter: false
     },
     {
-      title: 'Họ tên',
+      title: 'Fullname',
       dataIndex: 'name',
       sorter: true
     },
@@ -58,43 +59,29 @@ const StaffsManagement = ({
       sorter: true
     },
     {
-      title: 'Tình trạng',
+      title: 'Status',
       dataIndex: 'status',
       sorter: false,
       render: (text, record) => {
-        const style = { fontWeight: '700', cursor: 'pointer' };
-        const status = staffStatus[text];
-        let label = 'Other';
-        if (status) {
-          label = status.label;
-          style.color = status.color;
-        }
+        const [label, style] = statusLabel('person', text);
 
         return (
-          <Dropdown
-            overlay={
-              <EditStatusDropdown
-                statusList={Object.keys(staffStatus)
-                  .filter(key => key !== text)
-                  .map(key => ({ key, label: staffStatus[key].label }))}
-                item={record}
-                onChangeStatus={onChangeStatus}
-                disabled={loading}
-              />
-            }
+          <EditStatusDropdown
+            statusList={Object.keys(ENTITY_STATUS)
+              .filter(key => key !== text)
+              .map(key => ({ key, label: ENTITY_STATUS[key].label }))}
+            item={record}
+            onChangeStatus={onChangeStatus}
+            disabled={loading}
           >
             <span style={style}>
               {label} <DownOutlined />
             </span>
-          </Dropdown>
+          </EditStatusDropdown>
         );
       }
     }
   ];
-
-  const handleViewCustomerDetails = staff => () => {
-    history.push('a2hl-management/staffs/' + staff.id);
-  };
 
   const onChangeStatus = async (id, status) => {
     const body = { idStaff: +id, status };
@@ -136,10 +123,7 @@ const StaffsManagement = ({
       sortType: params.sortType,
 
       username: params.username,
-      email: params.email,
-      name: params.name,
-      phone: params.phone,
-      address: params.address
+      name: params.name
     };
 
     try {
@@ -150,6 +134,7 @@ const StaffsManagement = ({
       const paper = { ...pagination };
       paper.total = totalItems;
       paper.current = customParams.page;
+      paper.pageSize = customParams.pageSize;
 
       setLoading(false);
       setPagination(paper);
@@ -162,23 +147,27 @@ const StaffsManagement = ({
 
   return (
     <div className="staffs-management">
-      <h2 className="page-header">THÔNG TIN NHÂN VIÊN</h2>
-      <Row align="middle" gutter={8}>
-        <Col span={20}>
+      <ComponentHeader title="Employees information" />
+
+      <Row gutter={[8, 8]}>
+        <Col xl={20} lg={20} md={20} sm={24} xs={24}>
           <FilterOptions
             columnFilter={FILTER_STAFFS}
             fetchData={fetchDataTable}
             paramsTable={paramsTable}
           />
         </Col>
-        <Col span={4}>
+
+        <Col xl={4} lg={4} md={4} sm={24} xs={24}>
           <AddStaffModal
+            width="100%"
             createStaff={createStaff}
             fetchData={fetchDataTable}
             paramsTable={paramsTable}
           />
         </Col>
       </Row>
+
       <div className="table">
         <Table
           size="middle"

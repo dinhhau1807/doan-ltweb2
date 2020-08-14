@@ -6,10 +6,13 @@ const shortid = require('shortid');
 const multer = require('multer');
 const sharp = require('sharp');
 
-const { Customer, Identity, Staff, Role } = require('../models');
 const AppError = require('../utils/appError');
 const passwordValidator = require('../utils/passwordValidator');
-const { STATUS } = require('../utils/statusEnum');
+const { STATUS } = require('../utils/enums/statusEnum');
+const { Customer, Identity, Staff, Role } = require('../models');
+
+const EmailService = require('../services/emailService');
+const SmsService = require('../services/smsService');
 
 const multerStorage = multer.memoryStorage();
 
@@ -112,7 +115,15 @@ exports.authorize = asyncHandler(async (req, res, next) => {
     default:
   }
 
-  // Should check user have changed password
+  // Check password changed
+  if (
+    currentUser.passwordUpdatedAt &&
+    decoded.iat < parseInt(currentUser.passwordUpdatedAt.getTime() / 1000, 10)
+  ) {
+    return next(
+      new AppError('User recently changed password! Please log in again.', 401)
+    );
+  }
 
   // GRANT ACCESS
   req.user = currentUser;
@@ -159,12 +170,47 @@ exports.customerLogin = asyncHandler(async (req, res, next) => {
     },
   });
 
+  // Check if customer is blocked or inactive
+  if (customer) {
+    switch (customer.status) {
+      case STATUS.inactive:
+        return next(new AppError('Your account is inactive!', 400));
+      case STATUS.blocked:
+        return next(new AppError('Your account is blocked!', 400));
+      default:
+    }
+  }
+
   if (
     !customer ||
     !(await passwordValidator.verifyHashedPassword(password, customer.password))
   ) {
-    return next(new AppError('Incorrect username/email or password', 401));
+    if (customer && customer.accessFailedCount < 5) {
+      customer.accessFailedCount += 1;
+      await customer.save();
+    }
+
+    return next(new AppError('Incorrect username/email or password', 400));
   }
+
+  // Check if user access failed 5 times
+  if (customer.accessFailedCount === 5) {
+    if (customer.status !== STATUS.blocked) {
+      customer.status = STATUS.blocked;
+      await customer.save();
+    }
+
+    return next(
+      new AppError(
+        'Your account is blocked! You have logged in failed 5 times!',
+        400
+      )
+    );
+  }
+
+  // Reset access failed if login success before 5 times
+  customer.accessFailedCount = 0;
+  await customer.save();
 
   // Create login token and send to client
   const token = signToken('customer', customer.id);
@@ -279,11 +325,22 @@ exports.staffLogin = asyncHandler(async (req, res, next) => {
     },
   });
 
+  // Check if staff is blocked or inactive
+  if (staff) {
+    switch (staff.status) {
+      case STATUS.inactive:
+        return next(new AppError('Your account is inactive!', 400));
+      case STATUS.blocked:
+        return next(new AppError('Your account is blocked!', 400));
+      default:
+    }
+  }
+
   if (
     !staff ||
     !(await passwordValidator.verifyHashedPassword(password, staff.password))
   ) {
-    return next(new AppError('Incorrect username/email or password', 401));
+    return next(new AppError('Incorrect username/email or password', 400));
   }
 
   // Create login token and send to client
@@ -292,5 +349,78 @@ exports.staffLogin = asyncHandler(async (req, res, next) => {
   return res.status(200).json({
     status: 'success',
     token,
+  });
+});
+
+exports.forgotPassword = asyncHandler(async (req, res, next) => {
+  const { email } = req.body;
+  const customer = await Customer.findOne({
+    where: {
+      email,
+    },
+  });
+
+  if (!customer) {
+    return next(new AppError('Email not found', 404));
+  }
+
+  customer.verifyCode = shortid.generate();
+  await customer.save();
+
+  const { verifyCode } = customer;
+
+  // Send otp code to user
+  const emailService = new EmailService(customer);
+  await emailService.sendResetPasswordCode(verifyCode);
+
+  // Send otp code to user with SMS
+  if (process.env.SMS_ENABLE_OTP === 'true') {
+    const sms = new SmsService(customer);
+    await sms.sendResetPasswordCode(verifyCode);
+  }
+
+  return res.status(200).json({
+    status: 'success',
+    message: 'Verify code was sent to your email/phone!',
+  });
+});
+
+exports.resetPassword = asyncHandler(async (req, res, next) => {
+  const { verifyCode, newPwd } = req.body;
+
+  if (!verifyCode) {
+    return next(new AppError('Please provide email and verifyCode!', 400));
+  }
+
+  const customer = await Customer.findOne({
+    where: {
+      verifyCode,
+    },
+  });
+
+  if (!customer) {
+    return next(new AppError('Verify code is incorrect.', 400));
+  }
+
+  const regexPwd = /^(?=.*[\d])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*])[\w!@#$%^&*]{8,}$/gm;
+  const matchedPwd = regexPwd.exec(newPwd);
+
+  if (!matchedPwd) {
+    return next(
+      new AppError(
+        'Password must be minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character.',
+        400
+      )
+    );
+  }
+
+  customer.password = await passwordValidator.createHashedPassword(newPwd);
+  customer.verifyCode = null;
+  customer.passwordUpdatedAt = new Date();
+  await customer.save();
+
+  return res.status(200).json({
+    status: 'success',
+    message: 'Your password have been reset!',
   });
 });

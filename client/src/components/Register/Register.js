@@ -1,14 +1,5 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { LOGIN_URL, TOKEN_KEY } from '../../constants/GlobalConstants';
-import {
-  createCookie,
-  getBase64,
-  getErrorMessage,
-  b64toBlob
-} from '../../utils/helpers';
-
-import './Register.scss';
 import {
   Form,
   Input,
@@ -22,6 +13,21 @@ import {
 } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
+// Components
+import CallingCodeFormItem from '../CallingCodeFormItem/CallingCodeFormItem';
+
+// Actions
+import { register } from '../../actions/UserActions';
+
+// Constants
+import { LOGIN_URL, DATE_FORMAT } from '../../constants/GlobalConstants';
+
+// Utils
+import { getBase64, getErrorMessage, b64toBlob } from '../../utils/helpers';
+
+// Styles
+import './Register.scss';
+
 const layout = {
   labelCol: { span: 8 },
   wrapperCol: { span: 16 }
@@ -29,10 +35,10 @@ const layout = {
 
 const validateMessages = {
   // eslint-disable-next-line no-template-curly-in-string
-  required: '${label} không được bỏ trống!',
+  required: '${label} is required!',
   types: {
     // eslint-disable-next-line no-template-curly-in-string
-    email: '${label} không đúng định dạng!'
+    email: '${label} is invalid formatted!'
   }
 };
 
@@ -43,7 +49,7 @@ const propTypes = {
 
 const defaultProps = {};
 
-const Register = ({ register, history }) => {
+const Register = ({ history }) => {
   const [loading, setLoading] = useState(false);
   //upload state
   const [uploadState, setUploadState] = useState({
@@ -85,6 +91,7 @@ const Register = ({ register, history }) => {
         password,
         name,
         DoB,
+        callingCode,
         phone,
         address,
         identityNumber,
@@ -96,11 +103,11 @@ const Register = ({ register, history }) => {
         email,
         password,
         name,
-        dateOfBirth: DoB.format('yyyy/MM/DD'),
-        phoneNumber: phone,
+        dateOfBirth: DoB.format(DATE_FORMAT),
+        phoneNumber: callingCode + phone,
         address,
         identityNumber,
-        registrationDate: registrationDate.format('yyyy/MM/DD')
+        registrationDate: registrationDate.format(DATE_FORMAT)
       };
 
       //parse body to formData
@@ -124,9 +131,10 @@ const Register = ({ register, history }) => {
         formData.append(propsName[i], blob);
       }
 
-      const { token } = await register(formData);
-      createCookie(TOKEN_KEY, token);
-      history.push('/');
+      await register(formData);
+
+      message.success('New account is created');
+      history.push(LOGIN_URL);
     } catch (err) {
       message.error(getErrorMessage(err), 10);
       setLoading(false);
@@ -140,25 +148,28 @@ const Register = ({ register, history }) => {
       <div className="ant-upload-text">Upload</div>
     </div>
   );
+
   return (
     <div className="public-form">
       <div className="public-form__wrap">
-        <h2 className="public-form__header">Đăng kí tài khoản</h2>
+        <h2 className="public-form__header">Register new account</h2>
         <Form
           {...layout}
           name="form"
           onFinish={onFinish}
           validateMessages={validateMessages}
+          initialValues={{ callingCode: '+84' }}
         >
-          <Row>
-            <Col span={12}>
+          <Row gutter={8}>
+            <Col xl={12} lg={12} md={24} sm={24} xs={24}>
               <Form.Item
                 name="username"
-                label="Tên đăng nhập"
+                label="Username"
                 rules={[{ required: true }]}
               >
                 <Input />
               </Form.Item>
+
               <Form.Item
                 name="email"
                 label="Email"
@@ -166,16 +177,18 @@ const Register = ({ register, history }) => {
               >
                 <Input />
               </Form.Item>
+
               <Form.Item
                 name="password"
-                label="Mật khẩu"
+                label="Password"
                 rules={[{ required: true }]}
               >
-                <Input type="password" />
+                <Input.Password />
               </Form.Item>
+
               <Form.Item
                 name="confirmPassword"
-                label="Xác nhận mật khẩu"
+                label="Confirm password"
                 dependencies={['password']}
                 rules={[
                   { required: true },
@@ -185,67 +198,94 @@ const Register = ({ register, history }) => {
                         return Promise.resolve();
                       }
                       return Promise.reject(
-                        'Xác nhận mật khẩu không chính xác!'
+                        'Password and password confirmation are not the same!'
                       );
                     }
                   })
                 ]}
               >
-                <Input type="password" />
+                <Input.Password />
               </Form.Item>
+
               <Form.Item
                 name="name"
-                label="Họ tên"
+                label="Fullname"
                 rules={[{ required: true }]}
               >
                 <Input />
               </Form.Item>
+
               <Form.Item
                 name="DoB"
-                label="Ngày sinh"
+                label="Birthday"
                 rules={[{ required: true }]}
               >
-                <DatePicker format="DD-MM-yyyy" placeholder="" />
+                <DatePicker
+                  style={{ width: '100%' }}
+                  format="DD-MM-yyyy"
+                  placeholder=""
+                />
               </Form.Item>
+
               <Form.Item
-                name="phone"
-                label="Số điện thoại"
+                label="Phone"
                 rules={[{ required: true }]}
+                style={{ marginBottom: '0' }}
               >
-                <Input />
+                <Row gutter={4}>
+                  <Col span={8}>
+                    <CallingCodeFormItem />
+                  </Col>
+                  <Col span={16}>
+                    <Form.Item
+                      name="phone"
+                      rules={[{ required: true, message: 'Phone is required' }]}
+                    >
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                </Row>
               </Form.Item>
+
               <Form.Item
                 name="address"
-                label="Địa chỉ"
+                label="Address"
                 rules={[{ required: true }]}
               >
                 <Input.TextArea />
               </Form.Item>
             </Col>
-            <Col span={12}>
+
+            <Col xl={12} lg={12} md={24} sm={24} xs={24}>
               <Form.Item
                 name="identityNumber"
-                label="Số CMND"
+                label="Identification ID No"
                 rules={[{ required: true }]}
               >
                 <Input />
               </Form.Item>
+
               <Form.Item
                 name="registrationDate"
-                label="Ngày cấp CMND"
+                label="Issued on"
                 rules={[{ required: true }]}
               >
-                <DatePicker format="DD-MM-yyyy" placeholder="" />
+                <DatePicker
+                  style={{ width: '100%' }}
+                  format={DATE_FORMAT}
+                  placeholder=""
+                />
               </Form.Item>
+
               <Form.Item
                 name="photos"
-                label="Ảnh chứng minh"
+                label="Identification Card photo"
                 rules={[
                   () => ({
                     validator(_, value) {
                       if (fileList.length !== 2) {
                         return Promise.reject(
-                          'Ảnh chứng minh phải có đủ 2 mặt'
+                          'There must be at least 2 photos'
                         );
                       }
 
@@ -256,7 +296,7 @@ const Register = ({ register, history }) => {
                           return Promise.resolve();
                         }
                         return Promise.reject(
-                          'Không đúng định dạng (jpg, jpeg, png)'
+                          'There must be in correct format (jpg, jpeg, png)'
                         );
                       }
                     }
@@ -273,6 +313,7 @@ const Register = ({ register, history }) => {
                   >
                     {fileList.length === 2 ? null : uploadButton}
                   </Upload>
+
                   <Modal
                     visible={previewVisible}
                     title={previewTitle}
@@ -289,14 +330,16 @@ const Register = ({ register, history }) => {
               </Form.Item>
             </Col>
           </Row>
-          <Row>
+
+          <Row align="middle" justify="center">
             <Col span={24}>
-              <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
+              <Form.Item wrapperCol={{ offset: 10 }}>
                 <Button loading={loading} type="primary" htmlType="submit">
-                  Đăng kí
+                  Register
                 </Button>
+
                 <a href={LOGIN_URL} style={{ marginLeft: '10px' }}>
-                  Trở về đăng nhập
+                  Back
                 </a>
               </Form.Item>
             </Col>

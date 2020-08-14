@@ -1,10 +1,24 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Input, Dropdown, Checkbox, Row, Col } from 'antd';
+import { Input, Dropdown, Checkbox, Row, Col, DatePicker, Select } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { debounce, find } from 'lodash';
 
+// Constants
+import { DATE_FORMAT } from '../../constants/GlobalConstants';
+
+// Styles
 import './FilterOptions.scss';
+
+const { RangePicker } = DatePicker;
+
+const breakpoints = {
+  xs: 24,
+  sm: 12,
+  md: 12,
+  lg: 8,
+  xl: 6
+};
 
 const propTypes = {
   columnFilter: PropTypes.object,
@@ -26,6 +40,7 @@ const FilterOptions = ({ columnFilter, paramsTable, fetchData }) => {
   const onCheckboxChange = e => {
     const { value, checked } = e.target;
     const selectedList = [...optionsSelected];
+
     if (checked) {
       //add checked option
       for (let i = 0; i < columnFilter.options.length; i++) {
@@ -38,9 +53,6 @@ const FilterOptions = ({ columnFilter, paramsTable, fetchData }) => {
       //remove unchecked option from selectedList
       for (let i = 0; i < selectedList.length; i++) {
         if (selectedList[i].columnName === value) {
-          //trigger change filter when unchecking a option
-          emitChangeDebounced(value);
-
           selectedList.splice(i, 1);
           break;
         }
@@ -52,27 +64,66 @@ const FilterOptions = ({ columnFilter, paramsTable, fetchData }) => {
 
   const onInputChange = e => {
     const { name, value } = e.target;
+
     emitChangeDebounced(name, value);
+  };
+
+  const onDatePickerChange = (date, dateString, columnName) => {
+    const dateSearch = date ? date.format(DATE_FORMAT) : undefined;
+
+    emitChangeDebounced(columnName, dateSearch);
+  };
+
+  const onRangePickerChange = (date, dateString, columnName) => {
+    const dateSearch = [];
+
+    date && date[0]
+      ? dateSearch.push(date[0].format(DATE_FORMAT))
+      : dateSearch.push(undefined);
+    date && date[1]
+      ? dateSearch.push(date[1].format(DATE_FORMAT))
+      : dateSearch.push(undefined);
+
+    emitChangeDebounced(columnName, dateSearch);
+  };
+
+  const onSelectChange = columnName => value => {
+    emitChangeDebounced(columnName, value);
   };
 
   function emitChangeFilter(key, value) {
     const filterParams = { ...paramsTable, page: 1 };
-    //remove empty value from params
-    filterParams[key] = value ? '' + value : undefined;
 
-    //remove key which its checkbox just been unchecked
+    //range picker case
+    //remove empty value from params
+    if (Array.isArray(key) && Array.isArray(value)) {
+      key.forEach((item, index) => {
+        filterParams[item] = value[index]
+          ? ('' + value[index]).trim()
+          : undefined;
+      });
+    } else {
+      filterParams[key] = value ? ('' + value).trim() : undefined;
+    }
+
+    //remove key which its checkbox unchecked
     const keyParams = Object.keys(filterParams);
     const ignoreKey = ['page', 'limit', 'sortBy', 'sortType'];
     for (let i = 0; i < keyParams.length; i++) {
       if (ignoreKey.indexOf(keyParams[i]) === -1) {
         const findItem = find(optionsSelected, function (item) {
+          if (Array.isArray(item.columnName)) {
+            return item.columnName.indexOf(keyParams[i]) > -1;
+          }
           return item.columnName === keyParams[i];
         });
+        //*: except for the default column
         if (!findItem && keyParams[i] !== columnFilter.default.columnName) {
           filterParams[keyParams[i]] = undefined;
         }
       }
     }
+
     fetchData(filterParams);
   }
 
@@ -85,6 +136,7 @@ const FilterOptions = ({ columnFilter, paramsTable, fetchData }) => {
           placeholder={columnFilter.default.placeholder}
           onChange={onInputChange}
         />
+
         <Dropdown
           style={{ background: '#fff' }}
           onVisibleChange={onVisibleDropdownChange}
@@ -110,10 +162,11 @@ const FilterOptions = ({ columnFilter, paramsTable, fetchData }) => {
           }
         >
           <span className="filter__dropdown-label">
-            <DownOutlined style={{ marginRight: '8px' }} /> Tìm kiếm nâng cao
+            <DownOutlined style={{ marginRight: '8px' }} /> Advanced search
           </span>
         </Dropdown>
       </div>
+
       {optionsSelected.length > 0 && (
         <div className="filter__options">
           <Row gutter={16}>
@@ -121,23 +174,91 @@ const FilterOptions = ({ columnFilter, paramsTable, fetchData }) => {
               switch (option.type) {
                 case 'input':
                   return (
-                    <Col
-                      key={option.columnName}
-                      xs={20}
-                      sm={16}
-                      md={12}
-                      lg={8}
-                      xl={6}
-                    >
+                    <Col key={option.columnName} {...breakpoints}>
                       <div className="filter__option">
                         <label htmlFor={option.columnName}>
                           {option.label}
                         </label>
+
                         <Input
                           id={option.columnName}
                           name={option.columnName}
                           placeholder={option.placeholder}
                           onChange={onInputChange}
+                        />
+                      </div>
+                    </Col>
+                  );
+                case 'datepicker':
+                  return (
+                    <Col key={option.columnName} {...breakpoints}>
+                      <div className="filter__option">
+                        <label htmlFor={option.columnName}>
+                          {option.label}
+                        </label>
+
+                        <DatePicker
+                          style={{ display: 'block' }}
+                          format={DATE_FORMAT}
+                          id={option.columnName}
+                          name={option.columnName}
+                          placeholder={option.placeholder}
+                          onChange={(date, dateString) =>
+                            onDatePickerChange(
+                              date,
+                              dateString,
+                              option.columnName
+                            )
+                          }
+                        />
+                      </div>
+                    </Col>
+                  );
+                case 'select':
+                  return (
+                    <Col key={option.columnName} {...breakpoints}>
+                      <div className="filter__option">
+                        <label htmlFor={option.columnName}>
+                          {option.label}
+                        </label>
+
+                        <Select
+                          style={{ display: 'block' }}
+                          id={option.columnName}
+                          name={option.columnName}
+                          placeholder={option.placeholder}
+                          onChange={onSelectChange(option.columnName)}
+                          defaultValue=""
+                        >
+                          {!!option.options &&
+                            option.options.map((item, index) => (
+                              <Select.Option value={item.key} key={index}>
+                                {item.value}
+                              </Select.Option>
+                            ))}
+                        </Select>
+                      </div>
+                    </Col>
+                  );
+                case 'rangePicker':
+                  return (
+                    <Col key={option.columnName} {...breakpoints}>
+                      <div className="filter__option">
+                        <label htmlFor={option.columnName}>
+                          {option.label}
+                        </label>
+
+                        <RangePicker
+                          style={{ width: '100%' }}
+                          id={option.columnName}
+                          format={DATE_FORMAT}
+                          onChange={(date, dateString) =>
+                            onRangePickerChange(
+                              date,
+                              dateString,
+                              option.columnName
+                            )
+                          }
                         />
                       </div>
                     </Col>

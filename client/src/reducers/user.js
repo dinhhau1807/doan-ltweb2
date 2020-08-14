@@ -1,12 +1,22 @@
-import { FETCH_USER_REQUEST, FETCH_USER_SUCCESS } from '../constants/actions';
+import {
+  FETCH_USER_REQUEST,
+  FETCH_USER_SUCCESS,
+  FETCH_USER_ERROR,
+  USER_LOGOUT,
+  UPDATE_USER_REQUEST,
+  UPDATE_USER_SUCCESS,
+  UPDATE_USER_ERROR
+} from '../constants/actions';
+import moment from 'moment';
 
 const initialState = {
-  loading: false,
-  data: {}
+  loading: true,
+  data: null
 };
 
 export default function (state = initialState, { type, payload }) {
   switch (type) {
+    case UPDATE_USER_REQUEST:
     case FETCH_USER_REQUEST:
       return {
         ...state,
@@ -15,7 +25,26 @@ export default function (state = initialState, { type, payload }) {
     case FETCH_USER_SUCCESS:
       return {
         ...state,
-        data: payload.user,
+        data: {
+          ...payload.user,
+          dateOfBirth: payload.user.dateOfBirth
+            ? moment(payload.user.dateOfBirth)
+            : undefined
+        },
+        loading: false
+      };
+    case USER_LOGOUT:
+      return initialState;
+    case UPDATE_USER_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        data: { ...state.data, ...payload.userUpdated }
+      };
+    case FETCH_USER_ERROR:
+    case UPDATE_USER_ERROR:
+      return {
+        ...state,
         loading: false
       };
     default:
