@@ -29,8 +29,8 @@ import { getUser } from '../../selectors/UserSelectors';
 import './UserProfile.scss';
 
 const layout = {
-  labelCol: { span: 8 },
-  wrapperCol: { span: 16 }
+  labelCol: { span: 6 },
+  wrapperCol: { span: 18 }
 };
 
 const validateMessages = {
@@ -176,7 +176,13 @@ const UserProfile = ({ loading, data, updateProfile }) => {
               }
             })}
 
-            <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
+            <Form.Item
+              wrapperCol={{
+                ...layout.wrapperCol,
+                lg: { offset: 6 },
+                sm: { offset: 6 }
+              }}
+            >
               <Button loading={loading} type="primary" htmlType="submit">
                 Update
               </Button>
