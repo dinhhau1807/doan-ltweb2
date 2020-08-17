@@ -30,6 +30,11 @@
     width: 180px !important;
     padding: 0 !important;
 
+    @include mq(laptop) {
+      font-size: 14px;
+      width: 150px !important;
+    }
+
     & ~ & {
       border-left: 1px solid #eee !important;
     }

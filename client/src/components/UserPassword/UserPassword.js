@@ -117,7 +117,13 @@ const UserPassword = () => {
             <Input.Password />
           </Form.Item>
 
-          <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
+          <Form.Item
+            wrapperCol={{
+              ...layout.wrapperCol,
+              lg: { offset: 8 },
+              sm: { offset: 8 }
+            }}
+          >
             <Button loading={loading} type="primary" htmlType="submit">
               Update
             </Button>
