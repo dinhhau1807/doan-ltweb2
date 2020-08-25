@@ -78,12 +78,12 @@ const TransferOutsideSystem = ({ history }) => {
     try {
       setLoading(true);
 
-      const { toAccount, amount, description } = values;
+      const { toAccount, amount, description, idBankDestination } = values;
       const { id } = account;
       const body = {
         idAccountSource: id,
         idAccountDestination: +toAccount,
-        idBankDestination: '1',
+        idBankDestination: idBankDestination,
         amount: +amount,
         description
       };
@@ -215,7 +215,8 @@ const TransferOutsideSystem = ({ history }) => {
             {!otpCodeFormVisible && (
               <Form.Item
                 wrapperCol={{
-                  lg: { offset: 8 }
+                  lg: { offset: 8 },
+                  sm: { offset: 8 }
                 }}
               >
                 <Button type="primary" htmlType="submit" disabled={false}>

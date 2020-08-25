@@ -18,3 +18,8 @@ export const UTILS_TABS = {
   PROFILE: { to: '/utils/profile', label: 'Profile' },
   PASSWORD: { to: '/utils/password', label: 'Password' }
 };
+
+export const STAFFS_TABS = {
+  STAFFS: { to: '/staffs', label: 'Employees' },
+  LOGS: { to: '/staffs/logs', label: 'Logs' }
+};

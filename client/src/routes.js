@@ -50,6 +50,7 @@ const CustomerDetails = lazy(() =>
 const StaffsManagement = lazy(() =>
   import('./components/StaffsManagement/StaffsManagement')
 );
+const StaffsLogs = lazy(() => import('./components/StaffsLogs/StaffsLogs'));
 const IdentitiesManagement = lazy(() =>
   import('./components/IdentitiesManagement/IdentitiesManagement')
 );
@@ -185,6 +186,14 @@ export const routes = [
     component: StaffsManagement
   },
   {
+    path: '/a2hl-management/staffs/logs',
+    exact: true,
+    isPrivate: true,
+    isStaffRoute: true,
+    layout: PrivateLayout,
+    component: StaffsLogs
+  },
+  {
     path: '/a2hl-management/identities',
     exact: true,
     isPrivate: true,
@@ -209,14 +218,6 @@ export const routes = [
     component: TransactionsManagement
   },
   {
-    path: '/a2hl-management/utils/password',
-    exact: true,
-    isPrivate: true,
-    isStaffRoute: true,
-    layout: PrivateLayout,
-    component: UserPassword
-  },
-  {
     path: '/a2hl-management/utils',
     exact: true,
     isPrivate: true,
@@ -231,6 +232,14 @@ export const routes = [
     isStaffRoute: true,
     layout: PrivateLayout,
     component: UserProfile
+  },
+  {
+    path: '/a2hl-management/utils/password',
+    exact: true,
+    isPrivate: true,
+    isStaffRoute: true,
+    layout: PrivateLayout,
+    component: UserPassword
   },
   {
     path: '/a2hl-management/login',

@@ -7,6 +7,8 @@ const passwordValidator = require('../utils/passwordValidator');
 const AppError = require('../utils/appError');
 const { Staff, Role } = require('../models');
 
+const LogService = require('../services/logService');
+
 const excludeAdmin = {
   model: Role,
   where: {
@@ -148,5 +150,28 @@ exports.updateStaffStatus = asyncHandler(async (req, res, next) => {
   return res.status(200).json({
     status: 'success',
     data: staff,
+  });
+});
+
+exports.getLogs = asyncHandler(async (req, res, next) => {
+  let { page, limit } = req.query;
+  const { staffId } = req.query;
+
+  if (!page || page <= 0) page = 1;
+  if (!limit || limit <= 0) limit = 50;
+
+  let filterStaff = null;
+  if (staffId) filterStaff = { staffId };
+
+  const logs = await LogService.getLogs({
+    where: filterStaff,
+    order: [['updatedAt', 'DESC']],
+    offset: (page - 1) * limit,
+    limit,
+  });
+  return res.status(200).json({
+    status: 'success',
+    totalItems: logs.count,
+    items: logs.rows,
   });
 });

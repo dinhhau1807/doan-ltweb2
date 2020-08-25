@@ -19,6 +19,17 @@ class SmsService {
     await client.messages.create(otpOptions);
   }
 
+  async sendBalanceChanges(template, sendTo) {
+    // Define otp options
+    const otpOptions = {
+      from: this.from,
+      to: sendTo,
+      body: template,
+    };
+
+    await client.messages.create(otpOptions);
+  }
+
   async sendResetPasswordCode(verifyCode) {
     const template =
       `Your verify code is: ${verifyCode}.` +
@@ -29,6 +40,50 @@ class SmsService {
   async sendOTPCode(otpCode) {
     const template = `Your OTP code is: ${otpCode}.`;
     await this.send(template);
+  }
+
+  async balanceChangesDeposit(
+    accountSourceId,
+    transactionId,
+    balance,
+    time,
+    accountBalance,
+    description,
+    smsTo
+  ) {
+    const template = `MaGD: #${transactionId}. TK: ${accountSourceId}) tai A2HL Banking. GD: ${balance} VND luc ${time}. Phi: 0 VND. SoDu: ${accountBalance} VND. ND: ${description}.`;
+    await this.sendBalanceChanges(template, `${smsTo}`);
+  }
+
+  async balanceChangesInternal(
+    nameAccountSource,
+    accountSourceId,
+    nameDestination,
+    accountDestinationId,
+    transactionId,
+    balance,
+    time,
+    accountBalance,
+    description,
+    smsTo
+  ) {
+    const template = `MaGD: #${transactionId}. TK: ${nameAccountSource} (STK: ${accountSourceId}) tai A2HL Banking. GD: ${balance} VND luc ${time}. Phi: 0 VND. Den TK: ${nameDestination} (STK: ${accountDestinationId}). SoDu: ${accountBalance} VND. ND: ${description}.`;
+    await this.sendBalanceChanges(template, `${smsTo}`);
+  }
+
+  async balanceChangesExternal(
+    transactionId,
+    accountSourceId,
+    balance,
+    time,
+    description,
+    accountDestinationId,
+    bankDestinationName,
+    accountBalance,
+    smsTo
+  ) {
+    const template = `MaGD: #${transactionId}. TK: ${accountSourceId}) tai A2HL Banking. GD: ${balance} VND luc ${time}. Phi: 0 VND. Den TK: ${accountDestinationId}) tai ${bankDestinationName}. SoDu: ${accountBalance} VND. ND: ${description}.`;
+    await this.sendBalanceChanges(template, `${smsTo}`);
   }
 }
 

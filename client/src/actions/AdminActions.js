@@ -13,3 +13,8 @@ export const changeStaffStatus = body => {
 export const createStaff = body => {
   return fetchApi(apiSegment + '/staffs', 'POST', body);
 };
+
+// logs
+export const getLogs = (params = {}) => {
+  return fetchApi(apiSegment + '/logs', 'GET', null, params);
+};

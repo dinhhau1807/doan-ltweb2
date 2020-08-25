@@ -63,7 +63,8 @@ const FilterDate = ({ fetchData, paramsTable }) => {
 
         <Form.Item
           wrapperCol={{
-            lg: { offset: 6 }
+            lg: { offset: 6 },
+            sm: { offset: 6 }
           }}
         >
           <Button type="primary" htmlType="submit">

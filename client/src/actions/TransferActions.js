@@ -15,7 +15,7 @@ export const externalTransferRequest = body => {
 };
 
 export const externalTransferConfirm = body => {
-  return fetchApi(segment + '/externalTransferRequest', 'POST', body);
+  return fetchApi(segment + '/externalTransferConfirm', 'POST', body);
 };
 
 export const getBanks = () => {
