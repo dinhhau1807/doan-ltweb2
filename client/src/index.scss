@@ -36,8 +36,13 @@ body {
 }
 
 .main {
-  height: calc(100vh - #{$nav-height * 2});
+  height: auto;
   border: 1px solid #eee;
+  margin-bottom: 16px;
+
+  @include mq(tablet) {
+    padding: 0 16px;
+  }
 }
 
 .spinning {

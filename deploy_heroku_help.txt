@@ -1,0 +1,7 @@
+git subtree push --prefix api heroku master
+
+heroku run bash
+
+sequelize db:seed:all
+
+git push heroku <id when conflict>:master --force

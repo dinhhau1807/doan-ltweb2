@@ -213,7 +213,8 @@ const CloseDepositAccount = ({ history }) => {
             {!otpCodeFormVisible && (
               <Form.Item
                 wrapperCol={{
-                  lg: { offset: 8 }
+                  lg: { offset: 8 },
+                  sm: { offset: 8 }
                 }}
               >
                 <Button type="primary" htmlType="submit" disabled={!account}>

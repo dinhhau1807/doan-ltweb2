@@ -16,11 +16,9 @@
 ## Thông tin đồ án
 
 >### Đề tài
-- Updating...
+- Xây dựng ứng dụng **Internet Banking**
 
->### Yêu cầu đồ án
+>### Công nghệ
 
-- Updating...
-
-## Hướng dẫn sử dụng
-- Updating...
+- Client: **React, Redux, SCSS, Ant.Design**
+- Server: **NodeJS, ExpressJS, PostgreSQL**
