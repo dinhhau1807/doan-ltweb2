@@ -27,6 +27,7 @@
 - https://documenter.getpostman.com/view/11144072/T17M75b1
 
 >### Test Account
+- Link: https://a2hl-banking.web.app/a2hl-management/login
 - Username: admin, Password: 1234@Demo
 
 >### Database schema
