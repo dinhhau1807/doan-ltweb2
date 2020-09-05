@@ -26,5 +26,8 @@
 >### API documentation
 - https://documenter.getpostman.com/view/11144072/T17M75b1
 
+>### Test Account
+- Username: admin, Password: 1234@Demo
+
 >### Database schema
 ![Database schema](./databse-schema.png)
